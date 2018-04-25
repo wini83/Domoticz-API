@@ -222,33 +222,6 @@ class UserVariable:
                     self._lastupdate = var["LastUpdate"]
                     break
 
-    # ..........................................................................
-    # Properties
-    # ..........................................................................
-    @property
-    def idx(self):
-        return self._idx
-
-    @property
-    def lastupdate(self):
-        return self._lastupdate
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def type(self):
-        return self._type
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        self._value = self.__value(self._type, value)
-
     def __value(self, type, value):
         print("type: " + type + " value: " + value)
         if value == "":
@@ -289,6 +262,33 @@ class UserVariable:
         else:  # string
             result = ""
         return result
+
+    # ..........................................................................
+    # Properties
+    # ..........................................................................
+    @property
+    def idx(self):
+        return self._idx
+
+    @property
+    def lastupdate(self):
+        return self._lastupdate
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def type(self):
+        return self._type
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = self.__value(self._type, value)
 
     @property
     def status(self):
