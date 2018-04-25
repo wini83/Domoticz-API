@@ -27,7 +27,7 @@ class Server:
     __param_light = "getlightswitches"
     __param_shutdown = "system_shutdown"
     __param_reboot = "system_reboot"
-    __param_sun = "getSunRiseSet"
+    _param_sun = "getSunRiseSet"
     __param_log = "addlogmessage"
     __param_notification = "sendnotification"
 
@@ -78,18 +78,29 @@ class Server:
     __filter_thermostat = "thermostat"
 
     _url_command = "type=" + __type_command + "&"
-    __url_sunrise_set = _url_command + "param=" + __param_sun
+    _url_sunrise_set = _url_command + "param=" + _param_sun
     __url_log_message = _url_command + "param=" + __param_log + "&message="
 
     def __init__(self, address="localhost", port="8080"):
         self._address = address
         self._port = port
         self._url = "http://" + self._address + ":" + self._port + "/json.htm?"
+        self._getSunRiseSet()
 
     def __str__(self):
         txt = __class__.__name__ + "\n"
         txt += "  address: " + self._address + "\n"
         txt += "  port: " + self._port + "\n"
+        txt += "    AstrTwilightEnd: " + self._AstrTwilightEnd + "\n"
+        txt += "    AstrTwilightStart: " + self. _AstrTwilightStart + "\n"
+        txt += "    CivTwilightEnd: " + self._CivTwilightEnd + "\n"
+        txt += "    CivTwilightStart: " + self._CivTwilightStart + "\n"
+        txt += "    DayLength: " + self._DayLength + "\n"
+        txt += "    NautTwilightEnd: " + self._NautTwilightEnd + "\n"
+        txt += "    NautTwilightStart: " + self._NautTwilightStart + "\n"
+        txt += "    SunAtSouth: " + self._SunAtSouth + "\n"
+        txt += "    Sunrise: " + self._Sunrise + "\n"
+        txt += "    Sunset: " + self._Sunset + "\n"
         return txt
 
     # Properties
@@ -113,6 +124,49 @@ class Server:
     # Global methods
 
     # Private methods
+    def _getSunRiseSet(self):
+        message = "param={}".format(self._param_sun)
+        res = self.call_command(message)
+        if res.get("AstrTwilightEnd"):
+            self._AstrTwilightEnd = res["AstrTwilightEnd"]
+        else:
+            self._AstrTwilightEnd = ""
+        if res.get("AstrTwilightStart"):
+            self._AstrTwilightStart = res["AstrTwilightStart"]
+        else:
+            self._AstrTwilightStart = ""
+        if res.get("CivTwilightEnd"):
+            self._CivTwilightEnd = res["CivTwilightEnd"]
+        else:
+            self._CivTwilightEnd = ""
+        if res.get("CivTwilightStart"):
+            self._CivTwilightStart = res["CivTwilightStart"]
+        else:
+            self._CivTwilightStart = ""
+        if res.get("DayLength"):
+            self._DayLength = res["DayLength"]
+        else:
+            self._DayLength = ""
+        if res.get("NautTwilightEnd"):
+            self._NautTwilightEnd = res["NautTwilightEnd"]
+        else:
+            self._NautTwilightEnd = ""
+        if res.get("NautTwilightStart"):
+            self._NautTwilightStart = res["NautTwilightStart"]
+        else:
+            self._NautTwilightStart = ""
+        if res.get("SunAtSouth"):
+            self._SunAtSouth = res["SunAtSouth"]
+        else:
+            self._SunAtSouth = ""
+        if res.get("Sunrise"):
+            self._Sunrise = res["Sunrise"]
+        else:
+            self._Sunrise = ""
+        if res.get("Sunset"):
+            self._Sunset = res["Sunset"]
+        else:
+            self._Sunset = ""
 
     def log_message(self, message):
         self.__call_api(self.__url_log_message + message)
@@ -223,7 +277,6 @@ class UserVariable:
                     break
 
     def __value(self, type, value):
-        print("type: " + type + " value: " + value)
         if value == "":
             result = value
         elif type == "integer":
