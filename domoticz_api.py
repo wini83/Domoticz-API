@@ -9,7 +9,6 @@ from datetime import datetime
 
 
 class Server:
-
     # Responses
     _return_ok = "OK"
     _return_error = "ERR"
@@ -151,7 +150,6 @@ class Server:
 # User variable                                                                #
 ################################################################################
 class UserVariable:
-
     # Types
     # 0 = Integer, e.g. - 1, 1, 0, 2, 10
     # 1 = Float, e.g. - 1.1, 1.2, 3.1
@@ -309,7 +307,8 @@ class UserVariable:
     def add(self):
         if not self.exists():
             if len(self._name) > 0 and len(self._type) > 0 and len(self._value) > 0:
-                message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_save_user_variable, self._name, self._typenum, self._value)
+                message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_save_user_variable, self._name,
+                                                                        self._typenum, self._value)
                 res = self._dom.call_command(message)
                 self._status = res["status"]
                 if self._status == self._dom._return_ok:
@@ -329,4 +328,3 @@ class UserVariable:
             message = "param={}&idx={}".format(self._param_delete_user_variable, self._idx)
             res = self._dom.call_command(message)
             self._idx = ""
-
