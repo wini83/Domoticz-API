@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#
-# https://www.domoticz.com/wiki/Domoticz_API/JSON_URL%27s
-# https://github.com/sguernion/myPI/blob/cc8d0bb5d6f465d18d74edccc480b3f4067ce6ec/domoticz/script/python/domoticz_api.py
-# http://mydomotic.blogspot.nl/?view=classic
 
 import json
 import urllib.request
