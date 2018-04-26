@@ -85,17 +85,8 @@ class Server:
         self._address = address
         self._port = port
         self._url = "http://" + self._address + ":" + self._port + "/json.htm?"
-        self._AstrTwilightEnd = ""
-        self._AstrTwilightStart = ""
-        self._CivTwilightEnd = ""
-        self._CivTwilightStart = ""
-        self._DayLength = ""
-        self._NautTwilightEnd = ""
-        self._NautTwilightStart = ""
-        self._SunAtSouth = ""
-        self._Sunrise = ""
-        self._AstrTwilightEnd = ""
-        self._Sunset()
+        # No need to initialize all time properties. Next procedure will do that.
+        self._getSunRiseSet()
 
     def __str__(self):
         txt = __class__.__name__ + "\n"
@@ -111,6 +102,7 @@ class Server:
         txt += "    Sunset: " + self._Sunset + "\n"
         txt += "    SunAtSouth: " + self._SunAtSouth + "\n"
         txt += "    DayLength: " + self._DayLength + "\n"
+        txt += "    ServerTime: " + self._ServerTime + "\n"
         return txt
 
     # Properties
@@ -131,52 +123,83 @@ class Server:
     def port(self, port):
         self._port = port
 
+    @property
+    def port(self):
+        return self._port
+
+    @property
+    def AstrTwilightEnd(self):
+        self._getSunRiseSet()
+        return self._AstrTwilightEnd
+
+    @property
+    def AstrTwilightStart(self):
+        self._getSunRiseSet()
+        return self._AstrTwilightStart
+
+    @property
+    def CivTwilightEnd(self):
+        self._getSunRiseSet()
+        return self._CivTwilightEnd
+
+    @property
+    def CivTwilightStart(self):
+        self._getSunRiseSet()
+        return self._CivTwilightStart
+
+    @property
+    def NautTwilightEnd(self):
+        self._getSunRiseSet()
+        return self._NautTwilightEnd
+
+    @property
+    def NautTwilightStart(self):
+        self._getSunRiseSet()
+        return self._NautTwilightStart
+
+    @property
+    def Sunrise(self):
+        self._getSunRiseSet()
+        return self._Sunrise
+
+    @property
+    def Sunset(self):
+        self._getSunRiseSet()
+        return self._Sunset
+
+    @property
+    def SunAtSouth(self):
+        self._getSunRiseSet()
+        return self._SunAtSouth
+
+    @property
+    def DayLength(self):
+        self._getSunRiseSet()
+        return self._DayLength
+
+    @property
+    def ServerTime(self):
+        self._getSunRiseSet()
+        return self._ServerTime
+
     # Global methods
 
     # Private methods
     def _getSunRiseSet(self):
         message = "param={}".format(self._param_sun)
         res = self.call_command(message)
-        if res.get("AstrTwilightEnd"):
-            self._AstrTwilightEnd = res["AstrTwilightEnd"]
-        else:
-            self._AstrTwilightEnd = ""
-        if res.get("AstrTwilightStart"):
-            self._AstrTwilightStart = res["AstrTwilightStart"]
-        else:
-            self._AstrTwilightStart = ""
-        if res.get("CivTwilightEnd"):
-            self._CivTwilightEnd = res["CivTwilightEnd"]
-        else:
-            self._CivTwilightEnd = ""
-        if res.get("CivTwilightStart"):
-            self._CivTwilightStart = res["CivTwilightStart"]
-        else:
-            self._CivTwilightStart = ""
-        if res.get("DayLength"):
-            self._DayLength = res["DayLength"]
-        else:
-            self._DayLength = ""
-        if res.get("NautTwilightEnd"):
-            self._NautTwilightEnd = res["NautTwilightEnd"]
-        else:
-            self._NautTwilightEnd = ""
-        if res.get("NautTwilightStart"):
-            self._NautTwilightStart = res["NautTwilightStart"]
-        else:
-            self._NautTwilightStart = ""
-        if res.get("SunAtSouth"):
-            self._SunAtSouth = res["SunAtSouth"]
-        else:
-            self._SunAtSouth = ""
-        if res.get("Sunrise"):
-            self._Sunrise = res["Sunrise"]
-        else:
-            self._Sunrise = ""
-        if res.get("Sunset"):
-            self._Sunset = res["Sunset"]
-        else:
-            self._Sunset = ""
+        # Used one line if ... then ... else for more compact code
+        self._AstrTwilightEnd = res["AstrTwilightEnd"] if res.get("AstrTwilightEnd") else ""
+        self._AstrTwilightStart = res["AstrTwilightStart"] if res.get("AstrTwilightStart") else ""
+        self._CivTwilightEnd = res["CivTwilightEnd"] if res.get("CivTwilightEnd") else ""
+        self._CivTwilightStart = res["CivTwilightStart"] if res.get("CivTwilightStart") else ""
+        self._NautTwilightEnd = res["NautTwilightEnd"] if res.get("NautTwilightEnd") else ""
+        self._NautTwilightStart = res["NautTwilightStart"] if res.get("NautTwilightStart") else ""
+        self._Sunrise = res["Sunrise"] if res.get("Sunrise") else ""
+        self._Sunset = res["Sunset"] if res.get("Sunset") else ""
+        self._SunAtSouth = res["SunAtSouth"] if res.get("SunAtSouth") else ""
+        self._DayLength = res["DayLength"] if res.get("DayLength") else ""
+        self._ServerTime = res["ServerTime"] if res.get("ServerTime") else ""
 
     def log_message(self, message):
         self.__call_api(self.__url_log_message + message)
