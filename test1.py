@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import domoticz_api as dom
+import DomoticzAPI as dom
 
 
 def main():
@@ -18,7 +18,7 @@ def main():
     print(var3)
     var1.delete()
     var2.delete()
-    var3.delete()
+    # var3.delete()
 
 
 if __name__ == "__main__":
