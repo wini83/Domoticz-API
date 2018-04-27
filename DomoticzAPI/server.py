@@ -24,11 +24,12 @@ class Server:
     __type_graph_sensor = "graph&sensor"  # Temperature
 
     # Param
+    _param = "param={}"
     __param_light = "getlightswitches"
-    __param_shutdown = "system_shutdown"
-    __param_reboot = "system_reboot"
+    _param_shutdown = "system_shutdown"
+    _param_reboot = "system_reboot"
     _param_sun = "getSunRiseSet"
-    __param_log = "addlogmessage"
+    _param_log = "addlogmessage"
     __param_notification = "sendnotification"
 
     __param_switch_light = "switchlight"
@@ -78,35 +79,37 @@ class Server:
     __filter_thermostat = "thermostat"
 
     _url_command = "type=" + __type_command + "&"
-    _url_sunrise_set = _url_command + "param=" + _param_sun
-    __url_log_message = _url_command + "param=" + __param_log + "&message="
+    # _url_sunrise_set = _url_command + "param=" + _param_sun
+    # _url_log_message = _url_command + "param=" + _param_log + "&message="
 
     def __init__(self, address="localhost", port="8080"):
         self._address = address
         self._port = port
+        self._status = ""
         self._url = "http://" + self._address + ":" + self._port + "/json.htm?"
         # No need to initialize all time properties. Next procedure will do that.
         self._getSunRiseSet()
 
     def __str__(self):
         txt = __class__.__name__ + "\n"
-        txt += "  address: " + self._address + "\n"
-        txt += "  port: " + self._port + "\n"
-        txt += "    AstrTwilightEnd: " + self._AstrTwilightEnd + "\n"
-        txt += "    AstrTwilightStart: " + self. _AstrTwilightStart + "\n"
-        txt += "    CivTwilightEnd: " + self._CivTwilightEnd + "\n"
-        txt += "    CivTwilightStart: " + self._CivTwilightStart + "\n"
-        txt += "    NautTwilightEnd: " + self._NautTwilightEnd + "\n"
-        txt += "    NautTwilightStart: " + self._NautTwilightStart + "\n"
-        txt += "    Sunrise: " + self._Sunrise + "\n"
-        txt += "    Sunset: " + self._Sunset + "\n"
-        txt += "    SunAtSouth: " + self._SunAtSouth + "\n"
-        txt += "    DayLength: " + self._DayLength + "\n"
-        txt += "    ServerTime: " + self._ServerTime + "\n"
+        txt += "  address: \"" + self._address + "\"\n"
+        txt += "  port: \"" + self._port + "\"\n"
+        txt += "    AstrTwilightEnd: \"" + self._AstrTwilightEnd + "\"\n"
+        txt += "    AstrTwilightStart: \"" + self. _AstrTwilightStart + "\"\n"
+        txt += "    CivTwilightEnd: \"" + self._CivTwilightEnd + "\"\n"
+        txt += "    CivTwilightStart: \"" + self._CivTwilightStart + "\"\n"
+        txt += "    DayLength: \"" + self._DayLength + "\"\n"
+        txt += "    NautTwilightEnd: \"" + self._NautTwilightEnd + "\"\n"
+        txt += "    NautTwilightStart: \"" + self._NautTwilightStart + "\"\n"
+        txt += "    Sunrise: \"" + self._Sunrise + "\"\n"
+        txt += "    Sunset: \"" + self._Sunset + "\"\n"
+        txt += "    SunAtSouth: \"" + self._SunAtSouth + "\"\n"
+        txt += "    ServerTime: \"" + self._ServerTime + "\"\n"
         return txt
 
+    # ..........................................................................
     # Properties
-
+    # ..........................................................................
     @property
     def address(self):
         return self._address
@@ -122,10 +125,6 @@ class Server:
     @port.setter
     def port(self, port):
         self._port = port
-
-    @property
-    def port(self):
-        return self._port
 
     @property
     def AstrTwilightEnd(self):
@@ -182,12 +181,32 @@ class Server:
         self._getSunRiseSet()
         return self._ServerTime
 
-    # Global methods
+    @property
+    def Status(self):
+        return self._status
 
+    # ..........................................................................
+    # Global methods
+    # ..........................................................................
+    def logmessage(self, text):
+        message = self._param.format(self._param_log) + "&message={}".format(text)
+        res = self._call_command(message)
+        self._status = res["status"]
+
+    def reboot(self):
+        message = self._param.format(self._param_reboot)
+        res = self._call_command(message)
+
+    def shutdown(self):
+        message = self._param.format(self._param_shutdown)
+        res = self._call_command(message)
+
+    # ..........................................................................
     # Private methods
+    # ..........................................................................
     def _getSunRiseSet(self):
-        message = "param={}".format(self._param_sun)
-        res = self.call_command(message)
+        message = self._param.format(self._param_sun)
+        res = self._call_command(message)
         # Used one line if ... then ... else for more compact code
         self._AstrTwilightEnd = res["AstrTwilightEnd"] if res.get("AstrTwilightEnd") else ""
         self._AstrTwilightStart = res["AstrTwilightStart"] if res.get("AstrTwilightStart") else ""
@@ -201,13 +220,10 @@ class Server:
         self._DayLength = res["DayLength"] if res.get("DayLength") else ""
         self._ServerTime = res["ServerTime"] if res.get("ServerTime") else ""
 
-    def log_message(self, message):
-        self.__call_api(self.__url_log_message + message)
+    def _call_command(self, text):
+        return self._call_api(self._url_command + text)
 
-    def call_command(self, text):
-        return self.call_api(self._url_command + text)
-
-    def call_api(self, text):
+    def _call_api(self, text):
         return self.__call_url(self._url + str(text), "", "")
 
     # def __call_url(self, url, username, password):
