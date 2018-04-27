@@ -6,8 +6,8 @@
 ################################################################################
 class UserVariable:
     # Types
-    # 0 = Integer, e.g. - 1, 1, 0, 2, 10
-    # 1 = Float, e.g. - 1.1, 1.2, 3.1
+    # 0 = Integer, e.g. -1, 1, 0, 2, 10
+    # 1 = Float, e.g. -1.1, 1.2, 3.1
     # 2 = String
     # 3 = Date in format DD/MM/YYYY
     # 4 = Time in 24 hr format HH:MM
@@ -39,9 +39,16 @@ class UserVariable:
     _date = "%d/%m/%Y"
     _time = "%H:%M"
 
-    def __init__(self, dom, name, type="string", value=""):
-        if dom is not None and len(name) > 0:
-            self._dom = dom
+    def __init__(self, server, name, type="string", value=""):
+        """
+        Args:
+            server (Server): Domoticz server object where to maintain the user variable
+            name (:obj:`str`): Name of the user variable
+            type (:obj:`str`, optional): Type of the user variable
+            value (:obj:`str`, optional): Value of the user variable
+        """
+        if server is not None and len(name) > 0:
+            self._server = server
             self._name = name
             if type in self._vtype2num:
                 self._type = type
@@ -57,17 +64,17 @@ class UserVariable:
 
     def __str__(self):
         txt = __class__.__name__ + ":\n"
-        txt += "  idx: " + self._idx + "\n"
-        txt += "  name: " + self._name + "\n"
-        txt += "  type: " + self._type + " (" + self._typenum + ")\n"
-        txt += "  value: " + self._value + "\n"
-        txt += "  status: " + self._status + "\n"
-        txt += "  lastupdate: " + self._lastupdate + "\n"
+        txt += "  idx: \"" + self._idx + "\"\n"
+        txt += "  name: \"" + self._name + "\"\n"
+        txt += "  type: \"" + self._type + "\"\n"
+        txt += "  value: \"" + self._value + "\"\n"
+        txt += "  status: \"" + self._status + "\"\n"
+        txt += "  lastupdate: \"" + self._lastupdate + "\"\n"
         return txt
 
     def __getvar(self):
         message = "param=getuservariables"
-        res = self._dom.call_command(message)
+        res = self._server._call_command(message)
         if res.get("result"):
             for var in res["result"]:
                 if var["Name"] == self._name:
@@ -133,6 +140,14 @@ class UserVariable:
         return self._name
 
     @property
+    def status(self):
+        return self._server
+
+    @property
+    def status(self):
+        return self._status
+
+    @property
     def type(self):
         return self._type
 
@@ -143,10 +158,6 @@ class UserVariable:
     @value.setter
     def value(self, value):
         self._value = self.__value(self._type, value)
-
-    @property
-    def status(self):
-        return self._status
 
     # ..........................................................................
     # Methods
@@ -163,9 +174,9 @@ class UserVariable:
             if len(self._name) > 0 and len(self._type) > 0 and len(self._value) > 0:
                 message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_save_user_variable, self._name,
                                                                         self._typenum, self._value)
-                res = self._dom.call_command(message)
+                res = self._server._call_command(message)
                 self._status = res["status"]
-                if self._status == self._dom._return_ok:
+                if self._status == self._server._return_ok:
                     self.__getvar()
 
     # json.htm?type=command&param=updateuservariable&vname=Test&vtype=1&vvalue=1.23
@@ -173,12 +184,13 @@ class UserVariable:
         if self.exists():
             message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_update_user_variable, self._name,
                                                                     self._typenum, self._value)
-            res = self._dom.call_command(message)
+            res = self._server._call_command(message)
             self.__getvar()
 
     # json.htm?type=command&param=deleteuservariable&idx=3
     def delete(self):
         if self.exists():
             message = "param={}&idx={}".format(self._param_delete_user_variable, self._idx)
-            res = self._dom.call_command(message)
+            res = self._server._call_command(message)
             self._idx = ""
+            self._status = res["status"]
