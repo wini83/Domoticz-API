@@ -3,3 +3,4 @@
 
 from .server import Server
 from .uservariable import UserVariable
+from .device import Device
