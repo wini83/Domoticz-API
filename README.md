@@ -1,5 +1,7 @@
 # Python Domoticz API
 
+The goal of this project is to have access to other devices, user variables, notifications, etc. in Domoticz Python plugins.
+
 # This is still under development!!!
 
 Therefore this api is not complete, fully tested, incomplete or wrong documentation in the [Wiki](https://github.com/Xorfor/Domoticz-API/wiki/Python-Domoticz-API), etc.
