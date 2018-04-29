@@ -63,15 +63,82 @@ class UserVariable:
             self.__getvar()
 
     def __str__(self):
-        txt = __class__.__name__ + ":\n"
-        txt += "  idx: \"" + self._idx + "\"\n"
-        txt += "  name: \"" + self._name + "\"\n"
-        txt += "  type: \"" + self._type + "\"\n"
-        txt += "  value: \"" + self._value + "\"\n"
-        txt += "  status: \"" + self._status + "\"\n"
-        txt += "  lastupdate: \"" + self._lastupdate + "\"\n"
-        return txt
+        return "{0}({1}, \"{2}\", \"{3}\", \"{4}\")".format(self.__class__.__name__, str(self._server), self._name, self._type, self._value)
 
+    # ..........................................................................
+    # Public methods
+    # ..........................................................................
+    def exists(self):
+        if len(self._idx) > 0:
+            return True
+        else:
+            return False
+
+    # json.htm?type=command&param=saveuservariable&vname=Test&vtype=1&vvalue=1.23
+    def add(self):
+        if not self.exists():
+            if len(self._name) > 0 and len(self._type) > 0 and len(self._value) > 0:
+                message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_save_user_variable, self._name,
+                                                                        self._typenum, self._value)
+                res = self._server._call_command(message)
+                self._status = res["status"]
+                if self._status == self._server._return_ok:
+                    self.__getvar()
+
+    # json.htm?type=command&param=updateuservariable&vname=Test&vtype=1&vvalue=1.23
+    def update(self):
+        if self.exists():
+            message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_update_user_variable, self._name,
+                                                                    self._typenum, self._value)
+            res = self._server._call_command(message)
+            self.__getvar()
+
+    # json.htm?type=command&param=deleteuservariable&idx=3
+    def delete(self):
+        if self.exists():
+            message = "param={}&idx={}".format(self._param_delete_user_variable, self._idx)
+            res = self._server._call_command(message)
+            self._idx = ""
+            self._status = res["status"]
+
+    # ..........................................................................
+    # Properties
+    # ..........................................................................
+    @property
+    def idx(self):
+        return self._idx
+
+    @property
+    def lastupdate(self):
+        return self._lastupdate
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def status(self):
+        return self._server
+
+    @property
+    def status(self):
+        return self._status
+
+    @property
+    def type(self):
+        return self._type
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = self.__value(self._type, value)
+
+    # ..........................................................................
+    # Private methods
+    # ..........................................................................
     def __getvar(self):
         message = "param=getuservariables"
         res = self._server._call_command(message)
@@ -123,74 +190,3 @@ class UserVariable:
         else:  # string
             result = ""
         return result
-
-    # ..........................................................................
-    # Properties
-    # ..........................................................................
-    @property
-    def idx(self):
-        return self._idx
-
-    @property
-    def lastupdate(self):
-        return self._lastupdate
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def status(self):
-        return self._server
-
-    @property
-    def status(self):
-        return self._status
-
-    @property
-    def type(self):
-        return self._type
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        self._value = self.__value(self._type, value)
-
-    # ..........................................................................
-    # Methods
-    # ..........................................................................
-    def exists(self):
-        if len(self._idx) > 0:
-            return True
-        else:
-            return False
-
-    # json.htm?type=command&param=saveuservariable&vname=Test&vtype=1&vvalue=1.23
-    def add(self):
-        if not self.exists():
-            if len(self._name) > 0 and len(self._type) > 0 and len(self._value) > 0:
-                message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_save_user_variable, self._name,
-                                                                        self._typenum, self._value)
-                res = self._server._call_command(message)
-                self._status = res["status"]
-                if self._status == self._server._return_ok:
-                    self.__getvar()
-
-    # json.htm?type=command&param=updateuservariable&vname=Test&vtype=1&vvalue=1.23
-    def update(self):
-        if self.exists():
-            message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_update_user_variable, self._name,
-                                                                    self._typenum, self._value)
-            res = self._server._call_command(message)
-            self.__getvar()
-
-    # json.htm?type=command&param=deleteuservariable&idx=3
-    def delete(self):
-        if self.exists():
-            message = "param={}&idx={}".format(self._param_delete_user_variable, self._idx)
-            res = self._server._call_command(message)
-            self._idx = ""
-            self._status = res["status"]
