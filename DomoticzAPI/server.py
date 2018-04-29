@@ -48,7 +48,6 @@ class Server:
     __param_add_scene_timer = "addscenetimer"
 
     __type_create_device = "createdevice"
-    __param_add_hardware = "addhardware"
     __param_update_device = "udevice"
 
     # User variables
@@ -91,20 +90,7 @@ class Server:
         self._getSunRiseSet()
 
     def __str__(self):
-        txt = __class__.__name__ + "\n"
-        txt += "  address: \"" + self._address + "\"\n"
-        txt += "  port: \"" + self._port + "\"\n"
-        txt += "    AstrTwilightEnd: \"" + self._AstrTwilightEnd + "\"\n"
-        txt += "    AstrTwilightStart: \"" + self. _AstrTwilightStart + "\"\n"
-        txt += "    CivTwilightEnd: \"" + self._CivTwilightEnd + "\"\n"
-        txt += "    CivTwilightStart: \"" + self._CivTwilightStart + "\"\n"
-        txt += "    DayLength: \"" + self._DayLength + "\"\n"
-        txt += "    NautTwilightEnd: \"" + self._NautTwilightEnd + "\"\n"
-        txt += "    NautTwilightStart: \"" + self._NautTwilightStart + "\"\n"
-        txt += "    Sunrise: \"" + self._Sunrise + "\"\n"
-        txt += "    Sunset: \"" + self._Sunset + "\"\n"
-        txt += "    SunAtSouth: \"" + self._SunAtSouth + "\"\n"
-        txt += "    ServerTime: \"" + self._ServerTime + "\"\n"
+        txt = "{0}(\"{1}\", \"{2}\")".format(self.__class__.__name__, self._address, self._port)
         return txt
 
     # ..........................................................................
