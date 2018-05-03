@@ -121,7 +121,7 @@ class Server:
         self._port = port
 
     @property
-    def server(self):
+    def servertime(self):
         self._getSunRiseSet()
         if self._status == self._return_ok:
             self._currentdate = self._ServerTime[:10]  # yyyy-mm-dd
@@ -129,7 +129,7 @@ class Server:
         return self._ServerTime
 
     @property
-    def server_dt(self):
+    def servertime_dt(self):
         return datetime.strptime(self._ServerTime, "%Y-%m-%d %H:%M:%S") if self._status == self._return_ok else None
 
     @property
@@ -174,22 +174,22 @@ class Server:
         if self.exists():
             message = self._param.format(self._param_log) + "&message={}".format(quote(text))
             res = self._call_command(message)
-            self._status = res["status"] if res.get("status") else ""
-            self._title = res["title"] if self._status == self._return_ok else ""
+            self._status = res.get("status", "")
+            self._title = res.get("title", "")
 
     def reboot(self):
         if self.exists():
             message = self._param.format(self._param_reboot)
             res = self._call_command(message)
-            self._status = res["status"] if res.get("status") else ""
-            self._title = res["title"] if self._status == self._return_ok else ""
+            self._status = res.get("status", "")
+            self._title = res.get("title", "")
 
     def shutdown(self):
         if self.exists():
             message = self._param.format(self._param_shutdown)
             res = self._call_command(message)
-            self._status = res["status"] if res.get("status") else ""
-            self._title = res["title"] if self._status == self._return_ok else ""
+            self._status = res.get("status", "")
+            self._title = res.get("title", "")
 
     def exists(self):
         return self._status == self._return_ok
@@ -200,23 +200,25 @@ class Server:
     def _getSunRiseSet(self, now=False):
         if isinstance(self._currentdate_dt, datetime):
             if datetime.now().date() > self._currentdate_dt:
-                now=True
+                now = True
         if now:
+            res = {}
             message = self._param.format(self._param_sun)
             res = self._call_command(message)
-            self._status = res["status"] if res.get("status") else ""
-            self._AstrTwilightEnd = res["AstrTwilightEnd"] if res.get("AstrTwilightEnd") else ""
-            self._AstrTwilightStart = res["AstrTwilightStart"] if res.get("AstrTwilightStart") else ""
-            self._CivTwilightEnd = res["CivTwilightEnd"] if res.get("CivTwilightEnd") else ""
-            self._CivTwilightStart = res["CivTwilightStart"] if res.get("CivTwilightStart") else ""
-            self._NautTwilightEnd = res["NautTwilightEnd"] if res.get("NautTwilightEnd") else ""
-            self._NautTwilightStart = res["NautTwilightStart"] if res.get("NautTwilightStart") else ""
-            self._Sunrise = res["Sunrise"] if res.get("Sunrise") else ""
-            self._Sunset = res["Sunset"] if res.get("Sunset") else ""
-            self._SunAtSouth = res["SunAtSouth"] if res.get("SunAtSouth") else ""
-            self._DayLength = res["DayLength"] if res.get("DayLength") else ""
-            self._ServerTime = res["ServerTime"] if res.get("ServerTime") else ""
-            self._title = res["title"] if res.get("title") else ""
+            self._AstrTwilightEnd = res.get("AstrTwilightEnd")
+            self._AstrTwilightStart = res.get("AstrTwilightStart")
+            self._CivTwilightEnd = res.get("CivTwilightEnd")
+            self._CivTwilightStart = res.get("CivTwilightStart")
+            self._NautTwilightEnd = res.get("NautTwilightEnd")
+            self._NautTwilightStart = res.get("NautTwilightStart")
+            self._Sunrise = res.get("Sunrise")
+            self._Sunset = res.get("Sunset")
+            self._SunAtSouth = res.get("SunAtSouth")
+            self._DayLength = res.get("DayLength")
+            self._ServerTime = res.get("ServerTime")
+            #
+            self._status = res.get("status", "ERR")
+            self._title = res.get("title", "")
 
     def _call_command(self, text):
         return self._call_api(self._url_command + text)
