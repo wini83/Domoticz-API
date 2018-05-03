@@ -26,7 +26,8 @@ class Hardware:
         self._Password = None
         self._Port = None
         self._SerialPort = None
-        self._Status = ""
+        self._status = ""
+        self._title = ""
         self._Type = None
         self._Username = None
         if len(args) == 1:
@@ -58,7 +59,7 @@ class Hardware:
                     self._Type = kwargs.get("Type", None)
                     self._Username = kwargs.get("Username", None)
         if self._idx is not None:
-            self._getHardware()
+            self._initHardware()
 
     def __str__(self):
         return "{}({}, \"{}\", \"{}\")".format(self.__class__.__name__, str(self._server), self._idx, self._Name)
@@ -70,15 +71,15 @@ class Hardware:
         return self._idx is not None and self._Name is not None
 
     def add(self):
-        # At least Name, Type and Enabled are required?
+        # At least Name, Type and Enabled are required
         if self._idx is None and self._Name is not None and self._Type is not None and self._Enabled is not None:
             message = "param={}&name={}&htype={}&enabled={}".format(self._param_add_hardware, self._Name, self._Type, self._Enabled)
             res = self._server._call_command(message)
-            self._Status = res["status"]
-            if self._Status == self._server._return_ok:
-                self._idx = res["idx"]
-                self._title = res["title"]
-                self._getHardware()
+            if res.get("status") == self._server._return_ok:
+                self._idx = res.get("idx")
+                self._initHardware()
+            self._status = res.get("status")
+            self._title = res.get("title")
 
     # ..........................................................................
     # Properties
@@ -221,7 +222,11 @@ class Hardware:
 
     @property
     def status(self):
-        return self._Status
+        return self._status
+
+    @property
+    def title(self):
+        return self._title
 
     @property
     def type(self):
@@ -244,27 +249,30 @@ class Hardware:
     # ..........................................................................
     # Private methods
     # ..........................................................................
-    def _getHardware(self):
+    def _initHardware(self):
         message = "type=hardware"
         res = self._server._call_api(message)
-        res = res["result"] if res.get("result") else ""
-        if len(res) > 0:
-            for myDict in res:
-                if myDict["idx"] == self._idx:
-                    self._Address = myDict["Address"]
-                    self._DataTimeout = myDict["DataTimeout"]
-                    self._Enabled = myDict["Enabled"]
-                    self._Extra = myDict["Extra"]
-                    self._Mode1 = myDict["Mode1"]
-                    self._Mode2 = myDict["Mode2"]
-                    self._Mode3 = myDict["Mode3"]
-                    self._Mode4 = myDict["Mode4"]
-                    self._Mode5 = myDict["Mode5"]
-                    self._Mode6 = myDict["Mode6"]
-                    self._Name = myDict["Name"]
-                    self._Password = myDict["Password"]
-                    self._Port = myDict["Port"]
-                    self._SerialPort = myDict["SerialPort"]
-                    self._Type = myDict["Type"]
-                    self._Username = myDict["Username"]
+        result = res.get("result")
+        if len(result) > 0:
+            for myDict in result:
+                if myDict.get("idx") == self._idx:
+                    self._Address = myDict.get("Address")
+                    self._DataTimeout = myDict.get("DataTimeout")
+                    self._Enabled = myDict.get("Enabled")
+                    self._Extra = myDict.get("Extra")
+                    self._Mode1 = myDict.get("Mode1")
+                    self._Mode2 = myDict.get("Mode2")
+                    self._Mode3 = myDict.get("Mode3")
+                    self._Mode4 = myDict.get("Mode4")
+                    self._Mode5 = myDict.get("Mode5")
+                    self._Mode6 = myDict.get("Mode6")
+                    self._Name = myDict.get("Name")
+                    self._Password = myDict.get("Password")
+                    self._Port = myDict.get("Port")
+                    self._SerialPort = myDict.get("SerialPort")
+                    self._Type = myDict.get("Type")
+                    self._Username = myDict.get("Username")
+                    #
+                    self._status = res.get("status")
+                    self._title = res.get("title")
                     break
