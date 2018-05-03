@@ -81,7 +81,8 @@ class UserVariable:
                 message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_save_user_variable, self._name,
                                                                         self._typenum, self._value)
                 res = self._server._call_command(message)
-                self._status = res["status"]
+                self._status = res["status"] if res.get("status") else ""
+                self._title = res["title"] if self._status == self._return_ok else ""
                 if self._status == self._server._return_ok:
                     self.__getvar()
 
@@ -91,6 +92,8 @@ class UserVariable:
             message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_update_user_variable, self._name,
                                                                     self._typenum, self._value)
             res = self._server._call_command(message)
+            self._status = res["status"] if res.get("status") else ""
+            self._title = res["title"] if self._status == self._return_ok else ""
             self.__getvar()
 
     # json.htm?type=command&param=deleteuservariable&idx=3
@@ -99,7 +102,8 @@ class UserVariable:
             message = "param={}&idx={}".format(self._param_delete_user_variable, self._idx)
             res = self._server._call_command(message)
             self._idx = ""
-            self._status = res["status"]
+            self._status = res["status"] if res.get("status") else ""
+            self._title = res["title"] if self._status == self._return_ok else ""
 
     # ..........................................................................
     # Properties
@@ -123,6 +127,10 @@ class UserVariable:
     @property
     def status(self):
         return self._status
+
+    @property
+    def title(self):
+        return self._title
 
     @property
     def type(self):
