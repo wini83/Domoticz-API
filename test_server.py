@@ -6,8 +6,14 @@ from datetime import datetime
 def main():
     server = dom.Server(address="192.168.0.13")
     print(server)
-    print("Server = " + server.server)
-    print("ServerDT = " + str(server.server_dt))
+    print("Domoticz version: " + server.version)
+    print("Build time: " + str(server.build_time_dt))
+    print("Update available: " + str(server.haveupdate))
+    if server.haveupdate:
+        server.update()
+        print("Domoticz version: " + server.version)
+    print("\nServer = " + server.servertime)
+    print("ServerDT = " + str(server.servertime_dt))
     print("Sunrise = " + server.sunrise)
     print("Sunset = " + server.sunset)
     print("SunsetDT = " + str(server.sunset_dt))
