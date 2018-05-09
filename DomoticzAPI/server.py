@@ -21,10 +21,11 @@ class Server:
 
     # param parameter
     _param = "param={}"
-    _param_shutdown = "system_shutdown"
-    _param_reboot = "system_reboot"
-    _param_sun = "getSunRiseSet"
     _param_log = "addlogmessage"
+    _param_reboot = "system_reboot"
+    _param_shutdown = "system_shutdown"
+    _param_sun = "getSunRiseSet"
+    _param_version = "getversion"
 
     _url_command = _type + "=" + _type_command + "&"
 
@@ -35,7 +36,8 @@ class Server:
         self._title = ""
         self._url = "http://" + self._address + ":" + self._port + "/json.htm?"
         self._currentdate_dt = None
-        # No need to initialize all time properties. Next procedure will do that.
+        # No need to initialize all time properties. Next procedures will do that.
+        self._getVersion()
         self._getSunRiseSet(True)
 
     def __str__(self):
@@ -44,6 +46,53 @@ class Server:
 
     # ..........................................................................
     # Properties
+    # ..........................................................................
+
+    # ..........................................................................
+    # json.htm?type=command&param=getversion
+    # ..........................................................................
+    @property
+    def build_time(self):
+        return self._build_time
+
+    @property
+    def build_time_dt(self):
+        return datetime.strptime(self._build_time, "%Y-%m-%d %H:%M:%S") if self._status == self._return_ok else None
+
+    @property
+    def dzvents_version(self):
+        return self._dzvents_version
+
+    @property
+    def domoticzupdateurl(self):
+        return self._DomoticzUpdateURL
+
+    @property
+    def haveupdate(self):
+        return self._HaveUpdate
+
+    @property
+    def hash(self):
+        return self._hash
+
+    @property
+    def python_version(self):
+        return self._python_version
+
+    @property
+    def revision(self):
+        return self._Revision
+
+    @property
+    def systemname(self):
+        return self._SystemName
+
+    @property
+    def version(self):
+        return self._version
+
+    # ..........................................................................
+    # json.htm?type=command&param=getSunRiseSet
     # ..........................................................................
     @property
     def address(self):
@@ -170,6 +219,9 @@ class Server:
     # ..........................................................................
     # Global methods
     # ..........................................................................
+    def exists(self):
+        return self._status == self._return_ok
+
     def logmessage(self, text):
         if self.exists():
             message = self._param.format(self._param_log) + "&message={}".format(quote(text))
@@ -191,12 +243,31 @@ class Server:
             self._status = res.get("status", "")
             self._title = res.get("title", "")
 
-    def exists(self):
-        return self._status == self._return_ok
+    def update(self):
+        if self._HaveUpdate:
+            # Do update
+            self._getVersion()
 
     # ..........................................................................
     # Private methods
     # ..........................................................................
+    def _getVersion(self):
+        # json.htm?type=command&param=getversion
+        message = self._param.format(self._param_version)
+        res = self._call_command(message)
+        self._build_time = res.get("build_time")
+        self._DomoticzUpdateURL = res.get("DomoticzUpdateURL")
+        self._dzvents_version = res.get("dzvents_version")
+        self._hash = res.get("hash")
+        self._HaveUpdate = res.get("HaveUpdate")
+        self._python_version = res.get("python_version")
+        self._Revision = res.get("Revision")
+        self._SystemName = res.get("SystemName")
+        self._version = res.get("version")
+        #
+        self._status = res.get("status", "ERR")
+        self._title = res.get("title", "")
+
     def _getSunRiseSet(self, now=False):
         if isinstance(self._currentdate_dt, datetime):
             if datetime.now().date() > self._currentdate_dt:
