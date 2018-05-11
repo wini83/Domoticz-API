@@ -7,6 +7,9 @@
 class Hardware:
 
     _param_add_hardware = "addhardware"
+    # https://github.com/domoticz/domoticz/blob/8d290f216e5e25be48178ad30273129d2c84ad69/www/app/HardwareController.js
+    _param_delete_hardware = "deletehardware"
+    _param_update_hardware = "updatehardware"
 
     # def __init__(self, server, idx):
     def __init__(self, server, *args, **kwargs):
@@ -26,8 +29,8 @@ class Hardware:
         self._Password = None
         self._Port = None
         self._SerialPort = None
-        self._status = ""
-        self._title = ""
+        self._api_status = ""
+        self._api_title = ""
         self._Type = None
         self._Username = None
         if len(args) == 1:
@@ -78,21 +81,28 @@ class Hardware:
             if res.get("status") == self._server._return_ok:
                 self._idx = res.get("idx")
                 self._initHardware()
-            self._status = res.get("status")
-            self._title = res.get("title")
+            self._api_status = res.get("status")
+            self._api_title = res.get("title")
+
+    def delete(self):
+        pass
+
+    def update(self):
+        pass
 
     # ..........................................................................
     # Properties
     # ..........................................................................
-    #
-    # For existing hardware (idx is not None) it is not allowed to change the properties
-    @property
-    def server(self):
-        return self._server
 
     @property
-    def idx(self):
-        return self._idx
+    def api_status(self):
+        return self._api_status
+
+    @property
+    def api_title(self):
+        return self._api_title
+
+    # ..........................................................................
 
     @property
     def address(self):
@@ -129,6 +139,11 @@ class Hardware:
     def extra(self, value):
         if self._idx is None:
             self._Extra = value
+
+    @property
+    # For existing hardware (idx is not None) it is not allowed to change the properties
+    def idx(self):
+        return self._idx
 
     @property
     def mode1(self):
@@ -221,12 +236,8 @@ class Hardware:
             self._SerialPort = value
 
     @property
-    def status(self):
-        return self._status
-
-    @property
-    def title(self):
-        return self._title
+    def server(self):
+        return self._server
 
     @property
     def type(self):
@@ -273,6 +284,6 @@ class Hardware:
                     self._Type = myDict.get("Type")
                     self._Username = myDict.get("Username")
                     #
-                    self._status = res.get("status")
-                    self._title = res.get("title")
+                    self._api_status = res.get("status")
+                    self._api_title = res.get("title")
                     break
