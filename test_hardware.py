@@ -8,7 +8,7 @@ def main():
     # hw1 = dom.Hardware(server, "180")
     hw1 = dom.Hardware(server, idx="18")
     print(hw1)
-    print("{}: {} {}".format(hw1.name, hw1.status, hw1.title))
+    print("{}: {} {}".format(hw1.name, hw1.api_status, hw1.api_title))
     if hw1.exists():
         print("Name = " + str(hw1.name))
     else:
@@ -17,7 +17,7 @@ def main():
     hw2 = dom.Hardware(server, Type=15, Port=1, Name="Sensors1", Enabled="true")
     hw2.add()
     print(hw2)
-    print("{}: {} {}".format(hw2.name, hw2.status, hw2.title))
+    print("{}: {} {}".format(hw2.name, hw2.api_status, hw2.api_title))
 
 
 if __name__ == "__main__":
