@@ -8,6 +8,7 @@ def main():
     print(server)
     print("Domoticz version: " + server.version)
     print("Build time: " + str(server.build_time_dt))
+    print("DomoticzUpdateURL: " + str(server.domoticzupdateurl))
     print("Update available: " + str(server.haveupdate))
     if server.haveupdate:
         server.update()
@@ -17,11 +18,11 @@ def main():
     print("Sunrise = " + server.sunrise)
     print("Sunset = " + server.sunset)
     print("SunsetDT = " + str(server.sunset_dt))
-    print("Status = " + server.status)
-    print("Title = " + server.title)
+    print("API Status = " + server.api_status)
+    print("API Title = " + server.api_title)
     server.logmessage("Test")
-    print("Status = " + server.status)
-    print("Title = " + server.title)
+    print("API Status = " + server.api_status)
+    print("API Title = " + server.api_title)
 
 if __name__ == "__main__":
     main()
