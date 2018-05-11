@@ -9,12 +9,21 @@ from .hardware import Hardware
 # Device                                                                       #
 ################################################################################
 class Device:
+
     _type_devices = "devices"
     _type_create_device = "createdevice"
+
+    _param_makefavorite = "makefavorite"
+
+    _favorite_off = 0
+    _favorite_on = 1
 
     # Existing device: def __init__(self, server, idx)
     # New device:      def __init__(self, server, hardwareidx, name, type=None, subtype=None):
     def __init__(self, server, *args, **kwargs):
+        self._idx = None
+        self._HardwareID = None
+        self._Name = None
         if isinstance(server, Server) and server.exists():
             self._server = server
         else:
@@ -48,14 +57,14 @@ class Device:
         self._initDevice()
 
     def __str__(self):
-        return "{0}({1}, \"{2}\", \"{3}\")".format(self.__class__.__name__, str(self._server), self._idx, self._Name)
+        if self.exists():
+            return "{0}({1}, \"{2}\", \"{3}\")".format(self.__class__.__name__, str(self._server), self._idx, self._Name)
+        else:
+            return "None"
 
     # ..........................................................................
     # Public methods
     # ..........................................................................
-    def exists(self):
-        return self._HardwareID is not None and self._idx is not None
-
     def add(self):
         if self._idx is None \
                 and self._HardwareID is not None \
@@ -70,16 +79,34 @@ class Device:
                                                                                            self._SubType)
         pass
 
+    def exists(self):
+        return self._HardwareID is not None and self._idx is not None
+
+    def isFavorite(self):
+        return not (self._Favorite is None or self._Favorite == 0)
+
     def hasBattery(self):
         return not (self._BatteryLevel is None or self._BatteryLevel == 255)
 
     # ..........................................................................
     # Properties
     # ..........................................................................
+
+    @property
+    def api_status(self):
+        return self._api_status
+
+    @property
+    def api_title(self):
+        return self._api_title
+
+    # ..........................................................................
+
     @property
     def addjmulti(self):
         return self._AddjMulti
 
+    @property
     def addjmulti2(self):
         return self._AddjMulti2
 
@@ -108,8 +135,27 @@ class Device:
         return self._Description
 
     @property
+    def dimmertype(self):
+        return self._DimmerType
+
+    @property
+    # For some reason this attribute in Domoticz is an 'int'. Boolean is more logical.
     def favorite(self):
-        return self._Favorite
+        if self._Favorite == 1:
+            return True
+        else:
+            return False
+
+    @favorite.setter
+    def favorite(self, value):
+        # json.htm?type=command&param=makefavorite&idx=" + id + "&isfavorite=" + isfavorite
+        if isinstance(value, bool) and self.exists():
+            if value:
+                self._server._call_command(self._server._param.format(self._param_makefavorite) + "&idx={}&isfavorite={}".format(self._idx, str(self._favorite_on)))
+                self._Favorite = self._favorite_on
+            else:
+                self._server._call_command(self._server._param.format(self._param_makefavorite) + "&idx={}&isfavorite={}".format(self._idx,  str(self._favorite_off)))
+                self._Favorite = self._favorite_off
 
     @property
     def hardwareid(self):
@@ -128,6 +174,14 @@ class Device:
         return self._HardwareTypeVal
 
     @property
+    def havedimmer(self):
+        return self._HaveDimmer
+
+    @property
+    def havegroupcmd(self):
+        return self._HaveGroupCmd
+
+    @property
     def havetimeout(self):
         return self._HaveTimeout
 
@@ -140,8 +194,24 @@ class Device:
         return self._Image
 
     @property
+    def issubdevice(self):
+        return self._IsSubDevice
+
+    @property
     def lastupdate(self):
         return self._LastUpdate
+
+    @property
+    def level(self):
+        return self._Level
+
+    @property
+    def levelint(self):
+        return self._LevelInt
+
+    @property
+    def maxdimlevel(self):
+        return self._MaxDimLevel
 
     @property
     def name(self):
@@ -230,13 +300,16 @@ class Device:
         else:
             message = ""
         res = self._server._call_api(message)
-        result = res.get("result")
         myDict = {}
-        if len(result) > 0:
-            for myDict in result:
-                if (self._idx is not None and myDict.get("idx") == self._idx) \
-                        or (self._Name is not None and myDict.get("Name") == self._Name):
-                    break
+        if res.get("status") == self._server._return_ok:
+            result = res.get("result")
+            if result is not None:
+                if len(result) > 0:
+                    for resDict in result:
+                        if (self._idx is not None and resDict.get("idx") == self._idx) \
+                        or (self._Name is not None and resDict.get("Name") == self._Name):
+                            myDict = resDict
+                            break
         self._AddjMulti = myDict.get("AddjMulti")
         self._AddjMulti2 = myDict.get("AddjMulti2")
         self._AddjValue = myDict.get("AddjValue")
@@ -245,17 +318,24 @@ class Device:
         self._CustomImage = myDict.get("CustomImage")
         self._Data = myDict.get("Data")
         self._Description = myDict.get("Description")
+        self._DimmerType = myDict.get("DimmerType")
         self._Favorite = myDict.get("Favorite")
         self._HardwareID = myDict.get("HardwareID")
         self._HardwareName = myDict.get("HardwareName")
         self._HardwareType = myDict.get("HardwareType")
         self._HardwareTypeVal = myDict.get("HardwareTypeVal")
+        self._HaveDimmer = myDict.get("HaveDimmer")
+        self._HaveGroupCmd = myDict.get("HaveGroupCmd")
         self._HaveTimeout = myDict.get("HaveTimeout")
         self._ID = myDict.get("ID")
-        self._idx = myDict.get("idx")
+        self._idx = myDict.get("idx", self._idx)
         self._Image = myDict.get("Image")
+        self._IsSubDevice = myDict.get("IsSubDevice")
         self._LastUpdate = myDict.get("LastUpdate")
-        self._Name = myDict.get("Name")
+        self._Level = myDict.get("Level")
+        self._LevelInt = myDict.get("LevelInt")
+        self._MaxDimLevel = myDict.get("MaxDimLevel")
+        self._Name = myDict.get("Name", self._Name)
         self._Notifications = myDict.get("Notifications")
         self._PlanID = myDict.get("PlanID")
         self._PlanIDs = myDict.get("PlanIDs")
@@ -264,14 +344,20 @@ class Device:
         self._SensorUnit = myDict.get("SensorUnit")
         self._ShowNotifications = myDict.get("ShowNotifications")
         self._SignalLevel = myDict.get("SignalLevel")
+        self._Status = myDict.get("Status")
+        self._StrParam1 = myDict.get("StrParam1")
+        self._StrParam2 = myDict.get("StrParam2")
         self._SubType = myDict.get("SubType")
+        self._SwitchType = myDict.get("SwitchType")
+        self._SwitchTypeVal = myDict.get("SwitchTypeVal")
         self._Timers = myDict.get("Timers")
         self._Type = myDict.get("Type")
         self._TypeImg = myDict.get("TypeImg")
         self._Unit = myDict.get("Unit")
         self._Used = myDict.get("Used")
+        self._UsedByCamera = myDict.get("UsedByCamera")
         self._XOffset = myDict.get("XOffset")
         self._YOffset = myDict.get("YOffset")
         #
-        self._status = res.get("status")
-        self._title = res.get("title")
+        self._api_status = res.get("status")
+        self._api_title = res.get("title")
