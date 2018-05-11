@@ -31,8 +31,8 @@ class Notification:
             self._subsystem = subsystem
         else:
             self._subsystem = None
-        self._status = ""
-        self._title = ""
+        self._api_status = ""
+        self._api_title = ""
 
     def __str__(self):
         return "{}({})".format(self.__class__.__name__, self._subject)
@@ -40,6 +40,17 @@ class Notification:
     # ..........................................................................
     # Properties
     # ..........................................................................
+
+    @property
+    def api_status(self):
+        return self._api_status
+
+    @property
+    def api_title(self):
+        return self._api_title
+
+    # ..........................................................................
+
     @property
     def body(self):
         return self._body
@@ -51,10 +62,6 @@ class Notification:
     @property
     def server(self):
         return self._server
-
-    @property
-    def status(self):
-        return self._status
 
     @property
     def subject(self):
@@ -75,10 +82,6 @@ class Notification:
         else:
             self._subsystem = None
 
-    @property
-    def title(self):
-        return self._title
-
     # ..........................................................................
     # Public methods
     # ..........................................................................
@@ -88,6 +91,6 @@ class Notification:
             if self._subsystem is not None:
                 message += "&subsystem={}".format(self._subsystem)
             res = self._server._call_command(message)
-            self._status = res["status"]
-            if self._status == self._server._return_ok:
-                self._title = res["title"]
+            self._api_status = res["status"]
+            if self._api_status == self._server._return_ok:
+                self._api_title = res["title"]
