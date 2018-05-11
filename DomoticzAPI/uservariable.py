@@ -81,9 +81,9 @@ class UserVariable:
                 message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_save_user_variable, self._name,
                                                                         self._typenum, self._value)
                 res = self._server._call_command(message)
-                self._status = res["status"] if res.get("status") else ""
-                self._title = res["title"] if self._status == self._return_ok else ""
-                if self._status == self._server._return_ok:
+                self._api_status = res["status"] if res.get("status") else ""
+                self._api_title = res["title"] if self._api_status == self._server._return_ok else ""
+                if self._api_status == self._server._return_ok:
                     self.__getvar()
 
     # json.htm?type=command&param=updateuservariable&vname=Test&vtype=1&vvalue=1.23
@@ -92,8 +92,8 @@ class UserVariable:
             message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_update_user_variable, self._name,
                                                                     self._typenum, self._value)
             res = self._server._call_command(message)
-            self._status = res["status"] if res.get("status") else ""
-            self._title = res["title"] if self._status == self._return_ok else ""
+            self._api_status = res["status"] if res.get("status") else ""
+            self._api_title = res["title"] if self._api_status == self._server._return_ok else ""
             self.__getvar()
 
     # json.htm?type=command&param=deleteuservariable&idx=3
@@ -102,12 +102,23 @@ class UserVariable:
             message = "param={}&idx={}".format(self._param_delete_user_variable, self._idx)
             res = self._server._call_command(message)
             self._idx = ""
-            self._status = res["status"] if res.get("status") else ""
-            self._title = res["title"] if self._status == self._return_ok else ""
+            self._api_status = res["status"] if res.get("status") else ""
+            self._api_title = res["title"] if self._api_status == self._server._return_ok else ""
 
     # ..........................................................................
     # Properties
     # ..........................................................................
+
+    @property
+    def api_status(self):
+        return self._api_status
+
+    @property
+    def api_title(self):
+        return self._api_title
+
+    # ..........................................................................
+
     @property
     def idx(self):
         return self._idx
@@ -121,16 +132,8 @@ class UserVariable:
         return self._name
 
     @property
-    def status(self):
+    def server(self):
         return self._server
-
-    @property
-    def status(self):
-        return self._status
-
-    @property
-    def title(self):
-        return self._title
 
     @property
     def type(self):
