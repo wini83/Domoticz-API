@@ -10,13 +10,13 @@ def main():
     notification.body = "Hello World!"
     print(notification)
     notification.send()
-    print("Result = {}".format(notification.status))
+    print("Result = {}".format(notification.api_status))
     notification.subject = "Test only for Kodi"
     notification.subsystem = "kodi"
     print(notification)
     notification.send()
-    print("Result = {}".format(notification.status))
-    print("Title = {}".format(notification.title))
+    print("Result = {}".format(notification.api_status))
+    print("Title = {}".format(notification.api_title))
 
 if __name__ == "__main__":
     main()
