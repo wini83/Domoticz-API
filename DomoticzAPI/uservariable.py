@@ -32,6 +32,7 @@ class UserVariable:
     }
 
     _param_get_user_variable = "getuservariable"
+    _param_get_user_variables = "getuservariables"
     _param_save_user_variable = "saveuservariable"
     _param_update_user_variable = "updateuservariable"
     _param_delete_user_variable = "deleteuservariable"
@@ -57,22 +58,23 @@ class UserVariable:
                 self._type = ""
                 self._typenum = ""
             self._value = self.__value(self._type, value)
-            self._status = ""
-            self._idx = ""
+            self._api_status = ""
+            self._idx = None
             self._lastupdate = ""
             self.__getvar()
 
     def __str__(self):
-        return "{0}({1}, \"{2}\", \"{3}\", \"{4}\")".format(self.__class__.__name__, str(self._server), self._name, self._type, self._value)
+        return "{}({}, \"{}\", \"{}\", \"{}\")".format(self.__class__.__name__, str(self._server), self._name,
+                                                       self._type, self._value)
 
     # ..........................................................................
     # Public methods
     # ..........................................................................
     def exists(self):
-        if len(self._idx) > 0:
-            return True
-        else:
+        if self._idx is None:
             return False
+        else:
+            return True
 
     # json.htm?type=command&param=saveuservariable&vname=Test&vtype=1&vvalue=1.23
     def add(self):
@@ -92,8 +94,8 @@ class UserVariable:
             message = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_update_user_variable, self._name,
                                                                     self._typenum, self._value)
             res = self._server._call_command(message)
-            self._api_status = res["status"] if res.get("status") else ""
-            self._api_title = res["title"] if self._api_status == self._server._return_ok else ""
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
             self.__getvar()
 
     # json.htm?type=command&param=deleteuservariable&idx=3
@@ -101,9 +103,9 @@ class UserVariable:
         if self.exists():
             message = "param={}&idx={}".format(self._param_delete_user_variable, self._idx)
             res = self._server._call_command(message)
-            self._idx = ""
-            self._api_status = res["status"] if res.get("status") else ""
-            self._api_title = res["title"] if self._api_status == self._server._return_ok else ""
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
+        self._idx = None
 
     # ..........................................................................
     # Properties
@@ -151,15 +153,17 @@ class UserVariable:
     # Private methods
     # ..........................................................................
     def __getvar(self):
-        message = "param=getuservariables"
+        message = "param={}".format(self._param_get_user_variables)
         res = self._server._call_command(message)
+        self._api_status = res.get("status", self._server._return_error)
+        self._api_title = res.get("title", self._server._return_empty)
         if res.get("result"):
             for var in res["result"]:
-                if var["Name"] == self._name:
-                    self._idx = var["idx"]
-                    self._value = var["Value"]
-                    self._type = self._vtype2string[var["Type"]]
-                    self._lastupdate = var["LastUpdate"]
+                if var.get("Name") == self._name:
+                    self._idx = var.get("idx")
+                    self._value = var.get("Value")
+                    self._type = self._vtype2string[var.get("Type")]
+                    self._lastupdate = var.get("LastUpdate")
                     break
 
     def __value(self, type, value):
