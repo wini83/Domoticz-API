@@ -87,10 +87,9 @@ class Notification:
     # ..........................................................................
     def send(self):
         if self._subject is not None and self._body is not None:
-            message = self._server._param.format(self._param_notification) + "&subject={}&body={}".format(quote(self._subject), quote(self._body))
+            querystring = self._server._param.format(self._param_notification) + "&subject={}&body={}".format(quote(self._subject), quote(self._body))
             if self._subsystem is not None:
-                message += "&subsystem={}".format(self._subsystem)
-            res = self._server._call_command(message)
-            self._api_status = res["status"]
-            if self._api_status == self._server._return_ok:
-                self._api_title = res["title"]
+                querystring += "&subsystem={}".format(self._subsystem)
+            res = self._server._call_command(querystring)
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
