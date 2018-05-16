@@ -4,7 +4,8 @@ import DomoticzAPI as dom
 from datetime import datetime
 
 def main():
-    server = dom.Server(address="192.168.0.13")
+    # server = dom.Server(address="192.168.0.13")
+    server = dom.Server()
     print(server)
     print("Domoticz version: " + server.version)
     print("Build time: " + str(server.build_time_dt))
