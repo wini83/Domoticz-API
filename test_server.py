@@ -4,6 +4,8 @@ import DomoticzAPI as dom
 from datetime import datetime
 
 def main():
+    print("DomoticzAPI: {}\n".format(dom.version()))
+
     # server = dom.Server(address="192.168.0.13")
     server = dom.Server()
     print(server)
