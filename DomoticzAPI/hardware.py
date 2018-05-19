@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from urllib.parse import quote
+
 
 ################################################################################
 # Hardware                                                                       #
@@ -7,6 +9,7 @@
 class Hardware:
 
     _param_add_hardware = "addhardware"
+    # https://github.com/domoticz/domoticz/blob/8d290f216e5e25be48178ad30273129d2c84ad69/www/app/HardwareController.js
     _param_delete_hardware = "deletehardware"
     _param_update_hardware = "updatehardware"
 
@@ -46,7 +49,7 @@ class Hardware:
                 if self._idx is None:
                     self._Address = kwargs.get("Address", None)
                     self._DataTimeout = kwargs.get("DataTimeout", 0)
-                    self._Enabled = kwargs.get("Enabled", "true")
+                    self._Enabled = kwargs.get("Enabled", "false")
                     self._Extra = kwargs.get("Extra", None)
                     self._Mode1 = kwargs.get("Mode1", None)
                     self._Mode2 = kwargs.get("Mode2", None)
@@ -75,25 +78,25 @@ class Hardware:
     def add(self):
         # At least Name, Type and Enabled are required
         if self._idx is None and self._Name is not None and self._Type is not None and self._Enabled is not None:
-            querystring = "param{}".format(self._param_add_hardware)
+            querystring = "param={}".format(self._param_add_hardware)
             querystring += "&name={}".format(self._Name)
             querystring += "&htype={}".format(self._Type)
             querystring += "&enabled={}".format(self._Enabled)
             querystring += "&datatimeout={}".format("0")
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status")
-            self._api_title = res.get("title")
-            if self._api_statu == self._server._return_ok:
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
+            if self._api_status == self._server._return_ok:
                 self._idx = res.get("idx")
                 self._initHardware()
 
     def delete(self):
         if self.exists():
-            querystring = "param{}".format(self._param_delete_hardware)
+            querystring = "param={}".format(self._param_delete_hardware)
             querystring += "&idx={}".format(self._idx)
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status")
-            self._api_title = res.get("title")
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
             if self._api_status == self._server._return_ok:
                 self._Name = None
                 self._idx = None
@@ -101,7 +104,7 @@ class Hardware:
     def update(self):
         # json.htm?type=command&param=updatehardware&htype=94&idx=idx
         if self.exists():
-            querystring = "param{}".format(self._param_update_hardware)
+            querystring = "param={}".format(self._param_update_hardware)
             querystring += "&idx={}".format(self._idx)
             querystring += "&address={}".format(self._Address)
             querystring += "&datatimeout={}".format(self._DataTimeout)
@@ -120,8 +123,8 @@ class Hardware:
             querystring += "&htype={}".format(self._Type)
             querystring += "&username={}".format(self._Username)
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status")
-            self._api_title = res.get("title")
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
 
     # ..........................................................................
     # Properties
