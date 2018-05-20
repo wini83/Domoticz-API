@@ -8,7 +8,7 @@ def main():
 
     # server = dom.Server(address="192.168.0.13")
     server = dom.Server()
-    print(server)
+    print("{}: {} - {}".format(server, server.api_status, server.api_title))
     print("Domoticz version: " + server.version)
     print("Build time: " + str(server.build_time_dt))
     print("DomoticzUpdateURL: " + str(server.domoticzupdateurl))
@@ -21,11 +21,10 @@ def main():
     print("Sunrise = " + server.sunrise)
     print("Sunset = " + server.sunset)
     print("SunsetDT = " + str(server.sunset_dt))
-    print("API Status = " + server.api_status)
-    print("API Title = " + server.api_title)
-    server.logmessage("Test")
-    print("API Status = " + server.api_status)
-    print("API Title = " + server.api_title)
+    print("{}: {} - {}".format(server, server.api_status, server.api_title))
+    server.logmessage("Test 1")
+    print("querystring: {}".format(server.api_querystring))
+    print("{}: {} - {}".format(server, server.api_status, server.api_title))
 
 if __name__ == "__main__":
     main()
