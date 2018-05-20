@@ -35,6 +35,7 @@ class Hardware:
         self._SerialPort = None
         self._api_status = ""
         self._api_title = ""
+        self._api_querystring = ""
         self._Type = None
         self._Username = None
         if len(args) == 1:
@@ -48,28 +49,28 @@ class Hardware:
             #   hw = dom.Hardware(server, Type=15, Port=1, Name="Sensors1", Enabled="true")
             if self._idx is None:
                 self._idx = kwargs.get("idx", None)
-                if self._idx is None:
-                    self._Address = kwargs.get("Address", None)
-                    self._DataTimeout = kwargs.get("DataTimeout", 0)
-                    self._Enabled = kwargs.get("Enabled", "false")
-                    self._Extra = kwargs.get("Extra", None)
-                    self._Mode1 = kwargs.get("Mode1", None)
-                    self._Mode2 = kwargs.get("Mode2", None)
-                    self._Mode3 = kwargs.get("Mode3", None)
-                    self._Mode4 = kwargs.get("Mode4", None)
-                    self._Mode5 = kwargs.get("Mode5", None)
-                    self._Mode6 = kwargs.get("Mode6", None)
-                    self._Name = kwargs.get("Name", None)
-                    self._Password = kwargs.get("Password", None)
-                    self._Port = kwargs.get("Port", None)
-                    self._SerialPort = kwargs.get("SerialPort", None)
-                    self._Type = kwargs.get("Type", None)
-                    self._Username = kwargs.get("Username", None)
+                if self.idx is None:
+                    self.address = kwargs.get("Address", None)
+                    self.datatimeout = kwargs.get("DataTimeout", 0)
+                    self.enabled = kwargs.get("Enabled", "false")
+                    self.extra = kwargs.get("Extra", None)
+                    self.mode1 = kwargs.get("Mode1", None)
+                    self.mode2 = kwargs.get("Mode2", None)
+                    self.mode3 = kwargs.get("Mode3", None)
+                    self.mode4 = kwargs.get("Mode4", None)
+                    self.mode5 = kwargs.get("Mode5", None)
+                    self.mode6 = kwargs.get("Mode6", None)
+                    self.name = kwargs.get("Name", None)
+                    self.password = kwargs.get("Password", None)
+                    self.port = kwargs.get("Port", None)
+                    self.serialport = kwargs.get("SerialPort", None)
+                    self.type = kwargs.get("Type", None)
+                    self.username = kwargs.get("Username", None)
         if self._idx is not None:
             self._initHardware()
 
     def __str__(self):
-        return "{}({}, \"{}\", \"{}\")".format(self.__class__.__name__, str(self._server), self._idx, self._Name)
+        return "{}({}, \"{}\", \"{}\", {})".format(self.__class__.__name__, str(self.server), self.idx, self.name, self.type)
 
     # ..........................................................................
     # Public methods
@@ -97,6 +98,7 @@ class Hardware:
             querystring += "&port={}".format(self._Port)
             querystring += "&serialport={}".format(self._SerialPort)
             querystring += "&username={}".format(self._Username)
+            self._api_querystring = querystring
             res = self._server._call_command(querystring)
             self._api_status = res.get("status", self._server._return_error)
             self._api_title = res.get("title", self._server._return_empty)
@@ -107,7 +109,8 @@ class Hardware:
     def delete(self):
         if self.exists():
             querystring = "param={}".format(self._param_delete_hardware)
-            querystring += "&idx={}".format(self._idx)
+            querystring += "&idx={}".format(self.idx)
+            self._api_querystring = querystring
             res = self._server._call_command(querystring)
             self._api_status = res.get("status", self._server._return_error)
             self._api_title = res.get("title", self._server._return_empty)
@@ -135,12 +138,17 @@ class Hardware:
             querystring += "&port={}".format(self._Port)
             querystring += "&serialport={}".format(self._SerialPort)
             querystring += "&username={}".format(self._Username)
+            self._api_querystring = querystring
             res = self._server._call_command(querystring)
             self._api_status = res.get("status", self._server._return_error)
             self._api_title = res.get("title", self._server._return_empty)
 
-    # ..........................................................................
+    # **************************************************************************
     # Properties
+    # **************************************************************************
+
+    # ..........................................................................
+    # Properties more for debugging
     # ..........................................................................
 
     @property
@@ -150,6 +158,10 @@ class Hardware:
     @property
     def api_title(self):
         return self._api_title
+
+    @property
+    def api_querystring(self):
+        return self._api_querystring
 
     # ..........................................................................
 
@@ -295,6 +307,7 @@ class Hardware:
     # ..........................................................................
     def _initHardware(self):
         querystring = "type={}".format(self._type_hardware)
+        self._api_querystring = querystring
         res = self._server._call_api(querystring)
         self._api_status = res.get("status", self._server._return_error)
         self._api_title = res.get("title", self._server._return_empty)
