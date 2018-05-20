@@ -4,9 +4,11 @@ from urllib.parse import quote
 
 
 ################################################################################
-# Hardware                                                                       #
+# Hardware                                                                     #
 ################################################################################
 class Hardware:
+
+    _type_hardware = "hardware"
 
     _param_add_hardware = "addhardware"
     # https://github.com/domoticz/domoticz/blob/8d290f216e5e25be48178ad30273129d2c84ad69/www/app/HardwareController.js
@@ -77,12 +79,24 @@ class Hardware:
 
     def add(self):
         # At least Name, Type and Enabled are required
-        if self._idx is None and self._Name is not None and self._Type is not None and self._Enabled is not None:
+        if self._idx is None and self._Name is not None and self._Type is not None:
             querystring = "param={}".format(self._param_add_hardware)
-            querystring += "&name={}".format(self._Name)
-            querystring += "&htype={}".format(self._Type)
+            querystring += "&address={}".format(self._Address)
+            querystring += "&datatimeout={}".format(self._DataTimeout)
             querystring += "&enabled={}".format(self._Enabled)
-            querystring += "&datatimeout={}".format("0")
+            querystring += "&extra={}".format(self._Extra)
+            querystring += "&htype={}".format(self._Type)
+            querystring += "&Mode1={}".format(self._Mode1)
+            querystring += "&Mode2={}".format(self._Mode2)
+            querystring += "&Mode3={}".format(self._Mode3)
+            querystring += "&Mode4={}".format(self._Mode4)
+            querystring += "&Mode5={}".format(self._Mode5)
+            querystring += "&Mode6={}".format(self._Mode6)
+            querystring += "&name={}".format(quote(self._Name))
+            querystring += "&password={}".format(self._Password)
+            querystring += "&port={}".format(self._Port)
+            querystring += "&serialport={}".format(self._SerialPort)
+            querystring += "&username={}".format(self._Username)
             res = self._server._call_command(querystring)
             self._api_status = res.get("status", self._server._return_error)
             self._api_title = res.get("title", self._server._return_empty)
@@ -98,7 +112,6 @@ class Hardware:
             self._api_status = res.get("status", self._server._return_error)
             self._api_title = res.get("title", self._server._return_empty)
             if self._api_status == self._server._return_ok:
-                self._Name = None
                 self._idx = None
 
     def update(self):
@@ -110,17 +123,17 @@ class Hardware:
             querystring += "&datatimeout={}".format(self._DataTimeout)
             querystring += "&enabled={}".format(self._Enabled)
             querystring += "&extra={}".format(self._Extra)
+            querystring += "&htype={}".format(self._Type)
             querystring += "&Mode1={}".format(self._Mode1)
             querystring += "&Mode2={}".format(self._Mode2)
             querystring += "&Mode3={}".format(self._Mode3)
             querystring += "&Mode4={}".format(self._Mode4)
             querystring += "&Mode5={}".format(self._Mode5)
             querystring += "&Mode6={}".format(self._Mode6)
-            querystring += "&name={}".format(self._Name)
+            querystring += "&name={}".format(quote(self._Name))
             querystring += "&password={}".format(self._Password)
             querystring += "&port={}".format(self._Port)
             querystring += "&serialport={}".format(self._SerialPort)
-            querystring += "&htype={}".format(self._Type)
             querystring += "&username={}".format(self._Username)
             res = self._server._call_command(querystring)
             self._api_status = res.get("status", self._server._return_error)
@@ -146,17 +159,15 @@ class Hardware:
 
     @address.setter
     def address(self, value):
-        if self._idx is None:
-            self._Address = value
+        self._Address = str(value)
 
     @property
     def datatimeout(self):
-        return self._DataTimeout
+        return int(self._DataTimeout)
 
     @datatimeout.setter
     def datatimeout(self, value):
-        if self._idx is None:
-            self._DataTimeout = value
+        self._DataTimeout = int(value)
 
     @property
     def enabled(self):
@@ -164,7 +175,7 @@ class Hardware:
 
     @enabled.setter
     def enabled(self, value):
-        if self._idx is None:
+        if str(value) in ("true", "false"):
             self._Enabled = value
 
     @property
@@ -173,11 +184,9 @@ class Hardware:
 
     @extra.setter
     def extra(self, value):
-        if self._idx is None:
-            self._Extra = value
+        self._Extra = str(value)
 
     @property
-    # For existing hardware (idx is not None) it is not allowed to change the properties
     def idx(self):
         return self._idx
 
@@ -187,17 +196,15 @@ class Hardware:
 
     @mode1.setter
     def mode1(self, value):
-        if self._idx is None:
-            self._Mode1 = value
+        self._Mode1 = str(value)
 
     @property
     def mode2(self):
-        return self._Mode12
+        return self._Mode2
 
     @mode2.setter
     def mode2(self, value):
-        if self._idx is None:
-            self._Mode12 = value
+        self._Mode2 = str(value)
 
     @property
     def mode3(self):
@@ -205,17 +212,15 @@ class Hardware:
 
     @mode3.setter
     def mode3(self, value):
-        if self._idx is None:
-            self._Mode3 = value
+        self._Mode3 = str(value)
 
     @property
-    def mode14(self):
+    def mode4(self):
         return self._Mode4
 
-    @mode14.setter
-    def mode14(self, value):
-        if self._idx is None:
-            self._Mode4 = value
+    @mode4.setter
+    def mode4(self, value):
+        self._Mode4 = str(value)
 
     @property
     def mode5(self):
@@ -223,8 +228,7 @@ class Hardware:
 
     @mode5.setter
     def mode5(self, value):
-        if self._idx is None:
-            self._Mode5 = value
+        self._Mode5 = str(value)
 
     @property
     def mode6(self):
@@ -232,8 +236,7 @@ class Hardware:
 
     @mode6.setter
     def mode6(self, value):
-        if self._idx is None:
-            self._Mode6 = value
+        self._Mode6 = str(value)
 
     @property
     def name(self):
@@ -241,8 +244,7 @@ class Hardware:
 
     @name.setter
     def name(self, value):
-        if self._idx is None:
-            self._Name = value
+       self._Name = str(value)
 
     @property
     def password(self):
@@ -250,8 +252,7 @@ class Hardware:
 
     @password.setter
     def password(self, value):
-        if self._idx is None:
-            self._Password = value
+        self._Password = str(value)
 
     @property
     def port(self):
@@ -259,8 +260,7 @@ class Hardware:
 
     @port.setter
     def port(self, value):
-        if self._idx is None:
-            self._Port = value
+        self._Port = int(value)
 
     @property
     def serialport(self):
@@ -268,8 +268,7 @@ class Hardware:
 
     @serialport.setter
     def serialport(self, value):
-        if self._idx is None:
-            self._SerialPort = value
+        self._SerialPort = str(value)
 
     @property
     def server(self):
@@ -281,8 +280,7 @@ class Hardware:
 
     @type.setter
     def type(self, value):
-        if self._idx is None:
-            self._Type = value
+        self._Type = int(value)
 
     @property
     def username(self):
@@ -290,36 +288,34 @@ class Hardware:
 
     @username.setter
     def username(self, value):
-        if self._idx is None:
-            self._Username = value
+        self._Username = str(value)
 
     # ..........................................................................
     # Private methods
     # ..........................................................................
     def _initHardware(self):
-        message = "type=hardware"
-        res = self._server._call_api(message)
+        querystring = "type={}".format(self._type_hardware)
+        res = self._server._call_api(querystring)
+        self._api_status = res.get("status", self._server._return_error)
+        self._api_title = res.get("title", self._server._return_empty)
         result = res.get("result")
         if len(result) > 0:
             for myDict in result:
                 if myDict.get("idx") == self._idx:
-                    self._Address = myDict.get("Address")
-                    self._DataTimeout = myDict.get("DataTimeout")
-                    self._Enabled = myDict.get("Enabled")
-                    self._Extra = myDict.get("Extra")
-                    self._Mode1 = myDict.get("Mode1")
-                    self._Mode2 = myDict.get("Mode2")
-                    self._Mode3 = myDict.get("Mode3")
-                    self._Mode4 = myDict.get("Mode4")
-                    self._Mode5 = myDict.get("Mode5")
-                    self._Mode6 = myDict.get("Mode6")
-                    self._Name = myDict.get("Name")
-                    self._Password = myDict.get("Password")
-                    self._Port = myDict.get("Port")
-                    self._SerialPort = myDict.get("SerialPort")
-                    self._Type = myDict.get("Type")
-                    self._Username = myDict.get("Username")
-                    #
-                    self._api_status = res.get("status")
-                    self._api_title = res.get("title")
+                    self.address = myDict.get("Address")
+                    self.datatimeout = myDict.get("DataTimeout")
+                    self.enabled = myDict.get("Enabled")
+                    self.extra = myDict.get("Extra")
+                    self.mode1 = myDict.get("Mode1")
+                    self.mode2 = myDict.get("Mode2")
+                    self.mode3 = myDict.get("Mode3")
+                    self.mode4 = myDict.get("Mode4")
+                    self.mode5 = myDict.get("Mode5")
+                    self.mode6 = myDict.get("Mode6")
+                    self.name = myDict.get("Name")
+                    self.password = myDict.get("Password")
+                    self.port = myDict.get("Port")
+                    self.serialport = myDict.get("SerialPort")
+                    self.type = myDict.get("Type")
+                    self.username = myDict.get("Username")
                     break
