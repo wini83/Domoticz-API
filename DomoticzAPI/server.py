@@ -78,6 +78,10 @@ class Server:
     def api_title(self):
         return self._api_title
 
+    @property
+    def api_querystring(self):
+        return self._api_querystring
+
     # ..........................................................................
     # json.htm?type=command&param=getversion
     # json.htm?type=command&param=checkforupdate
@@ -250,28 +254,32 @@ class Server:
 
     def logmessage(self, text):
         if self.exists():
-            message = self._param.format(self._param_log) + "&message={}".format(quote(text))
-            res = self._call_command(message)
+            querystring = self._param.format(self._param_log) + "&message={}".format(quote(text))
+            self._api_querystring = querystring
+            res = self._call_command(querystring)
             self._api_status = res.get("status", self._return_error)
             self._api_title = res.get("title", self._return_empty)
 
     def reboot(self):
         if self.exists():
-            message = self._param.format(self._param_reboot)
-            res = self._call_command(message)
+            querystring = self._param.format(self._param_reboot)
+            self._api_querystring = querystring
+            res = self._call_command(querystring)
             self._api_status = res.get("status", self._return_error)
             self._api_title = res.get("title", self._return_empty)
 
     def shutdown(self):
         if self.exists():
-            message = self._param.format(self._param_shutdown)
-            res = self._call_command(message)
+            querystring = self._param.format(self._param_shutdown)
+            self._api_querystring = querystring
+            res = self._call_command(querystring)
             self._api_status = res.get("status", self._return_error)
             self._api_title = res.get("title", self._return_empty)
 
     def update(self):
         if self._HaveUpdate:
             # Do update
+            pass
             self._getVersion()
 
     # ..........................................................................
@@ -280,6 +288,7 @@ class Server:
     def _getVersion(self):
         # json.htm?type=command&param=getversion
         querystring = self._param.format(self._param_version)
+        self._api_querystring = querystring
         res = self._call_command(querystring)
         self._build_time = res.get("build_time")
         self._DomoticzUpdateURL = res.get("DomoticzUpdateURL")
@@ -292,11 +301,12 @@ class Server:
         self._version = res.get("version")
         #
         self._api_status = res.get("status", self._return_error)
-        self._api_title = res.get("title", "")
+        self._api_title = res.get("title", self._return_empty)
 
     def _checkForUpdate(self):
         # json.htm?type=command&param=checkforupdate
         querystring = self._param.format(self._param_checkforupdate)
+        self._api_querystring = querystring
         res = self._call_command(querystring)
         self._DomoticzUpdateURL = res.get("DomoticzUpdateURL")
         self._HaveUpdate = res.get("HaveUpdate")
@@ -305,7 +315,7 @@ class Server:
         self._statuscode = res.get("statuscode")
         #
         self._api_status = res.get("status", self._return_error)
-        self._api_title = res.get("title", "")
+        self._api_title = res.get("title", self._return_empty)
 
     def _getSunRiseSet(self, now=False):
         if isinstance(self._currentdate_dt, datetime):
@@ -314,6 +324,7 @@ class Server:
         if now:
             res = {}
             querystring = self._param.format(self._param_sun)
+            self._api_querystring = querystring
             res = self._call_command(querystring)
             self._AstrTwilightEnd = res.get("AstrTwilightEnd")
             self._AstrTwilightStart = res.get("AstrTwilightStart")
@@ -327,8 +338,8 @@ class Server:
             self._DayLength = res.get("DayLength")
             self._ServerTime = res.get("ServerTime")
             #
-            self._api_status = res.get("status", "ERR")
-            self._api_title = res.get("title", "")
+            self._api_status = res.get("status", self._return_error)
+            self._api_title = res.get("title", self._return_empty)
 
     def _call_command(self, text):
         return self._call_api(self._url_command + text)
