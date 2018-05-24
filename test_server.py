@@ -13,9 +13,6 @@ def main():
     print("Build time: " + str(server.build_time_dt))
     print("DomoticzUpdateURL: " + str(server.domoticzupdateurl))
     print("Update available: " + str(server.haveupdate))
-    if server.haveupdate:
-        server.update()
-        print("Domoticz version: " + server.version)
     print("\nServer = " + server.servertime)
     print("ServerDT = " + str(server.servertime_dt))
     print("Sunrise = " + server.sunrise)
