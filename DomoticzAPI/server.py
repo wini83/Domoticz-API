@@ -330,6 +330,7 @@ class Server:
             querystring = self._param.format(self._param_sun)
             self._api_querystring = querystring
             res = self._call_command(querystring)
+            self._ActTime = res.get("ActTime")
             self._AstrTwilightEnd = res.get("AstrTwilightEnd")
             self._AstrTwilightStart = res.get("AstrTwilightStart")
             self._CivTwilightEnd = res.get("CivTwilightEnd")
