@@ -12,8 +12,11 @@ Please look at the `test_*.py`-examples how to use this api. The `plugin.py` con
 ## Status
 | Class        | Status
 | :---         | :---
-| Server       | Beta
-| Hardware     | Beta
-| Device       | Alpha
+| Server       | <img src="https://img.shields.io/badge/Status-Beta-orange.svg" />
+| Hardware     | <img src="https://img.shields.io/badge/Status-Beta-orange.svg" />
+| Device       | <img src="https://img.shields.io/badge/Status-Alfa-red.svg" />
 | Uservariable | Beta
 | Notification | Beta
+| Scene        | -
+| Group        | -
+| RoomPlan     | -
