@@ -12,7 +12,7 @@ Please look at the `test_*.py`-examples how to use this api. The `plugin.py` con
 ## Status
 | Class        | Status
 | :---         | :---
-| Server       | <img src="https://img.shields.io/badge/Status-Beta-orange.svg" />
+| Server       | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 | Hardware     | <img src="https://img.shields.io/badge/Status-Beta-orange.svg" />
 | Device       | <img src="https://img.shields.io/badge/Status-Alpha-red.svg" />
 | Uservariable | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
