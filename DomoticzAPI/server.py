@@ -29,6 +29,7 @@ class Server:
     _param_sun = "getSunRiseSet"
     _param_version = "getversion"
     _param_checkforupdate = "checkforupdate"
+    _param_execute_script = "execute_script"
 
     _url_command = _type + "=" + _type_command + "&"
 
@@ -81,6 +82,15 @@ class Server:
     @property
     def api_querystring(self):
         return self._api_querystring
+
+    # ..........................................................................
+    @property
+    def act_time(self):
+        return self._ActTime
+
+    # @property
+    # def startup_time_dt(self):
+    #     return self._StartupTime
 
     # ..........................................................................
     # json.htm?type=command&param=getversion
@@ -276,12 +286,6 @@ class Server:
             self._api_status = res.get("status", self._return_error)
             self._api_title = res.get("title", self._return_empty)
 
-    def update(self):
-        if self._HaveUpdate:
-            # Do update
-            pass
-            self._getVersion()
-
     # ..........................................................................
     # Private methods
     # ..........................................................................
@@ -318,11 +322,11 @@ class Server:
         self._api_title = res.get("title", self._return_empty)
 
     def _getSunRiseSet(self, now=False):
+        # json.htm?type=command&param=getSunRiseSet
         if isinstance(self._currentdate_dt, datetime):
             if datetime.now().date() > self._currentdate_dt:
                 now = True
         if now:
-            res = {}
             querystring = self._param.format(self._param_sun)
             self._api_querystring = querystring
             res = self._call_command(querystring)
@@ -341,22 +345,16 @@ class Server:
             self._api_status = res.get("status", self._return_error)
             self._api_title = res.get("title", self._return_empty)
 
+    def _getConfig(self):
+        # json.htm?type=command&param=getconfig
+        # Not required yet. May be interesting to get latitude and longitude. Most is GUI stuff.
+        pass
+
     def _call_command(self, text):
         return self._call_api(self._url_command + text)
 
     def _call_api(self, text):
         return self.__call_url(self._url + text, "", "")
-
-    # def __call_url(self, url, username, password):
-    #     print("__call_url: "+ url)
-    #     # request = urllib.request(url)
-    #     # if len(username) != 0 and len(password) != 0:
-    #     #	base64string = base64.encodestring("%s:%s" % (username, password)).replace("\n", "")
-    #     #	request.add_header("Authorization", "Basic %s" % base64string)
-    #     req = urllib.request.urlopen(url)
-    #     #res = req.read()
-    #     res = json.loads(req.read().decode("utf-8", "ignore"))
-    #     return res
 
     def __call_url(self, url, username="", password=""):
         try:
