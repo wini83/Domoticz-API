@@ -10,13 +10,13 @@ Use the code at your own risk.
 Please look at the `test_*.py`-examples how to use this api. The `plugin.py` contains an implementation of this api.
 
 ## Status
-| Class        | Status
-| :---         | :---
-| Server       | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| Hardware     | <img src="https://img.shields.io/badge/Status-Beta-orange.svg" />
-| Device       | <img src="https://img.shields.io/badge/Status-Alpha-red.svg" />
-| Uservariable | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| Notification | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| Class                                                                    | Status
+| :---                                                                     | :---
+| [Server](https://github.com/Xorfor/Domoticz-API/wiki/Server)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| Hardware                                                                 | <img src="https://img.shields.io/badge/Status-Beta-orange.svg" />
+| Device                                                                   | <img src="https://img.shields.io/badge/Status-Alpha-red.svg" />
+| [Uservariable](https://github.com/Xorfor/Domoticz-API/wiki/Variable)     | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [Notification](https://github.com/Xorfor/Domoticz-API/wiki/Notification) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 | Scene        | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
 | Group        | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
 | RoomPlan     | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
