@@ -15,8 +15,8 @@ Please look at the `test_*.py`-examples how to use this api. The `plugin.py` con
 | Server       | <img src="https://img.shields.io/badge/Status-Beta-orange.svg" />
 | Hardware     | <img src="https://img.shields.io/badge/Status-Beta-orange.svg" />
 | Device       | <img src="https://img.shields.io/badge/Status-Alpha-red.svg" />
-| Uservariable | <img src="https://img.shields.io/badge/Status-Beta-orange.svg" />
-| Notification | <img src="https://img.shields.io/badge/Status-Beta-orange.svg" />
+| Uservariable | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| Notification | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 | Scene        | -
 | Group        | -
 | RoomPlan     | -
