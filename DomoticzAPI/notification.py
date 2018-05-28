@@ -22,6 +22,7 @@ class Notification:
         "pushbullet",
         "pushover",
         "pushsafer",
+        "telegram",
     }
 
     def __init__(self, server, subject=None, body=None, subsystem=None):
