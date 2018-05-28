@@ -35,6 +35,7 @@ class Server:
 
     def __init__(self, address="127.0.0.1", port="8080",**kwargs):
         self._address = address
+        self._api_status = self._return_error
         self._port = port
         self._user = kwargs.get("user", None)
         self._password = kwargs.get("password", None)
@@ -52,6 +53,18 @@ class Server:
     # ..........................................................................
     # Properties
     # ..........................................................................
+    # json.htm?type=command&param=getSunRiseSet
+    #
+    # Used undocumented url's:
+    #
+    # json.htm?type=command&param=getversion
+    # json.htm?type=command&param=checkforupdate
+    # ..........................................................................
+
+    @property
+    # Returned from device calls, together with the getSunRiseSet values
+    def act_time(self):
+        return self._ActTime
 
     @property
     def address(self):
@@ -60,16 +73,6 @@ class Server:
     @address.setter
     def address(self, value):
         self._address = value
-
-    @property
-    def port(self):
-        return self._port
-
-    @port.setter
-    def port(self, port):
-        self._port = port
-
-    # ..........................................................................
 
     @property
     def api_status(self):
@@ -83,19 +86,26 @@ class Server:
     def api_querystring(self):
         return self._api_querystring
 
-    # ..........................................................................
     @property
-    def act_time(self):
-        return self._ActTime
+    # getSunRiseSet
+    def astrtwilightend(self):
+        self._getSunRiseSet()
+        return self._AstrTwilightEnd
 
-    # @property
-    # def startup_time_dt(self):
-    #     return self._StartupTime
+    @property
+    def astrtwilightend_dt(self):
+        return datetime.strptime(self._currentdate + " " + self._AstrTwilightEnd, "%Y-%m-%d %H:%M")
 
-    # ..........................................................................
-    # json.htm?type=command&param=getversion
-    # json.htm?type=command&param=checkforupdate
-    # ..........................................................................
+    @property
+    # getSunRiseSet
+    def astrtwilightstart(self):
+        self._getSunRiseSet()
+        return self._AstrTwilightStart
+
+    @property
+    def astrtwilightstart_dt(self):
+        return datetime.strptime(self._currentdate + " " + self._AstrTwilightStart, "%Y-%m-%d %H:%M")
+
     @property
     # getversion
     def build_time(self):
@@ -104,6 +114,32 @@ class Server:
     @property
     def build_time_dt(self):
         return datetime.strptime(self._build_time, "%Y-%m-%d %H:%M:%S") if self._api_status == self._return_ok else None
+
+    @property
+    # getSunRiseSet
+    def civtwilightend(self):
+        self._getSunRiseSet()
+        return self._CivTwilightEnd
+
+    @property
+    def civtwilightend_dt(self):
+        return datetime.strptime(self._currentdate + " " + self._CivTwilightEnd, "%Y-%m-%d %H:%M")
+
+    @property
+    # getSunRiseSet
+    def civtwilightstart(self):
+        self._getSunRiseSet()
+        return self._CivTwilightStart
+
+    @property
+    def civtwilightstart_dt(self):
+        return datetime.strptime(self._currentdate + " " + self._CivTwilightStart, "%Y-%m-%d %H:%M")
+
+    @property
+    # getSunRiseSet
+    def daylength(self):
+        self._getSunRiseSet()
+        return self._DayLength
 
     @property
     # getversion & checkforupdate
@@ -126,6 +162,34 @@ class Server:
         return self._hash
 
     @property
+    # getSunRiseSet
+    def nauttwilightend(self):
+        self._getSunRiseSet()
+        return self._NautTwilightEnd
+
+    @property
+    def nauttwilightend_dt(self):
+        return datetime.strptime(self._currentdate + " " + self._NautTwilightEnd, "%Y-%m-%d %H:%M")
+
+    @property
+    # getSunRiseSet
+    def nauttwilightstart(self):
+        self._getSunRiseSet()
+        return self._NautTwilightStart
+
+    @property
+    def nauttwilightstart_dt(self):
+        return datetime.strptime(self._currentdate + " " + self._NautTwilightStart, "%Y-%m-%d %H:%M")
+
+    @property
+    def port(self):
+        return self._port
+
+    @port.setter
+    def port(self, port):
+        self._port = port
+
+    @property
     # getversion
     def python_version(self):
         return self._python_version
@@ -136,9 +200,54 @@ class Server:
         return self._Revision
 
     @property
+    # getSunRiseSet
+    def servertime(self):
+        self._getSunRiseSet()
+        if self._api_status == self._return_ok:
+            self._currentdate = self._ServerTime[:10]  # yyyy-mm-dd
+            self._currentdate_dt = datetime.strptime(self._ServerTime, "%Y-%m-%d %H:%M:%S").date()
+        else:
+            self._ServerTime = None
+        return self._ServerTime
+
+    @property
+    def servertime_dt(self):
+        return datetime.strptime(self.servertime, "%Y-%m-%d %H:%M:%S") if self._api_status == self._return_ok else None
+
+    @property
     # checkforupdate
     def statuscode(self):
         return self._statuscode
+
+    @property
+    # getSunRiseSet
+    def sunatsouth(self):
+        self._getSunRiseSet()
+        return self._SunAtSouth
+
+    @property
+    def sunatsouth_dt(self):
+        return datetime.strptime(self._currentdate + " " + self._SunAtSouth, "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
+
+    @property
+    # getSunRiseSet
+    def sunrise(self):
+        self._getSunRiseSet()
+        return self._Sunrise
+
+    @property
+    def sunrise_dt(self):
+        return datetime.strptime(self._currentdate + " " + self._Sunrise, "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
+
+    @property
+    # getSunRiseSet
+    def sunset(self):
+        self._getSunRiseSet()
+        return self._Sunset
+
+    @property
+    def sunset_dt(self):
+        return datetime.strptime(self._currentdate + " " + self._Sunset, "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
 
     @property
     # getversion & checkforupdate
@@ -151,108 +260,6 @@ class Server:
         return self._version
 
     # ..........................................................................
-    # json.htm?type=command&param=getSunRiseSet
-    # ..........................................................................
-
-    @property
-    def astrtwilightend(self):
-        self._getSunRiseSet()
-        return self._AstrTwilightEnd
-
-    @property
-    def astrtwilightend_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._AstrTwilightEnd, "%Y-%m-%d %H:%M")
-
-    @property
-    def astrtwilightstart(self):
-        self._getSunRiseSet()
-        return self._AstrTwilightStart
-
-    @property
-    def astrtwilightstart_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._AstrTwilightStart, "%Y-%m-%d %H:%M")
-
-    @property
-    def daylength(self):
-        self._getSunRiseSet()
-        return self._DayLength
-
-    @property
-    def civtwilightend(self):
-        self._getSunRiseSet()
-        return self._CivTwilightEnd
-
-    @property
-    def civtwilightend_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._CivTwilightEnd, "%Y-%m-%d %H:%M")
-
-    @property
-    def civtwilightstart(self):
-        self._getSunRiseSet()
-        return self._CivTwilightStart
-
-    @property
-    def civtwilightstart_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._CivTwilightStart, "%Y-%m-%d %H:%M")
-
-    @property
-    def nauttwilightend(self):
-        self._getSunRiseSet()
-        return self._NautTwilightEnd
-
-    @property
-    def nauttwilightend_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._NautTwilightEnd, "%Y-%m-%d %H:%M")
-
-    @property
-    def nauttwilightstart(self):
-        self._getSunRiseSet()
-        return self._NautTwilightStart
-
-    @property
-    def nauttwilightstart_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._NautTwilightStart, "%Y-%m-%d %H:%M")
-
-    @property
-    def servertime(self):
-        self._getSunRiseSet()
-        if self._api_status == self._return_ok:
-            self._currentdate = self._ServerTime[:10]  # yyyy-mm-dd
-            self._currentdate_dt = datetime.strptime(self._ServerTime, "%Y-%m-%d %H:%M:%S").date()
-        return self._ServerTime
-
-    @property
-    def servertime_dt(self):
-        return datetime.strptime(self._ServerTime, "%Y-%m-%d %H:%M:%S") if self._api_status == self._return_ok else None
-
-    @property
-    def sunatsouth(self):
-        self._getSunRiseSet()
-        return self._SunAtSouth
-
-    @property
-    def sunatsouth_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._SunAtSouth, "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
-
-    @property
-    def sunrise(self):
-        self._getSunRiseSet()
-        return self._Sunrise
-
-    @property
-    def sunrise_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._Sunrise, "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
-
-    @property
-    def sunset(self):
-        self._getSunRiseSet()
-        return self._Sunset
-
-    @property
-    def sunset_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._Sunset, "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
-
-    # ..........................................................................
     # Global methods
     # ..........................................................................
 
@@ -260,6 +267,7 @@ class Server:
         self._checkForUpdate()
 
     def exists(self):
+        # Unable to use something else?
         return self._api_status == self._return_ok
 
     def logmessage(self, text):
