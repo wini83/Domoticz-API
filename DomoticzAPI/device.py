@@ -4,9 +4,9 @@ from .server import *
 from .hardware import *
 import datetime
 from urllib.parse import quote
-'''
+"""
     Device class
-'''
+"""
 
 
 class Device:
