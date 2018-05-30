@@ -6,6 +6,7 @@ from .hardware import Hardware
 from .device import Device
 from .uservariable import UserVariable
 from .notification import Notification
+from .utilities import *
 
 __version_major__ = 0
 __version_minor__ = 1
