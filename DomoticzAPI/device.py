@@ -16,15 +16,15 @@ class Device:
     _type_devices = "devices"
     _type_create_device = "createdevice"
     _type_create_dummy = "createvirtualsensor"
-
     _type_delete_device = "deletedevice"
+    _type_set_used = "setused"
 
     _param_make_favorite = "makefavorite"
     _param_rename_device = "renamedevice"
     _param_update_device = "udevice"
 
-    _favorite_off = 0
-    _favorite_on = 1
+    _int_value_off = 0
+    _int_value_on = 1
 
     def __init__(self, server, *args, **kwargs):
         self._idx = None
@@ -70,64 +70,7 @@ class Device:
         self._initDevice()
 
     def __str__(self):
-        return "{}({}, {}, \"{}\")".format(self.__class__.__name__, str(self._server), self._idx, self._Name)
-
-    # ..........................................................................
-    # Public methods
-    # ..........................................................................
-
-    def add(self):
-        if self._idx is None \
-                and self._Hardware is not None \
-                and self._Name is not None \
-                and self._Type is not None \
-                and self._SubType is not None:
-            # type=createdevice&idx=IDX&sensorname=SENSORNAME&devicetype=DEVICETYPE&devicesubtype=SUBTYPE
-            querystring = "type={}".format(self._type_create_device)
-            querystring += "&idx={}".format(self._Hardware._idx)
-            querystring += "&sensorname={}".format(quote(self._Name))
-            querystring += "&devicetype={}".format(self._Type)
-            querystring += "&devicesubtype={}".format(self._SubType)
-            self._api_querystring = querystring
-            res = self._server._call_api(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
-            if self._api_status == self._server._return_ok:
-                self._idx = res.get("idx", None)
-                self._initDevice()
-
-    def delete(self):
-        if self.exists():
-            # type=deletedevice&idx=29
-            querystring = "type={}&idx={}".format(self._type_delete_device, self._idx)
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
-            if self._api_status == self._server._return_ok:
-                # self._Hardware = None
-                self._idx = None
-
-    def exists(self):
-        return self._idx is not None and self._Hardware is not None
-
-    def hasBattery(self):
-        return not (self._BatteryLevel is None or self._BatteryLevel == 255)
-
-    def isFavorite(self):
-        return not (self._Favorite is None or self._Favorite == 0)
-
-    def update(self, nvalue=0, svalue=""):
-        # /json.htm?type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
-        if self.exists():
-            querystring = "param={}".format(self._param_update_device)
-            querystring += "&idx={}".format(self._idx)
-            querystring += "&nvalue={}".format(nvalue)
-            if len(svalue) > 0:
-                querystring += "&svalue={}".format(svalue)
-            res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
+        return "{}({}, {}: \"{}\")".format(self.__class__.__name__, str(self._server), self._idx, self._Name)
 
     # ..........................................................................
     # Private methods
@@ -181,9 +124,11 @@ class Device:
         self._HaveDimmer = myDict.get("HaveDimmer")
         self._HaveGroupCmd = myDict.get("HaveGroupCmd")
         self._HaveTimeout = myDict.get("HaveTimeout")
+        self._Humidity = myDict.get("Humidity")
         self._ID = myDict.get("ID")
         self._idx = myDict.get("idx", self._idx)
         self._Image = myDict.get("Image")
+        self._InternalState = myDict.get("InternalState")
         self._IsSubDevice = myDict.get("IsSubDevice")
         self._LastUpdate = myDict.get("LastUpdate")
         self._Level = myDict.get("Level")
@@ -204,12 +149,14 @@ class Device:
         self._SubType = myDict.get("SubType", self._SubType)
         self._SwitchType = myDict.get("SwitchType")
         self._SwitchTypeVal = myDict.get("SwitchTypeVal")
+        self._Temp = myDict.get("Temp")
         self._Timers = myDict.get("Timers")
         self._Type = myDict.get("Type", self._Type)
         self._TypeImg = myDict.get("TypeImg")
         self._Unit = myDict.get("Unit")
         self._Used = myDict.get("Used")
         self._UsedByCamera = myDict.get("UsedByCamera")
+        self._Voltage = myDict.get("Voltage")
         self._XOffset = myDict.get("XOffset")
         self._YOffset = myDict.get("YOffset")
 
@@ -225,6 +172,76 @@ class Device:
                 # self._HardwareTypeVal = myDict.get("HardwareTypeVal")
             else:
                 self._Hardware = None
+
+    # ..........................................................................
+    # Public methods
+    # ..........................................................................
+
+    def add(self):
+        if self._idx is None \
+                and self._Hardware is not None \
+                and self._Name is not None \
+                and self._Type is not None \
+                and self._SubType is not None:
+            # type=createdevice&idx=IDX&sensorname=SENSORNAME&devicetype=DEVICETYPE&devicesubtype=SUBTYPE
+            querystring = "type={}".format(self._type_create_device)
+            querystring += "&idx={}".format(self._Hardware._idx)
+            querystring += "&sensorname={}".format(quote(self._Name))
+            querystring += "&devicetype={}".format(self._Type)
+            querystring += "&devicesubtype={}".format(self._SubType)
+            self._api_querystring = querystring
+            res = self._server._call_api(querystring)
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
+            if self._api_status == self._server._return_ok:
+                self._idx = res.get("idx", None)
+                self._initDevice()
+
+    def delete(self):
+        if self.exists():
+            # type=deletedevice&idx=29
+            querystring = "type={}&idx={}".format(self._type_delete_device, self._idx)
+            self._api_querystring = querystring
+            res = self._server._call_command(querystring)
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
+            if self._api_status == self._server._return_ok:
+                # self._Hardware = None
+                self._idx = None
+
+    def exists(self):
+        return self._idx is not None and self._Hardware is not None
+
+    def hasBattery(self):
+        return not (self._BatteryLevel is None or self._BatteryLevel == 255)
+
+    def isDimmer(self):
+        return self.isSwitch() and self._SwitchType == "Dimmer"
+
+    def isFavorite(self):
+        return not (self._Favorite is None or self._Favorite == 0)
+
+    def isSwitch(self):
+        return self._SwitchType is not None
+
+    def isThermometer(self):
+        return self._Temp is not None
+
+    def isHygrometer(self):
+        return self._Humidity is not None
+
+    def update(self, nvalue=0, svalue=""):
+        # /json.htm?type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
+        if self.exists():
+            querystring = "param={}".format(self._param_update_device)
+            querystring += "&idx={}".format(self._idx)
+            querystring += "&nvalue={}".format(nvalue)
+            if len(svalue) > 0:
+                querystring += "&svalue={}".format(svalue)
+            self._api_querystring = querystring
+            res = self._server._call_command(querystring)
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
 
     # ..........................................................................
     # Properties
@@ -293,11 +310,17 @@ class Device:
         # json.htm?type=command&param=makefavorite&idx=" + id + "&isfavorite=" + isfavorite
         if isinstance(value, bool) and self.exists():
             if value:
-                self._server._call_command(self._server._param.format(self._param_make_favorite) + "&idx={}&isfavorite={}".format(self._idx, str(self._favorite_on)))
-                self._Favorite = self._favorite_on
+                int_value = self._int_value_on
             else:
-                self._server._call_command(self._server._param.format(self._param_make_favorite) + "&idx={}&isfavorite={}".format(self._idx, str(self._favorite_off)))
-                self._Favorite = self._favorite_off
+                int_value = self._int_value_off
+            querystring = self._server._param.format(self._param_make_favorite)
+            querystring += "&idx={}&isfavorite={}".format(self._idx, str(int_value))
+            self._api_querystring = querystring
+            res = self._server._call_command(querystring)
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
+            if self._api_status == self._server._return_ok:
+                self._Favorite = int_value
 
     @property
     def hardware(self):
@@ -316,6 +339,10 @@ class Device:
         return self._HaveTimeout
 
     @property
+    def humidity(self):
+        return self._Humidity
+
+    @property
     def id(self):
         return self._ID
 
@@ -326,6 +353,10 @@ class Device:
     @property
     def image(self):
         return self._Image
+
+    @property
+    def internalstate(self):
+        return self._InternalState
 
     @property
     def issubdevice(self):
@@ -401,6 +432,10 @@ class Device:
         return self._SubType
 
     @property
+    def temp(self):
+        return self._Temp
+
+    @property
     def timers(self):
         return self._Timers
 
@@ -421,20 +456,35 @@ class Device:
         return self._Unit
 
     @property
+    # For some reason this attribute in Domoticz is an 'int'. Boolean is more logical.
     def used(self):
-        return self._Used
+        if self._Used == 1:
+            return True
+        else:
+            return False
 
     @used.setter
     def used(self, value):
-        if value in ("true", "false") and self.exists():
-            # json.htm?type=setused&idx=<idx>&used=true
-            querystring = "type=setused&idx={}&used={}".format(self._idx, value)
+        # The url needs "true" or "false"!!!
+        if isinstance(value, bool) and self.exists():
+            if value:
+                int_value = self._int_value_on
+                str_value = "true"
+            else:
+                int_value = self._int_value_off
+                str_value = "false"
+            # json.htm?type=setused&idx=IDX&used=true|false
+            querystring = "type={}&idx={}&used={}".format(self._type_set_used, self._idx, str_value)
             self._api_querystring = querystring
             res = self._server._call_api(querystring)
             self._api_status = res.get("status", self._server._return_error)
             self._api_title = res.get("title", self._server._return_empty)
             if self._api_status == self._server._return_ok:
-                self._Used = value
+                self._Used = int_value
+
+    @property
+    def voltage(self):
+        return self._Voltage
 
     @property
     def xoffset(self):
