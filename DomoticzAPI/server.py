@@ -6,11 +6,11 @@ import subprocess
 from datetime import datetime
 from urllib.parse import quote
 
+
 ################################################################################
 # Server                                                                       #
 ################################################################################
 class Server:
-
 
     # Responses
     _return_ok = "OK"
@@ -49,6 +49,128 @@ class Server:
     def __str__(self):
         txt = "{}(\"{}\", \"{}\")".format(self.__class__.__name__, self._address, self._port)
         return txt
+
+    # ..........................................................................
+    # Private methods
+    # ..........................................................................
+
+    def _getVersion(self):
+        # json.htm?type=command&param=getversion
+        querystring = self._param.format(self._param_version)
+        self._api_querystring = querystring
+        res = self._call_command(querystring)
+        self._build_time = res.get("build_time")
+        self._DomoticzUpdateURL = res.get("DomoticzUpdateURL")
+        self._dzvents_version = res.get("dzvents_version")
+        self._hash = res.get("hash")
+        self._HaveUpdate = res.get("HaveUpdate")
+        self._python_version = res.get("python_version")
+        self._Revision = res.get("Revision")
+        self._SystemName = res.get("SystemName")
+        self._version = res.get("version")
+        #
+        self._api_status = res.get("status", self._return_error)
+        self._api_title = res.get("title", self._return_empty)
+
+    def _checkForUpdate(self):
+        # json.htm?type=command&param=checkforupdate
+        querystring = self._param.format(self._param_checkforupdate)
+        self._api_querystring = querystring
+        res = self._call_command(querystring)
+        self._DomoticzUpdateURL = res.get("DomoticzUpdateURL")
+        self._HaveUpdate = res.get("HaveUpdate")
+        self._Revision = res.get("Revision")
+        self._SystemName = res.get("SystemName")
+        self._statuscode = res.get("statuscode")
+        #
+        self._api_status = res.get("status", self._return_error)
+        self._api_title = res.get("title", self._return_empty)
+
+    def _getSunRiseSet(self, now=False):
+        # json.htm?type=command&param=getSunRiseSet
+        if isinstance(self._currentdate_dt, datetime):
+            if datetime.now().date() > self._currentdate_dt:
+                now = True
+        if now:
+            querystring = self._param.format(self._param_sun)
+            self._api_querystring = querystring
+            res = self._call_command(querystring)
+            self._ActTime = res.get("ActTime")
+            self._AstrTwilightEnd = res.get("AstrTwilightEnd")
+            self._AstrTwilightStart = res.get("AstrTwilightStart")
+            self._CivTwilightEnd = res.get("CivTwilightEnd")
+            self._CivTwilightStart = res.get("CivTwilightStart")
+            self._NautTwilightEnd = res.get("NautTwilightEnd")
+            self._NautTwilightStart = res.get("NautTwilightStart")
+            self._Sunrise = res.get("Sunrise")
+            self._Sunset = res.get("Sunset")
+            self._SunAtSouth = res.get("SunAtSouth")
+            self._DayLength = res.get("DayLength")
+            self._ServerTime = res.get("ServerTime")
+            #
+            self._api_status = res.get("status", self._return_error)
+            self._api_title = res.get("title", self._return_empty)
+
+    def _getConfig(self):
+        # json.htm?type=command&param=getconfig
+        # Not required yet. May be interesting to get latitude and longitude. Most is GUI stuff.
+        pass
+
+    def _call_command(self, text):
+        return self._call_api(self._url_command + text)
+
+    def _call_api(self, text):
+        return self.__call_url(self._url + text, "", "")
+
+    def __call_url(self, url, username="", password=""):
+        try:
+            # print("server.__call_url.url: " + url)
+            command = "curl -s -X GET"
+            options = "'" + url + "'"
+            p = subprocess.Popen(command + " " + options, shell=True, stdout=subprocess.PIPE)
+            p.wait()
+            data, errors = p.communicate()
+            if p.returncode != 0:
+                pass
+            res = json.loads(data.decode("utf-8", "ignore"))
+        except:
+            res = json.loads("{ \"status\" : \"ERR\" }")
+        return res
+
+    # ..........................................................................
+    # Global methods
+    # ..........................................................................
+
+    def checkForUpdate(self):
+        self._checkForUpdate()
+
+    def exists(self):
+        # Unable to use something else?
+        return self._api_status == self._return_ok
+
+    def logmessage(self, text):
+        if self.exists():
+            querystring = self._param.format(self._param_log) + "&message={}".format(quote(text))
+            self._api_querystring = querystring
+            res = self._call_command(querystring)
+            self._api_status = res.get("status", self._return_error)
+            self._api_title = res.get("title", self._return_empty)
+
+    def reboot(self):
+        if self.exists():
+            querystring = self._param.format(self._param_reboot)
+            self._api_querystring = querystring
+            res = self._call_command(querystring)
+            self._api_status = res.get("status", self._return_error)
+            self._api_title = res.get("title", self._return_empty)
+
+    def shutdown(self):
+        if self.exists():
+            querystring = self._param.format(self._param_shutdown)
+            self._api_querystring = querystring
+            res = self._call_command(querystring)
+            self._api_status = res.get("status", self._return_error)
+            self._api_title = res.get("title", self._return_empty)
 
     # ..........................................................................
     # Properties
@@ -259,123 +381,3 @@ class Server:
     def version(self):
         return self._version
 
-    # ..........................................................................
-    # Global methods
-    # ..........................................................................
-
-    def checkForUpdate(self):
-        self._checkForUpdate()
-
-    def exists(self):
-        # Unable to use something else?
-        return self._api_status == self._return_ok
-
-    def logmessage(self, text):
-        if self.exists():
-            querystring = self._param.format(self._param_log) + "&message={}".format(quote(text))
-            self._api_querystring = querystring
-            res = self._call_command(querystring)
-            self._api_status = res.get("status", self._return_error)
-            self._api_title = res.get("title", self._return_empty)
-
-    def reboot(self):
-        if self.exists():
-            querystring = self._param.format(self._param_reboot)
-            self._api_querystring = querystring
-            res = self._call_command(querystring)
-            self._api_status = res.get("status", self._return_error)
-            self._api_title = res.get("title", self._return_empty)
-
-    def shutdown(self):
-        if self.exists():
-            querystring = self._param.format(self._param_shutdown)
-            self._api_querystring = querystring
-            res = self._call_command(querystring)
-            self._api_status = res.get("status", self._return_error)
-            self._api_title = res.get("title", self._return_empty)
-
-    # ..........................................................................
-    # Private methods
-    # ..........................................................................
-    def _getVersion(self):
-        # json.htm?type=command&param=getversion
-        querystring = self._param.format(self._param_version)
-        self._api_querystring = querystring
-        res = self._call_command(querystring)
-        self._build_time = res.get("build_time")
-        self._DomoticzUpdateURL = res.get("DomoticzUpdateURL")
-        self._dzvents_version = res.get("dzvents_version")
-        self._hash = res.get("hash")
-        self._HaveUpdate = res.get("HaveUpdate")
-        self._python_version = res.get("python_version")
-        self._Revision = res.get("Revision")
-        self._SystemName = res.get("SystemName")
-        self._version = res.get("version")
-        #
-        self._api_status = res.get("status", self._return_error)
-        self._api_title = res.get("title", self._return_empty)
-
-    def _checkForUpdate(self):
-        # json.htm?type=command&param=checkforupdate
-        querystring = self._param.format(self._param_checkforupdate)
-        self._api_querystring = querystring
-        res = self._call_command(querystring)
-        self._DomoticzUpdateURL = res.get("DomoticzUpdateURL")
-        self._HaveUpdate = res.get("HaveUpdate")
-        self._Revision = res.get("Revision")
-        self._SystemName = res.get("SystemName")
-        self._statuscode = res.get("statuscode")
-        #
-        self._api_status = res.get("status", self._return_error)
-        self._api_title = res.get("title", self._return_empty)
-
-    def _getSunRiseSet(self, now=False):
-        # json.htm?type=command&param=getSunRiseSet
-        if isinstance(self._currentdate_dt, datetime):
-            if datetime.now().date() > self._currentdate_dt:
-                now = True
-        if now:
-            querystring = self._param.format(self._param_sun)
-            self._api_querystring = querystring
-            res = self._call_command(querystring)
-            self._ActTime = res.get("ActTime")
-            self._AstrTwilightEnd = res.get("AstrTwilightEnd")
-            self._AstrTwilightStart = res.get("AstrTwilightStart")
-            self._CivTwilightEnd = res.get("CivTwilightEnd")
-            self._CivTwilightStart = res.get("CivTwilightStart")
-            self._NautTwilightEnd = res.get("NautTwilightEnd")
-            self._NautTwilightStart = res.get("NautTwilightStart")
-            self._Sunrise = res.get("Sunrise")
-            self._Sunset = res.get("Sunset")
-            self._SunAtSouth = res.get("SunAtSouth")
-            self._DayLength = res.get("DayLength")
-            self._ServerTime = res.get("ServerTime")
-            #
-            self._api_status = res.get("status", self._return_error)
-            self._api_title = res.get("title", self._return_empty)
-
-    def _getConfig(self):
-        # json.htm?type=command&param=getconfig
-        # Not required yet. May be interesting to get latitude and longitude. Most is GUI stuff.
-        pass
-
-    def _call_command(self, text):
-        return self._call_api(self._url_command + text)
-
-    def _call_api(self, text):
-        return self.__call_url(self._url + text, "", "")
-
-    def __call_url(self, url, username="", password=""):
-        try:
-            # print("server.__call_url.url: " + url)
-            command = "curl -s -X GET"
-            options = "'" + url + "'"
-            p = subprocess.Popen(command + " " + options, shell=True, stdout=subprocess.PIPE)
-            p.wait()
-            data, errors = p.communicate()
-            if p.returncode != 0:
-                pass
-            res = json.loads(data.decode("utf-8", "ignore"))
-        except:
-            res = json.loads("{ \"status\" : \"ERR\" }")
-        return res
