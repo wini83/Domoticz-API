@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from .server import Server
-from .hardware import Hardware
+from .server import *
+from .hardware import *
 import datetime
 from urllib.parse import quote
-
-
-################################################################################
-# Device                                                                       #
-################################################################################
+'''
+    Device class
+'''
 
 class Device:
 
@@ -387,7 +384,7 @@ class Device:
         if self.exists():
             # json.htm?type=command&param=renamedevice&idx=idx&name=
             querystring = self._server._param.format(self._param_rename_device)
-            querystring += "&idx={}&name={}".format(self._idx, quoute(str(value)))
+            querystring += "&idx={}&name={}".format(self._idx, quote(str(value)))
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
             self._api_status = res.get("status", self._server._return_error)
