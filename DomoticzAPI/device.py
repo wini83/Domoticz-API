@@ -8,6 +8,7 @@ from urllib.parse import quote
     Device class
 '''
 
+
 class Device:
 
     _type_devices = "devices"
