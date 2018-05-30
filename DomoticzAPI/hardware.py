@@ -1,18 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from urllib.parse import quote
+'''
+    Hardware
+'''
 
-
-################################################################################
-# Hardware                                                                     #
-################################################################################
 
 class Hardware:
 
     _type_hardware = "hardware"
 
     _param_add_hardware = "addhardware"
-    # https://github.com/domoticz/domoticz/blob/8d290f216e5e25be48178ad30273129d2c84ad69/www/app/HardwareController.js
     _param_delete_hardware = "deletehardware"
     _param_update_hardware = "updatehardware"
 
