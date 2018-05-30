@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from .server import Server
+from .server import *
 from urllib.parse import quote
+'''
+    Notification
+'''
 
 
-################################################################################
-# Notification                                                                 #
-################################################################################
 class Notification:
 
     _param_notification = "sendnotification"
@@ -40,6 +40,30 @@ class Notification:
 
     def __str__(self):
         return "{}({})".format(self.__class__.__name__, self._subject)
+
+    # ..........................................................................
+    # Private methods
+    # ..........................................................................
+
+    def _initNotification(self):
+        self._api_status = Server._return_error
+        self._api_title = Server._return_empty
+        self._api_querystring = Server._return_empty
+
+    # ..........................................................................
+    # Public methods
+    # ..........................................................................
+
+    def send(self):
+        if self._server is not None and self._subject is not None and self._body is not None:
+            querystring = self._server._param.format(self._param_notification) + "&subject={}&body={}".format(quote(self._subject), quote(self._body))
+            if self._subsystem is not None:
+                querystring += "&subsystem={}".format(self._subsystem)
+            self._api_querystring = querystring
+            res = self._server._call_command(querystring)
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
+
 
     # ..........................................................................
     # Properties
@@ -87,24 +111,3 @@ class Notification:
             self._subsystem = value
         else:
             self._subsystem = None
-
-    # ..........................................................................
-    # Public methods
-    # ..........................................................................
-    def send(self):
-        if self._server is not None and self._subject is not None and self._body is not None:
-            querystring = self._server._param.format(self._param_notification) + "&subject={}&body={}".format(quote(self._subject), quote(self._body))
-            if self._subsystem is not None:
-                querystring += "&subsystem={}".format(self._subsystem)
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
-
-    # ..........................................................................
-    # Private methods
-    # ..........................................................................
-    def _initNotification(self):
-        self._api_status = Server._return_error
-        self._api_title = Server._return_empty
-        self._api_querystring = Server._return_empty
