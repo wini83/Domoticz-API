@@ -245,20 +245,6 @@ class Device:
     # ..........................................................................
 
     @property
-    def api_status(self):
-        return self._api_status
-
-    @property
-    def api_title(self):
-        return self._api_title
-
-    @property
-    def api_querystring(self):
-        return self._api_querystring
-
-    # ..........................................................................
-
-    @property
     def addjmulti(self):
         return self._AddjMulti
 
@@ -273,6 +259,18 @@ class Device:
     @property
     def addjvalue2(self):
         return self._AddjValue2
+
+    @property
+    def api_status(self):
+        return self._api_status
+
+    @property
+    def api_title(self):
+        return self._api_title
+
+    @property
+    def api_querystring(self):
+        return self._api_querystring
 
     @property
     def batterylevel(self):
@@ -415,6 +413,10 @@ class Device:
     @property
     def sensorunit(self):
         return self._SensorUnit
+
+    @property
+    def server(self):
+        return self._server
 
     @property
     def shownotifications(self):
