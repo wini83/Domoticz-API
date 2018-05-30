@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+    User variable
+"""
 
-################################################################################
-# User variable                                                                #
-################################################################################
+
 class UserVariable:
     # Types
     # 0 = Integer, e.g. -1, 1, 0, 2, 10
@@ -68,8 +69,68 @@ class UserVariable:
                                                        self._type, self._value)
 
     # ..........................................................................
+    # Private methods
+    # ..........................................................................
+
+    def __getvar(self):
+        querystring = "param={}".format(self._param_get_user_variables)
+        self._api_querystring = querystring
+        res = self._server._call_command(querystring)
+        self._api_status = res.get("status", self._server._return_error)
+        self._api_title = res.get("title", self._server._return_empty)
+        if res.get("result"):
+            for var in res["result"]:
+                if var.get("Name") == self._name:
+                    self._idx = var.get("idx")
+                    self._value = var.get("Value")
+                    self._type = self._vtype2string[var.get("Type")]
+                    self._lastupdate = var.get("LastUpdate")
+                    break
+
+    def __value(self, type, value):
+        if value == "":
+            result = value
+        elif type == "integer":
+            result = str(int(float(value)))
+        elif type == "float":
+            result = str(float(value))
+        elif type == "date":
+            try:
+                dt = datetime.strptime(value, self._date)
+            except:
+                dt = None
+            if dt is not None:
+                result = dt.strftime(self._date)
+            else:
+                result = ""
+        elif type == "time":
+            try:
+                dt = datetime.strptime(value, self._time)
+            except:
+                dt = None
+            if dt is not None:
+                result = dt.strftime(self._time)
+            else:
+                result = ""
+        elif type == "datetime":
+            try:
+                dt = datetime.strptime(value, self._date + " " + self._time)
+            except:
+                dt = None
+            if dt is not None:
+                result = dt.strftime(self._date + " " + self._time)
+            else:
+                result = ""
+        elif type == "string":
+            result = value
+        else:  # string
+            result = ""
+        return result
+
+    # ..........................................................................
     # Public methods
     # ..........................................................................
+
     def exists(self):
         if self._idx is None:
             return False
@@ -126,8 +187,6 @@ class UserVariable:
     def api_querystring(self):
         return self._api_querystring
 
-    # ..........................................................................
-
     @property
     def idx(self):
         return self._idx
@@ -155,61 +214,3 @@ class UserVariable:
     @value.setter
     def value(self, value):
         self._value = self.__value(self._type, value)
-
-    # ..........................................................................
-    # Private methods
-    # ..........................................................................
-    def __getvar(self):
-        querystring = "param={}".format(self._param_get_user_variables)
-        self._api_querystring = querystring
-        res = self._server._call_command(querystring)
-        self._api_status = res.get("status", self._server._return_error)
-        self._api_title = res.get("title", self._server._return_empty)
-        if res.get("result"):
-            for var in res["result"]:
-                if var.get("Name") == self._name:
-                    self._idx = var.get("idx")
-                    self._value = var.get("Value")
-                    self._type = self._vtype2string[var.get("Type")]
-                    self._lastupdate = var.get("LastUpdate")
-                    break
-
-    def __value(self, type, value):
-        if value == "":
-            result = value
-        elif type == "integer":
-            result = str(int(float(value)))
-        elif type == "float":
-            result = str(float(value))
-        elif type == "date":
-            try:
-                dt = datetime.strptime(value, self._date)
-            except:
-                dt = None
-            if dt is not None:
-                result = dt.strftime(self._date)
-            else:
-                result = ""
-        elif type == "time":
-            try:
-                dt = datetime.strptime(value, self._time)
-            except:
-                dt = None
-            if dt is not None:
-                result = dt.strftime(self._time)
-            else:
-                result = ""
-        elif type == "datetime":
-            try:
-                dt = datetime.strptime(value, self._date + " " + self._time)
-            except:
-                dt = None
-            if dt is not None:
-                result = dt.strftime(self._date + " " + self._time)
-            else:
-                result = ""
-        elif type == "string":
-            result = value
-        else:  # string
-            result = ""
-        return result
