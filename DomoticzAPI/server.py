@@ -5,11 +5,11 @@ import json
 import subprocess
 from datetime import datetime
 from urllib.parse import quote
+'''
+    Server
+'''
 
 
-################################################################################
-# Server                                                                       #
-################################################################################
 class Server:
 
     # Responses
@@ -380,4 +380,3 @@ class Server:
     # getversion
     def version(self):
         return self._version
-
