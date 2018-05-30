@@ -6,6 +6,7 @@ from urllib.parse import quote
 ################################################################################
 # Hardware                                                                     #
 ################################################################################
+
 class Hardware:
 
     _type_hardware = "hardware"
@@ -16,6 +17,7 @@ class Hardware:
     _param_update_hardware = "updatehardware"
 
     _htype_dummy = 15
+    _htype_python_plugin = 94
 
     # def __init__(self, server, idx):
     def __init__(self, server, *args, **kwargs):
@@ -74,11 +76,136 @@ class Hardware:
             self._initHardware()
 
     def __str__(self):
-        return "{}({}, {}, \"{}\", {})".format(self.__class__.__name__, str(self.server), self.idx, self.name, self.type)
+        return "{}({}, {}: \"{}\", {})".format(self.__class__.__name__, str(self.server), self.idx, self.name, self.type)
+
+    # ..........................................................................
+    # Private methods
+    # ..........................................................................
+
+    def _initHardware(self):
+        querystring = "type={}".format(self._type_hardware)
+        self._api_querystring = querystring
+        res = self._server._call_api(querystring)
+        self._api_status = res.get("status", self._server._return_error)
+        self._api_title = res.get("title", self._server._return_empty)
+        result = res.get("result")
+        myDict = {}
+        if len(result) > 0:
+            for myDict in result:
+                if myDict.get("idx") == str(self._idx):
+                    break
+        self.address = myDict.get("Address")
+        self.datatimeout = myDict.get("DataTimeout")
+        self.enabled = myDict.get("Enabled")
+        self.extra = myDict.get("Extra")
+        self.mode1 = myDict.get("Mode1")
+        self.mode2 = myDict.get("Mode2")
+        self.mode3 = myDict.get("Mode3")
+        self.mode4 = myDict.get("Mode4")
+        self.mode5 = myDict.get("Mode5")
+        self.mode6 = myDict.get("Mode6")
+        self.name = myDict.get("Name")
+        self.password = myDict.get("Password")
+        self.port = myDict.get("Port")
+        self.serialport = myDict.get("SerialPort")
+        self.type = myDict.get("Type")
+        self.username = myDict.get("Username")
+
+    # ..........................................................................
+    # Public methods
+    # ..........................................................................
+
+    def exists(self):
+        return self._idx is not None and self._Name is not None
+
+    def add(self):
+        self._api_querystring = self._server._return_empty
+        self._api_title = self._server._return_empty
+        self._api_status = self._server._return_error
+        # At least Name and Type are required
+        if self._idx is None and self._Name is not None and self._Type is not None:
+            # Currently only Dummy device is allowed to create
+            if self._Type == self._htype_dummy:
+                querystring = "param={}".format(self._param_add_hardware)
+                querystring += "&address={}".format(self._Address) if self._Address is not None else ""
+                querystring += "&datatimeout={}".format(self._DataTimeout)
+                querystring += "&enabled={}".format(self._Enabled)
+                querystring += "&extra={}".format(self._Extra) if self._Extra is not None else ""
+                querystring += "&htype={}".format(self._Type)
+                querystring += "&Mode1={}".format(self._Mode1) if self._Mode1 is not None else ""
+                querystring += "&Mode2={}".format(self._Mode2) if self._Mode2 is not None else ""
+                querystring += "&Mode3={}".format(self._Mode3) if self._Mode3 is not None else ""
+                querystring += "&Mode4={}".format(self._Mode4) if self._Mode4 is not None else ""
+                querystring += "&Mode5={}".format(self._Mode5) if self._Mode5 is not None else ""
+                querystring += "&Mode6={}".format(self._Mode6) if self._Mode6 is not None else ""
+                querystring += "&name={}".format(quote(self._Name))
+                querystring += "&password={}".format(self._Password) if self._Password is not None else ""
+                querystring += "&port={}".format(self._Port) if self._Port is not None else ""
+                querystring += "&serialport={}".format(self._SerialPort) if self._SerialPort is not None else ""
+                querystring += "&username={}".format(self._Username) if self._Username is not None else ""
+                self._api_querystring = querystring
+                res = self._server._call_command(querystring)
+                self._api_status = res.get("status", self._server._return_error)
+                self._api_title = res.get("title", self._server._return_empty)
+                if self._api_status == self._server._return_ok:
+                    self._idx = int(res.get("idx"))
+                    self._initHardware()
+
+    def add_virtual(self):
+        self._Type = self._htype_dummy
+        self.add()
+
+    def delete(self):
+        self._api_querystring = self._server._return_empty
+        self._api_title = self._server._return_empty
+        self._api_status = self._server._return_error
+        if self.exists():
+            querystring = "param={}".format(self._param_delete_hardware)
+            querystring += "&idx={}".format(self.idx)
+            self._api_querystring = querystring
+            res = self._server._call_command(querystring)
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
+            if self._api_status == self._server._return_ok:
+                self._idx = None
+
+    def isDummy(self):
+        return self._Type == self._htype_dummy
+
+    def isPythonPlugin(self):
+        return self._Type == self._htype_python_plugin
+
+    def update(self):
+        # json.htm?type=command&param=updatehardware&htype=94&idx=idx
+        if self.exists():
+            querystring = "param={}".format(self._param_update_hardware)
+            querystring += "&idx={}".format(self._idx)
+            querystring += "&address={}".format(self._Address) if self._Address is not None else ""
+            querystring += "&datatimeout={}".format(self._DataTimeout)
+            querystring += "&enabled={}".format(self._Enabled)
+            querystring += "&extra={}".format(self._Extra) if self._Extra is not None else ""
+            if self._Type == self._htype_dummy:
+                querystring += "&htype={}".format(self._Type)
+            querystring += "&Mode1={}".format(self._Mode1) if self._Mode1 is not None else ""
+            querystring += "&Mode2={}".format(self._Mode2) if self._Mode2 is not None else ""
+            querystring += "&Mode3={}".format(self._Mode3) if self._Mode3 is not None else ""
+            querystring += "&Mode4={}".format(self._Mode4) if self._Mode4 is not None else ""
+            querystring += "&Mode5={}".format(self._Mode5) if self._Mode5 is not None else ""
+            querystring += "&Mode6={}".format(self._Mode6) if self._Mode6 is not None else ""
+            querystring += "&name={}".format(quote(self._Name))
+            querystring += "&password={}".format(self._Password) if self._Password is not None else ""
+            querystring += "&port={}".format(self._Port) if self._Port is not None else ""
+            querystring += "&serialport={}".format(self._SerialPort) if self._SerialPort is not None else ""
+            querystring += "&username={}".format(self._Username) if self._Username is not None else ""
+            self._api_querystring = querystring
+            res = self._server._call_command(querystring)
+            self._api_status = res.get("status", self._server._return_error)
+            self._api_title = res.get("title", self._server._return_empty)
 
     # **************************************************************************
     # Properties
     # **************************************************************************
+
     @property
     def address(self):
         return self._Address
@@ -235,118 +362,3 @@ class Hardware:
     @username.setter
     def username(self, value):
         self._Username = str(value) if value is not None else None
-
-    # ..........................................................................
-    # Public methods
-    # ..........................................................................
-    def exists(self):
-        return self._idx is not None and self._Name is not None
-
-    def add(self):
-        self._api_querystring = self._server._return_empty
-        self._api_title = self._server._return_empty
-        self._api_status = self._server._return_error
-        # At least Name and Type are required
-        if self._idx is None and self._Name is not None and self._Type is not None:
-            # Currently only Dummy device is allowed to create
-            if self._Type == self._htype_dummy:
-                querystring = "param={}".format(self._param_add_hardware)
-                querystring += "&address={}".format(self._Address) if self._Address is not None else ""
-                querystring += "&datatimeout={}".format(self._DataTimeout)
-                querystring += "&enabled={}".format(self._Enabled)
-                querystring += "&extra={}".format(self._Extra) if self._Extra is not None else ""
-                querystring += "&htype={}".format(self._Type)
-                querystring += "&Mode1={}".format(self._Mode1) if self._Mode1 is not None else ""
-                querystring += "&Mode2={}".format(self._Mode2) if self._Mode2 is not None else ""
-                querystring += "&Mode3={}".format(self._Mode3) if self._Mode3 is not None else ""
-                querystring += "&Mode4={}".format(self._Mode4) if self._Mode4 is not None else ""
-                querystring += "&Mode5={}".format(self._Mode5) if self._Mode5 is not None else ""
-                querystring += "&Mode6={}".format(self._Mode6) if self._Mode6 is not None else ""
-                querystring += "&name={}".format(quote(self._Name))
-                querystring += "&password={}".format(self._Password) if self._Password is not None else ""
-                querystring += "&port={}".format(self._Port) if self._Port is not None else ""
-                querystring += "&serialport={}".format(self._SerialPort) if self._SerialPort is not None else ""
-                querystring += "&username={}".format(self._Username) if self._Username is not None else ""
-                self._api_querystring = querystring
-                res = self._server._call_command(querystring)
-                self._api_status = res.get("status", self._server._return_error)
-                self._api_title = res.get("title", self._server._return_empty)
-                if self._api_status == self._server._return_ok:
-                    self._idx = int(res.get("idx"))
-                    self._initHardware()
-
-    def add_virtual(self):
-        self._Type = self._htype_dummy
-        self.add()
-
-    def delete(self):
-        self._api_querystring = self._server._return_empty
-        self._api_title = self._server._return_empty
-        self._api_status = self._server._return_error
-        if self.exists():
-            querystring = "param={}".format(self._param_delete_hardware)
-            querystring += "&idx={}".format(self.idx)
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
-            if self._api_status == self._server._return_ok:
-                self._idx = None
-
-    def update(self):
-        # json.htm?type=command&param=updatehardware&htype=94&idx=idx
-        if self.exists():
-            querystring = "param={}".format(self._param_update_hardware)
-            querystring += "&idx={}".format(self._idx)
-            querystring += "&address={}".format(self._Address) if self._Address is not None else ""
-            querystring += "&datatimeout={}".format(self._DataTimeout)
-            querystring += "&enabled={}".format(self._Enabled)
-            querystring += "&extra={}".format(self._Extra) if self._Extra is not None else ""
-            if self._Type == self._htype_dummy:
-                querystring += "&htype={}".format(self._Type)
-            querystring += "&Mode1={}".format(self._Mode1) if self._Mode1 is not None else ""
-            querystring += "&Mode2={}".format(self._Mode2) if self._Mode2 is not None else ""
-            querystring += "&Mode3={}".format(self._Mode3) if self._Mode3 is not None else ""
-            querystring += "&Mode4={}".format(self._Mode4) if self._Mode4 is not None else ""
-            querystring += "&Mode5={}".format(self._Mode5) if self._Mode5 is not None else ""
-            querystring += "&Mode6={}".format(self._Mode6) if self._Mode6 is not None else ""
-            querystring += "&name={}".format(quote(self._Name))
-            querystring += "&password={}".format(self._Password) if self._Password is not None else ""
-            querystring += "&port={}".format(self._Port) if self._Port is not None else ""
-            querystring += "&serialport={}".format(self._SerialPort) if self._SerialPort is not None else ""
-            querystring += "&username={}".format(self._Username) if self._Username is not None else ""
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
-
-    # ..........................................................................
-    # Private methods
-    # ..........................................................................
-    def _initHardware(self):
-        querystring = "type={}".format(self._type_hardware)
-        self._api_querystring = querystring
-        res = self._server._call_api(querystring)
-        self._api_status = res.get("status", self._server._return_error)
-        self._api_title = res.get("title", self._server._return_empty)
-        result = res.get("result")
-        if len(result) > 0:
-            for myDict in result:
-                if myDict.get("idx") == str(self._idx):
-                    self.address = myDict.get("Address")
-                    self.datatimeout = myDict.get("DataTimeout")
-                    self.enabled = myDict.get("Enabled")
-                    self.extra = myDict.get("Extra")
-                    self.mode1 = myDict.get("Mode1")
-                    self.mode2 = myDict.get("Mode2")
-                    self.mode3 = myDict.get("Mode3")
-                    self.mode4 = myDict.get("Mode4")
-                    self.mode5 = myDict.get("Mode5")
-                    self.mode6 = myDict.get("Mode6")
-                    self.name = myDict.get("Name")
-                    self.password = myDict.get("Password")
-                    self.port = myDict.get("Port")
-                    self.serialport = myDict.get("SerialPort")
-                    self.type = myDict.get("Type")
-                    self.username = myDict.get("Username")
-                    break
