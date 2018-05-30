@@ -5,9 +5,9 @@ import json
 import subprocess
 from datetime import datetime
 from urllib.parse import quote
-'''
+"""
     Server
-'''
+"""
 
 
 class Server:
