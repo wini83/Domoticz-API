@@ -4,9 +4,7 @@ import DomoticzAPI as dom
 from datetime import datetime
 
 def main():
-    print("DomoticzAPI: {}\n".format(dom.version()))
-
-    # server = dom.Server(address="192.168.0.13")
+    # server = dom.Server(address="192.168.0.13", port="8080")
     server = dom.Server()
     print("{}: {} - {}".format(server, server.api_status, server.api_title))
     print("Domoticz version: " + server.version)
@@ -22,6 +20,9 @@ def main():
     server.logmessage("Test 1")
     print("querystring: {}".format(server.api_querystring))
     print("{}: {} - {}".format(server, server.api_status, server.api_title))
+    # print(server.__dict__)
+    res = server.os_command("/opt/vc/bin/vcgencmd", "measure_temp")
+    print("CPU temperature: " + res.split("=")[1][:-3])
 
 if __name__ == "__main__":
     main()
