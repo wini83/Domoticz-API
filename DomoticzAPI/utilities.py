@@ -3,9 +3,10 @@ from .server import *
 
 __version_major__ = 0
 __version_minor__ = 2
-__version_micro__ = 0
+__version_micro__ = 1
 
 __version__ = "{}.{}.{}".format(__version_major__, __version_minor__, __version_micro__)
+
 
 
 def machine():
