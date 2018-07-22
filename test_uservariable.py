@@ -1,16 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# For this test, first create a uservariable in Domoticz with the name Test0
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 import DomoticzAPI as dom
 
 
 def main():
-    #server = dom.Server(address="192.168.0.13")
-    #server = dom.Server(address="127.0.0.1")
     server = dom.Server()
 
     # Define an user variable only by name, which does exists in Domoticz
@@ -21,8 +14,7 @@ def main():
         print("{} exists in Domoticz".format(var0.name))
     else:
         print("{} NOT exists in Domoticz".format(var0.name))
-
-    print("\n")
+    print("\r")
     # Define an user variable only by name, which does not exists in Domoticz
     var1 = dom.UserVariable(server, "Test1")
     print(var1)
@@ -31,8 +23,7 @@ def main():
         print("{} exists in Domoticz".format(var1.name))
     else:
         print("{} NOT exists in Domoticz".format(var1.name))
-
-    print("\n")
+    print("\r")
     # Create an new user variable
     var2 = dom.UserVariable(server, "Test2", "float", "1.23")
     print("Add {}".format(var2.name))
@@ -52,8 +43,7 @@ def main():
         print("{} exists in Domoticz".format(var2.name))
     else:
         print("{} NOT exists in Domoticz".format(var2.name))
-
-    print("\n")
+    print("\r")
     var3 = dom.UserVariable(server, "Test3", "integer")
     print(var3)
     flt = 4.56
