@@ -2,16 +2,20 @@
 # -*- coding: utf-8 -*-
 
 import json
+import os
 import subprocess
 from datetime import datetime
 from urllib.parse import quote
+
 """
     Server
 """
 
 
 class Server:
-
+    """
+    The Server class represents the Domoticz server
+    """
     # Responses
     _return_ok = "OK"
     _return_error = "ERR"
@@ -21,30 +25,49 @@ class Server:
     _type = "type"
     _type_command = "command"
 
+    _url_command = _type + "=" + _type_command + "&"
+
     # param parameter
     _param = "param={}"
+    _param_checkforupdate = "checkforupdate"
+    _param_execute_script = "execute_script"
+    _param_getauth = "getauth"
     _param_log = "addlogmessage"
     _param_reboot = "system_reboot"
     _param_shutdown = "system_shutdown"
     _param_sun = "getSunRiseSet"
     _param_version = "getversion"
-    _param_checkforupdate = "checkforupdate"
-    _param_execute_script = "execute_script"
 
-    _url_command = _type + "=" + _type_command + "&"
+    # rights
+    _rights_login_required = -1
+    _rights_not_defined = 0
+    _rights_logged_in = 2
 
-    def __init__(self, address="127.0.0.1", port="8080",**kwargs):
+    def __init__(self, address="127.0.0.1", port="8080", **kwargs):
         self._address = address
         self._api_status = self._return_error
         self._port = port
-        self._user = kwargs.get("user", None)
-        self._password = kwargs.get("password", None)
+        self._user = kwargs.get("user")
+        self._password = kwargs.get("password")
+        self._rights = self._rights_not_defined
+        self._api_message = self._return_empty
         self._url = "http://" + self._address + ":" + self._port + "/json.htm?"
         self._currentdate_dt = None
-        # No need to initialize all time properties. Next procedures will do that.
-        self._getVersion()
-        self._checkForUpdate()
-        self._getSunRiseSet(True)
+        # Check if authorization is required
+        self._getAuth()
+        if self._rights == self._rights_logged_in or (
+                self._rights == self._rights_login_required and self._user is not None):
+            # No need to initialize all time properties. Next procedures will do that.
+            self._getVersion()
+            if self._rights == self._rights_login_required and self._DomoticzUpdateURL is None:
+                self._api_status = self._return_error
+                self._api_message = "Invalid login"
+            else:
+                self._checkForUpdate()
+                self._getSunRiseSet(True)
+        else:
+            self._api_status = self._return_error
+            self._api_message = "Authorization is required"
 
     def __str__(self):
         txt = "{}(\"{}\", \"{}\")".format(self.__class__.__name__, self._address, self._port)
@@ -53,6 +76,18 @@ class Server:
     # ..........................................................................
     # Private methods
     # ..........................................................................
+    def _getAuth(self):
+        # json.htm?type=command&param=getauth
+        querystring = self._param.format(self._param_getauth)
+        self._api_querystring = querystring
+        res = self._call_command(querystring)
+        if res is None:
+            self._api_status = self._return_error
+            self._api_title = "getAuth"
+        else:
+            self._rights = res.get("rights")
+            self._api_status = res.get("status", self._return_error)
+            self._api_title = res.get("title", self._return_empty)
 
     def _getVersion(self):
         # json.htm?type=command&param=getversion
@@ -123,25 +158,28 @@ class Server:
         return self.__call_url(self._url + text, "", "")
 
     def __call_url(self, url, username="", password=""):
+        command = "curl"
+        if self._rights == self._rights_login_required:
+            command += " -u " + self._user + ":" + self._password
+        command += " -s -X GET"
+        options = "'" + url + "'"
         try:
-            # print("server.__call_url.url: " + url)
-            command = "curl -s -X GET"
-            options = "'" + url + "'"
-            p = subprocess.Popen(command + " " + options, shell=True, stdout=subprocess.PIPE)
-            p.wait()
-            data, errors = p.communicate()
-            if p.returncode != 0:
-                pass
-            res = json.loads(data.decode("utf-8", "ignore"))
+            res = self.os_command(command, options)
+            if res is not None:
+                res = json.loads(res)
+            return res
         except:
-            res = json.loads("{ \"status\" : \"ERR\" }")
-        return res
+            self._api_status = self._return_error
+            self._api_message = "Invalid call"
 
     # ..........................................................................
     # Global methods
     # ..........................................................................
 
     def checkForUpdate(self):
+        """
+        Retrieves Domoticz version information
+        """
         self._checkForUpdate()
 
     def exists(self):
@@ -155,6 +193,18 @@ class Server:
             res = self._call_command(querystring)
             self._api_status = res.get("status", self._return_error)
             self._api_title = res.get("title", self._return_empty)
+
+    def os_command(self, command, options):
+        try:
+            p = subprocess.Popen(command + " " + options, shell=True, stdout=subprocess.PIPE)
+            p.wait()
+            data, errors = p.communicate()
+            if p.returncode != 0:
+                pass
+            result = data.decode("utf-8", "ignore")
+        except:
+            result = None
+        return result
 
     def reboot(self):
         if self.exists():
@@ -195,6 +245,10 @@ class Server:
     @address.setter
     def address(self, value):
         self._address = value
+
+    @property
+    def api_message(self):
+        return self._api_message
 
     @property
     def api_status(self):
@@ -322,6 +376,11 @@ class Server:
         return self._Revision
 
     @property
+    # getauth
+    def rights(self):
+        return self._rights
+
+    @property
     # getSunRiseSet
     def servertime(self):
         self._getSunRiseSet()
@@ -334,7 +393,7 @@ class Server:
 
     @property
     def servertime_dt(self):
-        return datetime.strptime(self.servertime, "%Y-%m-%d %H:%M:%S") if self._api_status == self._return_ok else None
+        return datetime.strptime(self._ServerTime, "%Y-%m-%d %H:%M:%S") if self._api_status == self._return_ok else None
 
     @property
     # checkforupdate
@@ -349,7 +408,8 @@ class Server:
 
     @property
     def sunatsouth_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._SunAtSouth, "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
+        return datetime.strptime(self._currentdate + " " + self._SunAtSouth,
+                                 "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
 
     @property
     # getSunRiseSet
@@ -359,7 +419,8 @@ class Server:
 
     @property
     def sunrise_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._Sunrise, "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
+        return datetime.strptime(self._currentdate + " " + self._Sunrise,
+                                 "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
 
     @property
     # getSunRiseSet
@@ -369,7 +430,8 @@ class Server:
 
     @property
     def sunset_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._Sunset, "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
+        return datetime.strptime(self._currentdate + " " + self._Sunset,
+                                 "%Y-%m-%d %H:%M") if self._api_status == self._return_ok else None
 
     @property
     # getversion & checkforupdate
