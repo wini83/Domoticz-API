@@ -12,7 +12,7 @@ def main():
     print("OS Version: " + dom.os_version())
     print("OS Release: " + dom.os_release())
     print("Python version: " + dom.python_version())
-
+    print("\r")
     print("-273.15 C = " + str(dom.TempC2F(-273.15)) + " F")
     print("-40 C = " + str(dom.TempC2F(-40)) + " F")
     print("0 C = " + str(dom.TempC2F(0)) + " F")
