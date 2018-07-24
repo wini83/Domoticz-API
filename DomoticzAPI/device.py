@@ -112,17 +112,35 @@ class Device:
         self._AddjMulti2 = myDict.get("AddjMulti2")
         self._AddjValue = myDict.get("AddjValue")
         self._AddjValue2 = myDict.get("AddjValue2")
+        self._Barometer = myDict.get("Barometer")
         self._BatteryLevel = myDict.get("BatteryLevel", 255)
+        self._CameraIdx = myDict.get("CameraIdx")
+        self._Chill = myDict.get("Chill")
+        self._Color = myDict.get("Color")
+        self._Counter = myDict.get("Counter")
+        self._CounterDeliv = myDict.get("CounterDeliv")
+        self._CounterDelivToday = myDict.get("CounterDelivToday")
         self._CounterToday = myDict.get("CounterToday")
+        self._Current = myDict.get("Current")
         self._CustomImage = myDict.get("CustomImage")
         self._Data = myDict.get("Data")
+        self._DayTime = myDict.get("DayTime")
         self._Description = myDict.get("Description")
+        self._Desc = myDict.get("Desc")
+        self._DewPoint = myDict.get("DewPoint")
         self._DimmerType = myDict.get("DimmerType")
+        self._Direction = myDict.get("Direction")
+        self._DirectionStr = myDict.get("DirectionStr")
+        self._displaytype = myDict.get("displaytype")
         self._Favorite = myDict.get("Favorite")
+        self._Forecast = myDict.get("Forecast")
+        self._ForecastStr = myDict.get("ForecastStr")
+        self._Gust = myDict.get("Gust")
         self._HaveDimmer = myDict.get("HaveDimmer")
         self._HaveGroupCmd = myDict.get("HaveGroupCmd")
         self._HaveTimeout = myDict.get("HaveTimeout")
         self._Humidity = myDict.get("Humidity")
+        self._HumidityStatus = myDict.get("HumidityStatus")
         self._ID = myDict.get("ID")
         self._idx = myDict.get("idx", self._idx)
         self._Image = myDict.get("Image")
@@ -130,17 +148,32 @@ class Device:
         self._IsSubDevice = myDict.get("IsSubDevice")
         self._LastUpdate = myDict.get("LastUpdate")
         self._Level = myDict.get("Level")
+        self._LevelActions = myDict.get("LevelActions")
         self._LevelInt = myDict.get("LevelInt")
+        self._LevelNames = myDict.get("LevelNames")
+        self._LevelOffHidden = myDict.get("LevelOffHidden")
         self._MaxDimLevel = myDict.get("MaxDimLevel")
+        self._Mode = myDict.get("Mode")
+        self._Modes = myDict.get("Modes")
         self._Name = myDict.get("Name", self._Name)
         self._Notifications = myDict.get("Notifications")
+        self._Options = myDict.get("Options")
         self._PlanID = myDict.get("PlanID")
         self._PlanIDs = myDict.get("PlanIDs")
+        self._Pressure = myDict.get("Pressure")
         self._Protected = myDict.get("Protected")
+        self._Quality = myDict.get("Quality")
+        self._Radiation = myDict.get("Radiation")
+        self._Rain = myDict.get("Rain")
+        self._RainRate = myDict.get("RainRate")
+        self._SelectorStyle = myDict.get("SelectorStyle")
         self._SensorType = myDict.get("SensorType")
         self._SensorUnit = myDict.get("SensorUnit")
+        self._SetPoint = myDict.get("SetPoint")
         self._ShowNotifications = myDict.get("ShowNotifications")
         self._SignalLevel = myDict.get("SignalLevel")
+        self._Speed = myDict.get("Speed")
+        self._State = myDict.get("State")
         self._Status = myDict.get("Status")
         self._StrParam1 = myDict.get("StrParam1")
         self._StrParam2 = myDict.get("StrParam2")
@@ -152,8 +185,15 @@ class Device:
         self._Type = myDict.get("Type", self._Type)
         self._TypeImg = myDict.get("TypeImg")
         self._Unit = myDict.get("Unit")
+        self._Until = myDict.get("Until")
         self._Used = myDict.get("Used")
+        self._Usage = myDict.get("Usage")
+        self._UsageDeliv = myDict.get("UsageDeliv")
         self._UsedByCamera = myDict.get("UsedByCamera")
+        self._UVI = myDict.get("UVI")
+        self._ValueQuantity = myDict.get("ValueQuantity")
+        self._ValueUnits = myDict.get("ValueUnits")
+        self._Visibility = myDict.get("Visibility")
         self._Voltage = myDict.get("Voltage")
         self._XOffset = myDict.get("XOffset")
         self._YOffset = myDict.get("YOffset")
@@ -274,8 +314,44 @@ class Device:
         return self._api_querystring
 
     @property
+    def barometer(self):
+        return self._Barometer
+
+    @property
     def batterylevel(self):
         return self._BatteryLevel
+
+    @property
+    def cameraidx(self):
+        return self._CameraIdx
+
+    @property
+    def chill(self):
+        return self._Chill
+
+    @property
+    def color(self):
+        return self._Color
+
+    @property
+    def counter(self):
+        return self._Counter
+
+    @property
+    def counterdeliv(self):
+        return self._CounterDeliv
+
+    @property
+    def counterdelivtoday(self):
+        return self._CounterDelivToday
+
+    @property
+    def countertoday(self):
+        return self._CounterToday
+
+    @property
+    def current(self):
+        return self._Current
 
     @property
     def customimage(self):
@@ -286,12 +362,36 @@ class Device:
         return self._Data
 
     @property
+    def daytime(self):
+        return self._DayTime
+
+    @property
     def description(self):
         return self._Description
 
     @property
+    def desc(self):
+        return self._Desc
+
+    @property
+    def dewpoint(self):
+        return self._DewPoint
+
+    @property
     def dimmertype(self):
         return self._DimmerType
+
+    @property
+    def direction(self):
+        return self._Direction
+
+    @property
+    def directionstr(self):
+        return self._DirectionStr
+
+    @property
+    def displaytype(self):
+        return self._displaytype
 
     @property
     # For some reason this attribute in Domoticz is an 'int'. Boolean is more logical.
@@ -319,6 +419,18 @@ class Device:
                 self._Favorite = int_value
 
     @property
+    def forecast(self):
+        return self._Forecast
+
+    @property
+    def forecaststr(self):
+        return self._ForecastStr
+
+    @property
+    def gust(self):
+        return self._Gust
+
+    @property
     def hardware(self):
         return self._Hardware
 
@@ -337,6 +449,10 @@ class Device:
     @property
     def humidity(self):
         return self._Humidity
+
+    @property
+    def humiditystatus(self):
+        return self._HumidityStatus
 
     @property
     def id(self):
@@ -367,12 +483,32 @@ class Device:
         return self._Level
 
     @property
+    def levelactions(self):
+        return self._LevelActions
+
+    @property
     def levelint(self):
         return self._LevelInt
 
     @property
+    def levelnames(self):
+        return self._LevelNames
+
+    @property
+    def leveloffhidden(self):
+        return self._LevelOffHidden
+
+    @property
     def maxdimlevel(self):
         return self._MaxDimLevel
+
+    @property
+    def mode(self):
+        return self._Mode
+
+    @property
+    def modes(self):
+        return self._Modes
 
     @property
     def name(self):
@@ -396,6 +532,10 @@ class Device:
         return self._Notifications
 
     @property
+    def options(self):
+        return self._Options
+
+    @property
     def planid(self):
         return self._PlanID
 
@@ -404,8 +544,32 @@ class Device:
         return self._PlanIDs
 
     @property
+    def pressure(self):
+        return self._Pressure
+
+    @property
     def protected(self):
         return self._Protected
+
+    @property
+    def quality(self):
+        return self._Quality
+
+    @property
+    def radiation(self):
+        return self._Radiation
+
+    @property
+    def rain(self):
+        return self._Rain
+
+    @property
+    def rainrate(self):
+        return self._RainRate
+
+    @property
+    def selectorstyle(self):
+        return self._SelectorStyle
 
     @property
     def sensortype(self):
@@ -420,12 +584,24 @@ class Device:
         return self._server
 
     @property
+    def setpoint(self):
+        return self._SetPoint
+
+    @property
     def shownotifications(self):
         return self._ShowNotifications
 
     @property
     def signallevel(self):
         return self._SignalLevel
+
+    @property
+    def speed(self):
+        return self._Speed
+
+    @property
+    def state(self):
+        return self._State
 
     @property
     def subtype(self):
@@ -440,10 +616,6 @@ class Device:
         return self._Timers
 
     @property
-    def title(self):
-        return self._title
-
-    @property
     def type(self):
         return self._Type
 
@@ -454,6 +626,18 @@ class Device:
     @property
     def unit(self):
         return self._Unit
+
+    @property
+    def until(self):
+        return self._Until
+
+    @property
+    def usage(self):
+        return self._Usage
+
+    @property
+    def usagedeliv(self):
+        return self._UsageDeliv
 
     @property
     # For some reason this attribute in Domoticz is an 'int'. Boolean is more logical.
@@ -481,6 +665,22 @@ class Device:
             self._api_title = res.get("title", self._server._return_empty)
             if self._api_status == self._server._return_ok:
                 self._Used = int_value
+
+    @property
+    def uvi(self):
+        return self._UVI
+
+    @property
+    def valuequantity(self):
+        return self._ValueQuantity
+
+    @property
+    def valueunits(self):
+        return self._ValueUnits
+
+    @property
+    def visibilty(self):
+        return self._Visibility
 
     @property
     def voltage(self):
