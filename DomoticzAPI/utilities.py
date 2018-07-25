@@ -8,7 +8,6 @@ __version_micro__ = 2
 __version__ = "{}.{}.{}".format(__version_major__, __version_minor__, __version_micro__)
 
 
-
 def machine():
     return platform.machine()
 
