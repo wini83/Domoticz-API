@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from urllib.parse import quote
-'''
+
+"""
     Hardware
-'''
+"""
 
 
 class Hardware:
-
+    """
+    The Hardware class represents the Domoticz hardware
+    """
     _type_hardware = "hardware"
 
     _param_add_hardware = "addhardware"
@@ -74,7 +77,8 @@ class Hardware:
             self._initHardware()
 
     def __str__(self):
-        return "{}({}, {}: \"{}\", {})".format(self.__class__.__name__, str(self.server), self.idx, self.name, self.type)
+        return "{}({}, {}: \"{}\", {})".format(self.__class__.__name__, str(self.server), self.idx, self.name,
+                                               self.type)
 
     # ..........................................................................
     # Private methods
@@ -309,7 +313,7 @@ class Hardware:
 
     @name.setter
     def name(self, value):
-       self._Name = str(value)
+        self._Name = str(value)
 
     @property
     def password(self):

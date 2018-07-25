@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 from .server import *
 from urllib.parse import quote
-'''
+
+"""
     Notification
-'''
+"""
 
 
 class Notification:
-
     _param_notification = "sendnotification"
 
     _subsystems = {
@@ -56,14 +56,14 @@ class Notification:
 
     def send(self):
         if self._server is not None and self._subject is not None and self._body is not None:
-            querystring = self._server._param.format(self._param_notification) + "&subject={}&body={}".format(quote(self._subject), quote(self._body))
+            querystring = self._server._param.format(self._param_notification) + "&subject={}&body={}".format(
+                quote(self._subject), quote(self._body))
             if self._subsystem is not None:
                 querystring += "&subsystem={}".format(self._subsystem)
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
             self._api_status = res.get("status", self._server._return_error)
             self._api_title = res.get("title", self._server._return_empty)
-
 
     # ..........................................................................
     # Properties

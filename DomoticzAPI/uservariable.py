@@ -142,7 +142,7 @@ class UserVariable:
         if not self.exists():
             if len(self._name) > 0 and len(self._type) > 0 and len(self._value) > 0:
                 querystring = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_save_user_variable, self._name,
-                                                                        self._typenum, self._value)
+                                                                            self._typenum, self._value)
                 self._api_querystring = querystring
                 res = self._server._call_command(querystring)
                 self._api_status = res["status"] if res.get("status") else ""
@@ -154,7 +154,7 @@ class UserVariable:
     def update(self):
         if self.exists():
             querystring = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_update_user_variable, self._name,
-                                                                    self._typenum, self._value)
+                                                                        self._typenum, self._value)
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
             self._api_status = res.get("status", self._server._return_error)
