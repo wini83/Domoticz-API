@@ -4,7 +4,7 @@ import DomoticzAPI as dom
 
 
 def main():
-    server = dom.Server(address="192.168.0.16", port="8080")
+    server = dom.Server()
     print("{}: {} - {}".format(server, server.api_status, server.api_title))
     dev1 = dom.Device(server, 62)
     print("Name: " + dev1.name)
