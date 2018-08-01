@@ -4,13 +4,13 @@ from .server import *
 from .hardware import *
 import datetime
 from urllib.parse import quote
+
 """
     Device class
 """
 
 
 class Device:
-
     _type_devices = "devices"
     _type_create_device = "createdevice"
     _type_create_dummy = "createvirtualsensor"
@@ -78,7 +78,7 @@ class Device:
         if self._idx is not None:
             querystring = "type=devices&rid={}".format(self._idx)
         elif self._Name is not None:
-            querystring = "type=devices&filter=all&used=true&order=Name"
+            querystring = "type=devices&filter=all"
         else:
             querystring = ""
         self._api_querystring = querystring
@@ -87,7 +87,8 @@ class Device:
         self._api_title = res.get("title", self._server._return_empty)
         myDict = {}
         if self._api_status == self._server._return_ok:
-            self._server._ActTime = res.get("ActTime")  # for some reason only given in device calls. No idea about the meaning!
+            self._server._ActTime = res.get(
+                "ActTime")  # for some reason only given in device calls. No idea about the meaning!
             # Update the server properties.
             self._server._AstrTwilightEnd = res.get("AstrTwilightEnd")
             self._server._AstrTwilightStart = res.get("AstrTwilightStart")
@@ -100,14 +101,12 @@ class Device:
             self._server._SunAtSouth = res.get("SunAtSouth")
             self._server._DayLength = res.get("DayLength")
             self._server._ServerTime = res.get("ServerTime")
-            result = res.get("result")
-            if result is not None:
-                if len(result) > 0:
-                    for resDict in result:
-                        if (self._idx is not None and resDict.get("idx") == self._idx) \
-                        or (self._Name is not None and resDict.get("Name") == self._Name):
-                            myDict = resDict
-                            break
+            if res.get("result"):
+                for resDict in res["result"]:
+                    if (self._idx is not None and int(resDict.get("idx")) == self._idx) \
+                            or (self._Name is not None and resDict.get("Name") == self._Name):
+                        myDict = resDict
+                        break
         self._AddjMulti = myDict.get("AddjMulti")
         self._AddjMulti2 = myDict.get("AddjMulti2")
         self._AddjValue = myDict.get("AddjValue")
@@ -248,7 +247,7 @@ class Device:
                 self._idx = None
 
     def exists(self):
-        return self._idx is not None and self._Hardware is not None
+        return not (self._idx is None and self._Hardware is None)
 
     def hasBattery(self):
         return not (self._BatteryLevel is None or self._BatteryLevel == 255)
@@ -693,4 +692,3 @@ class Device:
     @property
     def yoffset(self):
         return self._YOffset
-

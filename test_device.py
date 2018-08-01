@@ -6,7 +6,7 @@ from datetime import datetime
 def main():
     server = dom.Server()
     print("Existing device")
-    dev1 = dom.Device(server, 2)
+    dev1 = dom.Device(server, 7)
     print(dev1.hardware)
     print("server.act_time: " + str(server.act_time))
     print("API Status: " + dev1.api_status)
@@ -23,14 +23,14 @@ def main():
     else:
         print("Device " + str(dev1.idx) + " doesn't exists or is disabled")
 
-    print("\n")
+    print("\r")
     print("Non existing device")
-    dev2 = dom.Device(server, name="PiMonitor - Connections")
+    dev2 = dom.Device(server, name="xyz")
     print(dev2)
     if dev2.exists():
         print("Value: " + str(dev2.data))
 
-    print("\n")
+    print("\r")
     print("Create new hardware")
     hw3 = dom.Hardware(server, type=15, name="Test 3 Hardware")  # Dummy hardware
     hw3.add()
