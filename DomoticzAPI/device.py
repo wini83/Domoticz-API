@@ -20,6 +20,7 @@ class Device:
     _param_make_favorite = "makefavorite"
     _param_rename_device = "renamedevice"
     _param_update_device = "udevice"
+    _param_set_color_brightness = "setcolbrightnessvalue"
 
     _int_value_off = 0
     _int_value_on = 1
