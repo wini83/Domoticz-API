@@ -204,10 +204,7 @@ class Device:
             hw = Hardware(self._server, idx=HardwareID)
             if hw.exists():
                 self._Hardware = hw
-                # Following 3 values should be in de hardware class
-                # self._HardwareName = myDict.get("HardwareName")
                 self._Hardware._HardwareType = myDict.get("HardwareType")
-                # self._HardwareTypeVal = myDict.get("HardwareTypeVal")
             else:
                 self._Hardware = None
 
@@ -244,11 +241,11 @@ class Device:
             self._api_status = res.get("status", self._server._return_error)
             self._api_title = res.get("title", self._server._return_empty)
             if self._api_status == self._server._return_ok:
-                # self._Hardware = None
+                self._Hardware = None
                 self._idx = None
 
     def exists(self):
-        return not (self._idx is None and self._Hardware is None)
+        return not (self._idx is None or self._Hardware is None)
 
     def hasBattery(self):
         return not (self._BatteryLevel is None or self._BatteryLevel == 255)

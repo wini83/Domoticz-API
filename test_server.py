@@ -5,7 +5,10 @@ from datetime import datetime
 
 
 def main():
-    # server = dom.Server(address="192.168.0.13", port="8080")
+    print("********************************************************************************")
+    print("DomoticzAPI: test_server")
+    print("********************************************************************************")
+    # server = dom.Server(address="localhost", port="8080")
     server = dom.Server()
     # server = dom.Server(user="user", password="password")
     if server.api_status == server._return_ok:
@@ -28,6 +31,7 @@ def main():
         res = server.os_command("/opt/vc/bin/vcgencmd", "measure_temp")
         print("CPU temperature: " + res.split("=")[1][:-3])
     else:
+        print("Server not found!!!")
         print(server.api_message)
 
 

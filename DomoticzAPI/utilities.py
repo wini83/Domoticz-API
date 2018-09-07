@@ -66,3 +66,15 @@ def TempC2F(value):
 # Temperature conversion from Fahrenheit to Celsius
 def TempF2C(value):
     return (value - 32) / 1.8
+
+# Convert bearing in degrees to a direction
+def Bearing2Status(d):
+    """
+    Based on https://gist.github.com/RobertSudwarts/acf8df23a16afdb5837f
+    """
+    dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
+
+    count = len(dirs)  # Number of entries in list
+    step = 360 / count  # Wind direction is in steps of 22.5 degrees (360/16)
+    ix = int((d + (step / 2)) / step)  # Calculate index in the list
+    return dirs[ix % count]
