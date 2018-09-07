@@ -7,6 +7,7 @@ def main():
     print("********************************************************************************")
     print("DomoticzAPI: test_utilities")
     print("********************************************************************************")
+
     print("\r")
     print("********************************************************************************")
     print("API properties")
@@ -19,6 +20,7 @@ def main():
     print("OS Version ............ : {}".format(dom.os_version()))
     print("OS Release ............ : {}".format(dom.os_release()))
     print("Python version ........ : {}".format(dom.python_version()))
+
     print("\r")
     print("********************************************************************************")
     print("Temperature conversion")
@@ -33,6 +35,7 @@ def main():
     print("0 F ................... : {} C".format(dom.TempF2C(0)))
     print("68 F .................. : {} C".format(dom.TempF2C(68)))
     print("100 F ................. : {} C".format(dom.TempF2C(100)))
+
     print("\r")
     print("********************************************************************************")
     print("Bearing conversion")
@@ -44,14 +47,22 @@ def main():
     print("360 ................... : {}".format(dom.Bearing2Status(360)))
     print("450 ................... : {}".format(dom.Bearing2Status(450)))
     print("40 .................... : {}".format(dom.Bearing2Status(40)))
+
     print("\r")
     print("********************************************************************************")
-    print("OS commands (unix)")
+    print("OS commands (Unix)")
     print("********************************************************************************")
     res = dom.os_command("/opt/vc/bin/vcgencmd", "measure_temp")
-    print("CPU temperature: " + res.split("=")[1][:-3])
+    print("CPU temperature: {}".format(res.split("=")[1][:-3]))
     res = dom.os_command("ls", "-al")
-    print("ls: " + str(res))
+    print("ls:\n{}".format(res))
+
+    print("\r")
+    print("********************************************************************************")
+    print("OS commands (Windows)")
+    print("********************************************************************************")
+    res = dom.os_command("vol", "")
+    print("vol:\n{}".format(res))
 
 
 if __name__ == "__main__":

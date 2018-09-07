@@ -187,6 +187,9 @@ class Server:
         return self._api_status == self._return_ok
 
     def logmessage(self, text):
+        """
+            Send text to the Domoticz log
+        """
         if self.exists():
             querystring = self._param.format(self._param_log) + "&message={}".format(quote(text))
             self._api_querystring = querystring
@@ -194,14 +197,20 @@ class Server:
             self._api_status = res.get("status", self._return_error)
             self._api_title = res.get("title", self._return_empty)
 
-    def os_command(self, command, options):
+    def os_command(self, command, options=None):
+        """
+           Execute OS command and returns result. If an error occurs, None is returned 
+        """
         try:
-            p = subprocess.Popen(command + " " + options, shell=True, stdout=subprocess.PIPE)
+            if options is None:
+                options = ""
+            p = subprocess.Popen(command + " " + options, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             p.wait()
             data, errors = p.communicate()
             if p.returncode != 0:
-                pass
-            result = data.decode("utf-8", "ignore")
+                result = None
+            else:
+                result = data.decode("utf-8", "ignore")
         except:
             result = None
         return result
