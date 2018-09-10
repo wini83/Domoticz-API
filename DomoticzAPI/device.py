@@ -11,6 +11,7 @@ from urllib.parse import quote
 
 
 class Device:
+
     _type_devices = "devices"
     _type_create_device = "createdevice"
     _type_create_dummy = "createvirtualsensor"
@@ -33,6 +34,18 @@ class Device:
     _int_value_on = 1
 
     def __init__(self, server, *args, **kwargs):
+        """
+            Args:
+                server (Server): Domoticz server object where to maintain the user variable            
+                    idx (:obj:`int`, optional): ID of an existing device
+                or
+                    hardware (:obj:`obj`, optional): Hardware to add device
+                    name (:obj:`str`, optional): Name of the device
+                        type (:obj:`int`, optional): Device type
+                        subtype (:obj:`int`, optional): Subtype of device
+                    or 
+                        typename (:obj:`str`, optional): Type name of the device
+        """
         self._idx = None
         self._Hardware = None
         self._Name = None
@@ -230,14 +243,12 @@ class Device:
                 and self._Type is not None \
                 and self._SubType is not None:
             # type=createdevice&idx=IDX&sensorname=SENSORNAME&devicetype=DEVICETYPE&devicesubtype=SUBTYPE
-            querystring = "type={}".format(self._type_create_device)
-            querystring += "&idx={}".format(self._Hardware._idx)
-            querystring += "&sensorname={}".format(quote(self._Name))
-            querystring += "&devicetype={}".format(self._Type)
-            querystring += "&devicesubtype={}".format(self._SubType)
+            querystring = "type={}&idx={}&sensorname={}&devicetype={}&devicesubtype={}".format(
+                self._type_create_device, self._Hardware._idx, quote(self._Name), self._Type, self._SubType)
             self._api_querystring = querystring
             res = self._server._call_api(querystring)
-            self._api_status = res.get("status", self._server._return_error)
+            self._api_status = res.get(
+                "status", self._server._return_error)[:3]
             self._api_title = res.get("title", self._server._return_empty)
             if self._api_status == self._server._return_ok:
                 self._idx = res.get("idx", None)
@@ -246,10 +257,12 @@ class Device:
     def delete(self):
         if self.exists():
             # type=deletedevice&idx=29
-            querystring = "type={}&idx={}".format(self._type_delete_device, self._idx)
+            querystring = "type={}&idx={}".format(
+                self._type_delete_device, self._idx)
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
+            self._api_status = res.get(
+                "status", self._server._return_error)[:3]
             self._api_title = res.get("title", self._server._return_empty)
             if self._api_status == self._server._return_ok:
                 self._Hardware = None
@@ -285,12 +298,14 @@ class Device:
     def update(self, nvalue=0, svalue=""):
         # type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
         if self.exists():
-            querystring = "param={}&idx={}&nvalue={}".format(self._param_update_device, self._idx, nvalue)
+            querystring = "param={}&idx={}&nvalue={}".format(
+                self._param_update_device, self._idx, nvalue)
             if len(svalue) > 0:
                 querystring += "&svalue={}".format(svalue)
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
+            self._api_status = res.get(
+                "status", self._server._return_error)[:3]
             self._api_title = res.get("title", self._server._return_empty)
             self._initDevice()
 
@@ -301,11 +316,14 @@ class Device:
                     # type=command&param=switchlight&idx=IDX&switchcmd=On
                     # type=command&param=switchlight&idx=IDX&switchcmd=Off
                     # type=command&param=switchlight&idx=IDX&switchcmd=Toggle
-                    querystring = "param={}&idx={}&switchcmd={}".format(self._param_switch_light, self._idx, value)
+                    querystring = "param={}&idx={}&switchcmd={}".format(
+                        self._param_switch_light, self._idx, value)
                     self._api_querystring = querystring
                     res = self._server._call_command(querystring)
-                    self._api_status = res.get("status", self._server._return_error)
-                    self._api_title = res.get("title", self._server._return_empty)
+                    self._api_status = res.get(
+                        "status", self._server._return_error)[:3]
+                    self._api_title = res.get(
+                        "title", self._server._return_empty)
                     self._initDevice()
 
     # ..........................................................................
@@ -437,7 +455,8 @@ class Device:
             else:
                 int_value = self._int_value_off
             querystring = self._server._param.format(self._param_make_favorite)
-            querystring += "&idx={}&isfavorite={}".format(self._idx, str(int_value))
+            querystring += "&idx={}&isfavorite={}".format(
+                self._idx, str(int_value))
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
             self._api_status = res.get("status", self._server._return_error)
@@ -546,7 +565,8 @@ class Device:
         if self.exists():
             # json.htm?type=command&param=renamedevice&idx=idx&name=
             querystring = self._server._param.format(self._param_rename_device)
-            querystring += "&idx={}&name={}".format(self._idx, quote(str(value)))
+            querystring += "&idx={}&name={}".format(
+                self._idx, quote(str(value)))
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
             self._api_status = res.get("status", self._server._return_error)
@@ -685,7 +705,8 @@ class Device:
                 int_value = self._int_value_off
                 str_value = "false"
             # json.htm?type=setused&idx=IDX&used=true|false
-            querystring = "type={}&idx={}&used={}".format(self._type_set_used, self._idx, str_value)
+            querystring = "type={}&idx={}&used={}".format(
+                self._type_set_used, self._idx, str_value)
             self._api_querystring = querystring
             res = self._server._call_api(querystring)
             self._api_status = res.get("status", self._server._return_error)

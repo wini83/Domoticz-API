@@ -42,10 +42,13 @@ def main():
         if dev3.exists():
             print("Switch succesfully created")
             print("Status: {}".format(dev3.data))
+            print("Switch device: On")
             dev3.switch("On")
             print("Status: {}".format(dev3.data))
+            print("Switch device: Off")
             dev3.switch("Off")
             print("Status: {}".format(dev3.data))
+            print("Switch device: Toggle")
             dev3.switch("Toggle")
             print("Status: {}".format(dev3.data))
     # Cleanup test data
