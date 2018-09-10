@@ -20,7 +20,14 @@ class Device:
     _param_make_favorite = "makefavorite"
     _param_rename_device = "renamedevice"
     _param_update_device = "udevice"
+    _param_switch_light = "switchlight"
     _param_set_color_brightness = "setcolbrightnessvalue"
+
+    switch_light_values = {
+        "On",
+        "Off",
+        "Toggle",
+    }
 
     _int_value_off = 0
     _int_value_on = 1
@@ -88,8 +95,8 @@ class Device:
         self._api_title = res.get("title", self._server._return_empty)
         myDict = {}
         if self._api_status == self._server._return_ok:
-            self._server._ActTime = res.get(
-                "ActTime")  # for some reason only given in device calls. No idea about the meaning!
+            # For some reason next property is only given in device calls. No idea about the meaning!
+            self._server._ActTime = res.get("ActTime")
             # Update the server properties.
             self._server._AstrTwilightEnd = res.get("AstrTwilightEnd")
             self._server._AstrTwilightStart = res.get("AstrTwilightStart")
@@ -102,12 +109,16 @@ class Device:
             self._server._SunAtSouth = res.get("SunAtSouth")
             self._server._DayLength = res.get("DayLength")
             self._server._ServerTime = res.get("ServerTime")
+            # Search for the given device
             if res.get("result"):
                 for resDict in res["result"]:
                     if (self._idx is not None and int(resDict.get("idx")) == self._idx) \
                             or (self._Name is not None and resDict.get("Name") == self._Name):
+                        # Found device :)
                         myDict = resDict
                         break
+        # Update device properties
+        # The list below may be not complete!!!
         self._AddjMulti = myDict.get("AddjMulti")
         self._AddjMulti2 = myDict.get("AddjMulti2")
         self._AddjValue = myDict.get("AddjValue")
@@ -245,9 +256,15 @@ class Device:
                 self._idx = None
 
     def exists(self):
+        """
+            Check if device exists in Domoticz
+        """
         return not (self._idx is None or self._Hardware is None)
 
     def hasBattery(self):
+        """
+            Check if this device is using a battery
+        """
         return not (self._BatteryLevel is None or self._BatteryLevel == 255)
 
     def isDimmer(self):
@@ -266,17 +283,30 @@ class Device:
         return self._Humidity is not None
 
     def update(self, nvalue=0, svalue=""):
-        # /json.htm?type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
+        # type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
         if self.exists():
-            querystring = "param={}".format(self._param_update_device)
-            querystring += "&idx={}".format(self._idx)
-            querystring += "&nvalue={}".format(nvalue)
+            querystring = "param={}&idx={}&nvalue={}".format(self._param_update_device, self._idx, nvalue)
             if len(svalue) > 0:
                 querystring += "&svalue={}".format(svalue)
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
             self._api_status = res.get("status", self._server._return_error)
             self._api_title = res.get("title", self._server._return_empty)
+            self._initDevice()
+
+    def switch(self, value):
+        if self.exists():
+            if self.isSwitch():
+                if value in self.switch_light_values:
+                    # type=command&param=switchlight&idx=IDX&switchcmd=On
+                    # type=command&param=switchlight&idx=IDX&switchcmd=Off
+                    # type=command&param=switchlight&idx=IDX&switchcmd=Toggle
+                    querystring = "param={}&idx={}&switchcmd={}".format(self._param_switch_light, self._idx, value)
+                    self._api_querystring = querystring
+                    res = self._server._call_command(querystring)
+                    self._api_status = res.get("status", self._server._return_error)
+                    self._api_title = res.get("title", self._server._return_empty)
+                    self._initDevice()
 
     # ..........................................................................
     # Properties

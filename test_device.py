@@ -26,7 +26,6 @@ def main():
     print("********************************************************************************")
     hw3 = dom.Hardware(server, type=15, name="Test Hardware")  # Dummy hardware
     hw3.add()
-    print(hw3)
     print("{}: {} - {}".format(hw3, hw3.api_status, hw3.api_title))
 
     if hw3.exists():
@@ -34,15 +33,23 @@ def main():
         print("********************************************************************************")
         print("Add device to new hardware")
         print("********************************************************************************")
-        print("hw3: " + str(hw3))
-        dev3 = dom.Device(server, hw3, "Test Device", type=243, subtype=8)
+        dev3 = dom.Device(server, hw3, "Test Device", type=244, subtype=73)  # Switch
         print("dev3.hardware: " + str(dev3.hardware))
         print("{}: {} - {}".format(dev3, dev3.api_status, dev3.api_title))
 
         dev3.add()
         print("{}: {} - {}".format(dev3, dev3.api_status, dev3.api_title))
-        # print(dev3.__dict__)
-        hw3.delete()
+        if dev3.exists():
+            print("Switch succesfully created")
+            print("Status: {}".format(dev3.data))
+            dev3.switch("On")
+            print("Status: {}".format(dev3.data))
+            dev3.switch("Off")
+            print("Status: {}".format(dev3.data))
+            dev3.switch("Toggle")
+            print("Status: {}".format(dev3.data))
+    # Cleanup test data
+    hw3.delete()
 
 if __name__ == "__main__":
     main()

@@ -17,6 +17,7 @@ Please look at the `test_*.py`-examples how to use this api. The `plugin.py` con
 | [Device](https://github.com/Xorfor/Domoticz-API/wiki/Device)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 | [UserVariable](https://github.com/Xorfor/Domoticz-API/wiki/UserVariable) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 | [Notification](https://github.com/Xorfor/Domoticz-API/wiki/Notification) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [Color](https://github.com/Xorfor/Domoticz-API/wiki/Color) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 | Scene                                                                    | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
 | Group                                                                    | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
 | RoomPlan                                                                 | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
