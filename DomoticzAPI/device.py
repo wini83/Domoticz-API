@@ -320,15 +320,11 @@ class Device:
                     # type=command&param=switchlight&idx=IDX&switchcmd=On
                     # type=command&param=switchlight&idx=IDX&switchcmd=Off
                     # type=command&param=switchlight&idx=IDX&switchcmd=Toggle
-                    # type=command&param=switchlight&idx=IDX&switchcmd=Set%20Level&level=LEVEL
                     querystring = "param={}&idx={}&switchcmd={}".format(
                         self._param_switch_light,
                         self._idx,
-                        quote(value)
+                        value
                         )
-                    if value == self.switchSetLevel:
-                        print("MaxDimLevel: {}".format(self.maxdimlevel))
-                        querystring += "&level={}".format(level)
                     self._api_querystring = querystring
                     res = self._server._call_command(querystring)
                     self._api_status = res.get(

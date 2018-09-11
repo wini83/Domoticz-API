@@ -21,3 +21,10 @@ Please look at the `test_*.py`-examples how to use this api. The `plugin.py` con
 | Scene                                                                    | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
 | Group                                                                    | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
 | RoomPlan                                                                 | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
+
+## History
+
+| Version | Description
+| :---    | :---
+| 0.4.1   | Code cleanup
+| 0.4.0   | Added ability to switch on, off or toggle (switch) devices and set the level for a light switch.
