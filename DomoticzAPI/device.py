@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from .server import *
 from .hardware import *
-import datetime
 from urllib.parse import quote
 
 """
@@ -24,10 +23,15 @@ class Device:
     _param_switch_light = "switchlight"
     _param_set_color_brightness = "setcolbrightnessvalue"
 
+    switchOn = "On"
+    switchOff = "Off"
+    switchToggle = "Toggle"
+    switchSetLevel = "Set Level"
+    
     switch_light_values = {
-        "On",
-        "Off",
-        "Toggle",
+        switchOn,
+        switchOff,
+        switchToggle,
     }
 
     _int_value_off = 0
@@ -309,15 +313,22 @@ class Device:
             self._api_title = res.get("title", self._server._return_empty)
             self._initDevice()
 
-    def switch(self, value):
+    def updateSwitch(self, value, level=0):
         if self.exists():
             if self.isSwitch():
                 if value in self.switch_light_values:
                     # type=command&param=switchlight&idx=IDX&switchcmd=On
                     # type=command&param=switchlight&idx=IDX&switchcmd=Off
                     # type=command&param=switchlight&idx=IDX&switchcmd=Toggle
+                    # type=command&param=switchlight&idx=IDX&switchcmd=Set%20Level&level=LEVEL
                     querystring = "param={}&idx={}&switchcmd={}".format(
-                        self._param_switch_light, self._idx, value)
+                        self._param_switch_light,
+                        self._idx,
+                        quote(value)
+                        )
+                    if value == self.switchSetLevel:
+                        print("MaxDimLevel: {}".format(self.maxdimlevel))
+                        querystring += "&level={}".format(level)
                     self._api_querystring = querystring
                     res = self._server._call_command(querystring)
                     self._api_status = res.get(
@@ -527,6 +538,24 @@ class Device:
     @property
     def level(self):
         return self._Level
+
+    @level.setter
+    def level(self, value):
+        if self.isSwitch():
+            # type=command&param=switchlight&idx=IDX&switchcmd=Set%20Level&level=LEVEL
+            querystring = "param={}&idx={}&switchcmd={}&level={}".format(
+                self._param_switch_light,
+                self._idx,
+                quote(self.switchSetLevel),
+                value
+                )
+            self._api_querystring = querystring
+            res = self._server._call_command(querystring)
+            self._api_status = res.get(
+                "status", self._server._return_error)[:3]
+            self._api_title = res.get(
+                "title", self._server._return_empty)
+            self._initDevice()
 
     @property
     def levelactions(self):
