@@ -17,7 +17,7 @@
           ww: # Range: 0 .. 255, Warm white level (also used as level for monochrome white)
         }
 """
-import ast
+from ast import literal_eval
 
 
 class Color:
@@ -26,7 +26,8 @@ class Color:
     _ColorModeWhite = 1  # White. Valid fields: none
     _ColorModeTemp = 2  # White with color temperature. Valid fields: t
     _ColorModeRGB = 3  # Color. Valid fields: r, g, b.
-    _ColorModeCustom = 4  # Custom (color + white). Valid fields: r, g, b, cw, ww, depending on device capabilities
+    # Custom (color + white). Valid fields: r, g, b, cw, ww, depending on device capabilities
+    _ColorModeCustom = 4
     _ColorModeFirst = _ColorModeNone
     _ColorModeLast = _ColorModeCustom
 
@@ -38,7 +39,8 @@ class Color:
         self._b = 0
         self._cw = 0
         self._ww = 0
-        myDict = ast.literal_eval(kwargs.get("color"))
+        myDict = literal_eval(kwargs.get("color"))
+        #  myDict = kwargs.get("color")
         if myDict is not None:
             self.m = myDict.get("m", 0)
             self.t = myDict.get("t", 0)
@@ -55,6 +57,29 @@ class Color:
             self.b = kwargs.get("b", 0)
             self.cw = kwargs.get("cw", 0)
             self.ww = kwargs.get("ww", 0)
+
+    def __str__(self):
+        return "{}(m: {}, t: {}, r: {}, g: {}, b: {}, cw: {}, ww: {})".format(self.__class__.__name__,
+                                                                              self._m,
+                                                                              self._t,
+                                                                              self._r,
+                                                                              self._g,
+                                                                              self._b,
+                                                                              self._cw,
+                                                                              self._ww
+                                                                              )
+
+    # ..........................................................................
+    # Private methods
+    # ..........................................................................
+
+     # ..........................................................................
+    # Public methods
+    # ..........................................................................
+
+   # ..........................................................................
+    # Properties
+    # ..........................................................................
 
     @property
     def color(self):

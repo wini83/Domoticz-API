@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import DomoticzAPI as dom
 from datetime import datetime
+import time
 
 def main():
     print("********************************************************************************")
@@ -56,6 +57,15 @@ def main():
             dev3.level = 50
             print("Level: {}".format(dev3.level))
             print("Status: {}".format(dev3.data))
+            # Check Color class
+            temp_t = dev3.color.t
+            new_color = dev3.color
+            for x in range(0, 255, 10):
+                new_color.t = x
+                dev3.color = new_color
+                time.sleep(1)
+            new_color.t = temp_t
+            dev3.color = new_color
     # Cleanup test data
     hw3.delete()
 

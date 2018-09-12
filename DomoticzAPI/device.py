@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from .server import *
 from .hardware import *
+from .color import *
 from urllib.parse import quote
 
 """
@@ -27,7 +28,7 @@ class Device:
     switchOff = "Off"
     switchToggle = "Toggle"
     switchSetLevel = "Set Level"
-    
+
     switch_light_values = {
         switchOn,
         switchOff,
@@ -144,7 +145,7 @@ class Device:
         self._BatteryLevel = myDict.get("BatteryLevel", 255)
         self._CameraIdx = myDict.get("CameraIdx")
         self._Chill = myDict.get("Chill")
-        self._Color = myDict.get("Color")
+        self._Color = Color(color=myDict.get("Color", "{}"))
         self._Counter = myDict.get("Counter")
         self._CounterDeliv = myDict.get("CounterDeliv")
         self._CounterDelivToday = myDict.get("CounterDelivToday")
@@ -324,7 +325,7 @@ class Device:
                         self._param_switch_light,
                         self._idx,
                         value
-                        )
+                    )
                     self._api_querystring = querystring
                     res = self._server._call_command(querystring)
                     self._api_status = res.get(
@@ -384,6 +385,25 @@ class Device:
     @property
     def color(self):
         return self._Color
+
+    @color.setter
+    def color(self, value):
+        if isinstance(value, Color) and self.exists():
+            if self.isSwitch():
+                # type=command&param=setcolbrightnessvalue&idx=IDX&color=COLOR&brightness=LEVEL
+                querystring = "param={}&idx={}&color={}&brightness={}".format(
+                    self._param_set_color_brightness,
+                    self._idx,
+                    quote(value.color),
+                    self._Level
+                )
+                self._api_querystring = querystring
+                res = self._server._call_command(querystring)
+                self._api_status = res.get(
+                    "status", self._server._return_error)[:3]
+                self._api_title = res.get(
+                    "title", self._server._return_empty)
+                self._initDevice()
 
     @property
     def counter(self):
@@ -544,7 +564,7 @@ class Device:
                 self._idx,
                 quote(self.switchSetLevel),
                 value
-                )
+            )
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
             self._api_status = res.get(
