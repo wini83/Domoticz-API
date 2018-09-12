@@ -26,5 +26,6 @@ Please look at the `test_*.py`-examples how to use this api. The `plugin.py` con
 
 | Version | Description
 | :---    | :---
+| 0.4.2   | Implemented Color class in Device
 | 0.4.1   | Code cleanup
 | 0.4.0   | Added ability to switch on, off or toggle (switch) devices and set the level for a light switch.
