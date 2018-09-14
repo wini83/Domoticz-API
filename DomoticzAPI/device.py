@@ -172,6 +172,7 @@ class Device:
         self._HumidityStatus = myDict.get("HumidityStatus")
         self._ID = myDict.get("ID")
         self._idx = myDict.get("idx", self._idx)
+        self._isDimmer = myDict.get("isDimmer")
         self._Image = myDict.get("Image")
         self._InternalState = myDict.get("InternalState")
         self._IsSubDevice = myDict.get("IsSubDevice")
@@ -286,7 +287,7 @@ class Device:
         return not (self._BatteryLevel is None or self._BatteryLevel == 255)
 
     def isDimmer(self):
-        return self.isSwitch() and self._SwitchType == "Dimmer"
+        return ((self.isSwitch() and self._SwitchType == "Dimmer") or (self._isDimmer == True))
 
     def isFavorite(self):
         return not (self._Favorite is None or self._Favorite == 0)
