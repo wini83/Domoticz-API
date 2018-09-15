@@ -17,13 +17,14 @@ class Device:
     _type_create_dummy = "createvirtualsensor"
     _type_delete_device = "deletedevice"
     _type_set_used = "setused"
-
     _param_make_favorite = "makefavorite"
     _param_rename_device = "renamedevice"
     _param_update_device = "udevice"
     _param_switch_light = "switchlight"
     _param_set_color_brightness = "setcolbrightnessvalue"
+    _param_reset_security_status = "resetsecuritystatus"
 
+    # Parameters used for: setcolbrightnessvalue
     switchOn = "On"
     switchOff = "Off"
     switchToggle = "Toggle"
@@ -33,6 +34,15 @@ class Device:
         switchOn,
         switchOff,
         switchToggle,
+    }
+
+    # Parameters used for: resetsecuritystatus
+    switchNormal = "Normal"
+    switchPanicEnd = "Panic End"
+
+    switch_reset_security_statuses = {
+        switchPanicEnd,
+        switchNormal,
     }
 
     _int_value_off = 0
@@ -172,7 +182,10 @@ class Device:
         self._HumidityStatus = myDict.get("HumidityStatus")
         self._ID = myDict.get("ID")
         self._idx = myDict.get("idx", self._idx)
-        self._isDimmer = myDict.get("isDimmer")
+        # Next property available with:
+        #     type=command&param=getlightswitches
+        #     type=devices&filter=light&used=true&order=Name
+        self._isDimmer = myDict.get("IsDimmer")
         self._Image = myDict.get("Image")
         self._InternalState = myDict.get("InternalState")
         self._IsSubDevice = myDict.get("IsSubDevice")
@@ -300,6 +313,27 @@ class Device:
 
     def isHygrometer(self):
         return self._Humidity is not None
+
+    def resetSecurityStatus(self, value):
+        """
+            Reset security status for eg. Smoke detectors
+        """
+        if self.exists():
+            if self.isSwitch():
+                if value in self.switch_reset_security_statuses:
+                    # type=command&param=resetsecuritystatus&idx=IDX&switchcmd=VALUE
+                    querystring = "param={}&idx={}&switchcmd={}".format(
+                        self._param_reset_security_status,
+                        self._idx,
+                        value
+                    )
+                    self._api_querystring = querystring
+                    res = self._server._call_command(querystring)
+                    self._api_status = res.get(
+                        "status", self._server._return_error)[:3]
+                    self._api_title = res.get(
+                        "title", self._server._return_empty)
+                    self._initDevice()
 
     def update(self, nvalue=0, svalue=""):
         # type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
