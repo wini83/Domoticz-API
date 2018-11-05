@@ -25,7 +25,7 @@ class Server:
     _type = "type"
     _type_command = "command"
 
-    _url_command = _type + "=" + _type_command + "&"
+    _url_command = "{}={}&".format(_type, _type_command)
 
     # param parameter
     _param = "param={}"
@@ -51,7 +51,7 @@ class Server:
         self._password = kwargs.get("password")
         self._rights = self._rights_not_defined
         self._api_message = self._return_empty
-        self._url = "http://" + self._address + ":" + self._port + "/json.htm?"
+        self._url = "http://{}:{}/json.htm?".format(self._address, self._port)
         self._currentdate_dt = None
         # Check if authorization is required
         self._getAuth()
@@ -160,7 +160,7 @@ class Server:
     def __call_url(self, url, username="", password=""):
         command = "curl"
         if self._rights == self._rights_login_required:
-            command += " -u " + self._user + ":" + self._password
+            command += " -u {}:{}".format(self._user, self._password)
         command += " -s -X GET"
         options = "'" + url + "'"
         try:

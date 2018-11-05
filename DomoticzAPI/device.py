@@ -51,7 +51,7 @@ class Device:
     def __init__(self, server, *args, **kwargs):
         """
             Args:
-                server (Server): Domoticz server object where to maintain the user variable            
+                server (Server): Domoticz server object where to maintain the device            
                     idx (:obj:`int`, optional): ID of an existing device
                 or
                     hardware (:obj:`obj`, optional): Hardware to add device
