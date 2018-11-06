@@ -88,8 +88,7 @@ class Hardware:
         querystring = "type={}".format(self._type_hardware)
         self._api_querystring = querystring
         res = self._server._call_api(querystring)
-        self._api_status = res.get("status", self._server._return_error)
-        self._api_title = res.get("title", self._server._return_empty)
+        self._set_status(res)
         result = res.get("result")
         myDict = {}
         if len(result) > 0:
@@ -112,6 +111,11 @@ class Hardware:
         self.serialport = myDict.get("SerialPort")
         self.type = myDict.get("Type")
         self.username = myDict.get("Username")
+
+    def _set_status(self, r):
+        self._api_status = r.get("status", self._server._return_error)
+        self._api_title = r.get("title", self._server._return_empty)
+        self._api_message = r.get("message", self._server._return_empty)
 
     # ..........................................................................
     # Public methods
@@ -147,8 +151,7 @@ class Hardware:
                 querystring += "&username={}".format(self._Username) if self._Username is not None else ""
                 self._api_querystring = querystring
                 res = self._server._call_command(querystring)
-                self._api_status = res.get("status", self._server._return_error)
-                self._api_title = res.get("title", self._server._return_empty)
+                self._set_status(res)
                 if self._api_status == self._server._return_ok:
                     self._idx = int(res.get("idx"))
                     self._initHardware()
@@ -166,8 +169,7 @@ class Hardware:
             querystring += "&idx={}".format(self.idx)
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
+            self._set_status(res)
             if self._api_status == self._server._return_ok:
                 self._idx = None
 
@@ -201,8 +203,7 @@ class Hardware:
             querystring += "&username={}".format(self._Username) if self._Username is not None else ""
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
+            self._set_status(res)
 
     # **************************************************************************
     # Properties
@@ -215,6 +216,10 @@ class Hardware:
     @address.setter
     def address(self, value):
         self._Address = str(value) if value is not None else None
+
+    @property
+    def api_message(self):
+        return self._api_message
 
     @property
     def api_status(self):

@@ -86,8 +86,7 @@ class Server:
             self._api_title = "getAuth"
         else:
             self._rights = res.get("rights")
-            self._api_status = res.get("status", self._return_error)
-            self._api_title = res.get("title", self._return_empty)
+            self._set_status(res)
 
     def _getVersion(self):
         # json.htm?type=command&param=getversion
@@ -103,9 +102,7 @@ class Server:
         self._Revision = res.get("Revision")
         self._SystemName = res.get("SystemName")
         self._version = res.get("version")
-        #
-        self._api_status = res.get("status", self._return_error)
-        self._api_title = res.get("title", self._return_empty)
+        self._set_status(res)
 
     def _checkForUpdate(self):
         # json.htm?type=command&param=checkforupdate
@@ -117,9 +114,7 @@ class Server:
         self._Revision = res.get("Revision")
         self._SystemName = res.get("SystemName")
         self._statuscode = res.get("statuscode")
-        #
-        self._api_status = res.get("status", self._return_error)
-        self._api_title = res.get("title", self._return_empty)
+        self._set_status(res)
 
     def _getSunRiseSet(self, now=False):
         # json.htm?type=command&param=getSunRiseSet
@@ -142,9 +137,7 @@ class Server:
             self._SunAtSouth = res.get("SunAtSouth")
             self._DayLength = res.get("DayLength")
             self._ServerTime = res.get("ServerTime")
-            #
-            self._api_status = res.get("status", self._return_error)
-            self._api_title = res.get("title", self._return_empty)
+            self._set_status(res)
 
     def _getConfig(self):
         # json.htm?type=command&param=getconfig
@@ -172,6 +165,11 @@ class Server:
             self._api_status = self._return_error
             self._api_message = "Invalid call"
 
+    def _set_status(self, r):
+        self._api_status = r.get("status", self._return_error)
+        self._api_title = r.get("title", self._return_empty)
+        self._api_message = r.get("message", self._return_empty)
+
     # ..........................................................................
     # Global methods
     # ..........................................................................
@@ -194,8 +192,7 @@ class Server:
             querystring = self._param.format(self._param_log) + "&message={}".format(quote(text))
             self._api_querystring = querystring
             res = self._call_command(querystring)
-            self._api_status = res.get("status", self._return_error)
-            self._api_title = res.get("title", self._return_empty)
+            self._set_status(res)
 
     def os_command(self, command, options=None):
         """
@@ -220,16 +217,14 @@ class Server:
             querystring = self._param.format(self._param_reboot)
             self._api_querystring = querystring
             res = self._call_command(querystring)
-            self._api_status = res.get("status", self._return_error)
-            self._api_title = res.get("title", self._return_empty)
+            self._set_status(res)
 
     def shutdown(self):
         if self.exists():
             querystring = self._param.format(self._param_shutdown)
             self._api_querystring = querystring
             res = self._call_command(querystring)
-            self._api_status = res.get("status", self._return_error)
-            self._api_title = res.get("title", self._return_empty)
+            self._set_status(res)
 
     # ..........................................................................
     # Properties

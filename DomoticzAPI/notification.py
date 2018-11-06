@@ -9,6 +9,7 @@ from urllib.parse import quote
 
 
 class Notification:
+
     _param_notification = "sendnotification"
 
     _subsystems = {
@@ -50,6 +51,11 @@ class Notification:
         self._api_title = Server._return_empty
         self._api_querystring = Server._return_empty
 
+    def _set_status(self, r):
+        self._api_status = r.get("status", self._server._return_error)
+        self._api_title = r.get("title", self._server._return_empty)
+        self._api_message = r.get("message", self._server._return_empty)
+
     # ..........................................................................
     # Public methods
     # ..........................................................................
@@ -62,12 +68,15 @@ class Notification:
                 querystring += "&subsystem={}".format(self._subsystem)
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
+            self._set_status(res)
 
     # ..........................................................................
     # Properties
     # ..........................................................................
+
+    @property
+    def api_message(self):
+        return self._api_message
 
     @property
     def api_status(self):

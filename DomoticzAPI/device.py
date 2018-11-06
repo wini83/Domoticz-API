@@ -119,8 +119,7 @@ class Device:
             querystring = ""
         self._api_querystring = querystring
         res = self._server._call_api(querystring)
-        self._api_status = res.get("status", self._server._return_error)
-        self._api_title = res.get("title", self._server._return_empty)
+        self._set_status(res)
         myDict = {}
         if self._api_status == self._server._return_ok:
             # For some reason next property is only given in device calls. No idea about the meaning!
@@ -251,6 +250,11 @@ class Device:
             else:
                 self._Hardware = None
 
+    def _set_status(self, r):
+        self._api_status = r.get("status", self._server._return_error)
+        self._api_title = r.get("title", self._server._return_empty)
+        self._api_message = r.get("message", self._server._return_empty)
+
     # ..........................................................................
     # Public methods
     # ..........................................................................
@@ -266,9 +270,7 @@ class Device:
                 self._type_create_device, self._Hardware._idx, quote(self._Name), self._Type, self._SubType)
             self._api_querystring = querystring
             res = self._server._call_api(querystring)
-            self._api_status = res.get(
-                "status", self._server._return_error)[:3]
-            self._api_title = res.get("title", self._server._return_empty)
+            self._set_status(res)
             if self._api_status == self._server._return_ok:
                 self._idx = res.get("idx", None)
                 self._initDevice()
@@ -280,9 +282,7 @@ class Device:
                 self._type_delete_device, self._idx)
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get(
-                "status", self._server._return_error)[:3]
-            self._api_title = res.get("title", self._server._return_empty)
+            self._set_status(res)
             if self._api_status == self._server._return_ok:
                 self._Hardware = None
                 self._idx = None
@@ -329,10 +329,7 @@ class Device:
                     )
                     self._api_querystring = querystring
                     res = self._server._call_command(querystring)
-                    self._api_status = res.get(
-                        "status", self._server._return_error)[:3]
-                    self._api_title = res.get(
-                        "title", self._server._return_empty)
+                    self._set_status(res)
                     self._initDevice()
 
     def update(self, nvalue=0, svalue=""):
@@ -344,9 +341,7 @@ class Device:
                 querystring += "&svalue={}".format(svalue)
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get(
-                "status", self._server._return_error)[:3]
-            self._api_title = res.get("title", self._server._return_empty)
+            self._set_status(res)
             self._initDevice()
 
     def updateSwitch(self, value, level=0):
@@ -363,10 +358,7 @@ class Device:
                     )
                     self._api_querystring = querystring
                     res = self._server._call_command(querystring)
-                    self._api_status = res.get(
-                        "status", self._server._return_error)[:3]
-                    self._api_title = res.get(
-                        "title", self._server._return_empty)
+                    self._set_status(res)
                     self._initDevice()
 
     # ..........................................................................
@@ -388,6 +380,10 @@ class Device:
     @property
     def addjvalue2(self):
         return self._AddjValue2
+
+    @property
+    def api_message(self):
+        return self._api_message
 
     @property
     def api_status(self):
@@ -434,10 +430,7 @@ class Device:
                 )
                 self._api_querystring = querystring
                 res = self._server._call_command(querystring)
-                self._api_status = res.get(
-                    "status", self._server._return_error)[:3]
-                self._api_title = res.get(
-                    "title", self._server._return_empty)
+                self._set_status(res)
                 self._initDevice()
 
     @property
@@ -521,8 +514,7 @@ class Device:
                 self._idx, str(int_value))
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
+            self._set_status(res)
             if self._api_status == self._server._return_ok:
                 self._Favorite = int_value
 
@@ -602,10 +594,7 @@ class Device:
             )
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get(
-                "status", self._server._return_error)[:3]
-            self._api_title = res.get(
-                "title", self._server._return_empty)
+            self._set_status(res)
             self._initDevice()
 
     @property
@@ -649,8 +638,7 @@ class Device:
                 self._idx, quote(str(value)))
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
+            self._set_status(res)
             if self._api_status == self._server._return_ok:
                 self._Name = value
 
@@ -789,8 +777,7 @@ class Device:
                 self._type_set_used, self._idx, str_value)
             self._api_querystring = querystring
             res = self._server._call_api(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
+            self._set_status(res)
             if self._api_status == self._server._return_ok:
                 self._Used = int_value
 

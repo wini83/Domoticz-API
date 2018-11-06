@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from datetime import datetime
 """
     User variable
 """
@@ -12,7 +13,7 @@ class UserVariable:
     # 2 = String
     # 3 = Date in format DD/MM/YYYY
     # 4 = Time in 24 hr format HH:MM
-    # 5 = DateTime(but the format is not checked)
+    # 5 = DateTime (but the format is not checked)
 
     _vtype2num = {
         "integer": "0",
@@ -60,6 +61,7 @@ class UserVariable:
                 self._typenum = ""
             self._value = self.__value(self._type, value)
             self._api_status = ""
+            self._api_title = ""
             self._idx = None
             self._lastupdate = ""
             self.__getvar()
@@ -76,8 +78,7 @@ class UserVariable:
         querystring = "param={}".format(self._param_get_user_variables)
         self._api_querystring = querystring
         res = self._server._call_command(querystring)
-        self._api_status = res.get("status", self._server._return_error)
-        self._api_title = res.get("title", self._server._return_empty)
+        self.__set_status(res)
         if res.get("result"):
             for var in res["result"]:
                 if var.get("Name") == self._name:
@@ -127,6 +128,11 @@ class UserVariable:
             result = ""
         return result
 
+    def __set_status(self, r):
+        self._api_status = r.get("status", self._server._return_error)
+        self._api_title = r.get("title", self._server._return_empty)
+        self._api_message = r.get("message", self._server._return_empty)
+
     # ..........................................................................
     # Public methods
     # ..........................................................................
@@ -145,8 +151,7 @@ class UserVariable:
                                                                             self._typenum, self._value)
                 self._api_querystring = querystring
                 res = self._server._call_command(querystring)
-                self._api_status = res["status"] if res.get("status") else ""
-                self._api_title = res["title"] if self._api_status == self._server._return_ok else ""
+                self.__set_status(res)
                 if self._api_status == self._server._return_ok:
                     self.__getvar()
 
@@ -157,8 +162,7 @@ class UserVariable:
                                                                         self._typenum, self._value)
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
+            self.__set_status(res)
             self.__getvar()
 
     # json.htm?type=command&param=deleteuservariable&idx=3
@@ -167,13 +171,16 @@ class UserVariable:
             querystring = "param={}&idx={}".format(self._param_delete_user_variable, self._idx)
             self._api_querystring = querystring
             res = self._server._call_command(querystring)
-            self._api_status = res.get("status", self._server._return_error)
-            self._api_title = res.get("title", self._server._return_empty)
+            self.__set_status(res)
         self._idx = None
 
     # ..........................................................................
     # Properties
     # ..........................................................................
+
+    @property
+    def api_message(self):
+        return self._api_message
 
     @property
     def api_status(self):
