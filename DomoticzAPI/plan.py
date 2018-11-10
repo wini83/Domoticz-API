@@ -74,12 +74,12 @@ class Plan:
         return self._api_title
 
     @property
-    def idx(self):
-        return self._idx
-
-    @property
     def devices(self):
         return self._Devices
+
+    @property
+    def idx(self):
+        return self._idx
 
     @property
     def name(self):
