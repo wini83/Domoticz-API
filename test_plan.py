@@ -5,11 +5,11 @@ import DomoticzAPI as dom
 
 def main():
     server = dom.Server()
-    plan1 = dom.Plan(server, 2)
+    plan1 = dom.Plan(server, 3) # Or use an other number as can be found as planid in a device
     print(plan1)
-    print("Name: " + plan1.name)
-    print("Order: " + str(plan1.order))
-    print("Devices: " + str(plan1.devices))
+    print("Name......: {}".format(plan1.name))
+    print("Order.....: {}".format(plan1.order))
+    print("Devices...: {}".format(plan1.devices))
 
 
 if __name__ == "__main__":
