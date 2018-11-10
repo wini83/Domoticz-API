@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from .server import *
-from .hardware import *
-from .color import *
+from .server import Server
+from .hardware import Hardware
+from .color import Color
 from urllib.parse import quote
 
 """
@@ -17,6 +17,7 @@ class Device:
     _type_create_dummy = "createvirtualsensor"
     _type_delete_device = "deletedevice"
     _type_set_used = "setused"
+    
     _param_make_favorite = "makefavorite"
     _param_rename_device = "renamedevice"
     _param_update_device = "udevice"
@@ -112,9 +113,9 @@ class Device:
 
     def _initDevice(self):
         if self._idx is not None:
-            querystring = "type=devices&rid={}".format(self._idx)
+            querystring = "type={}&rid={}".format(self._type_devices, self._idx)
         elif self._Name is not None:
-            querystring = "type=devices&filter=all"
+            querystring = "type={}&filter=all".format(self._type_devices)
         else:
             querystring = ""
         self._api_querystring = querystring
@@ -386,16 +387,16 @@ class Device:
         return self._api_message
 
     @property
+    def api_querystring(self):
+        return self._api_querystring
+
+    @property
     def api_status(self):
         return self._api_status
 
     @property
     def api_title(self):
         return self._api_title
-
-    @property
-    def api_querystring(self):
-        return self._api_querystring
 
     @property
     def barometer(self):

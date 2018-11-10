@@ -1,5 +1,5 @@
 import platform
-from .server import *
+from .server import Server
 
 __version_major__ = 0
 __version_minor__ = 5

@@ -3,6 +3,7 @@
 from .server import *
 from .hardware import *
 from .device import *
+from .plan import *
 from .color import *
 from .uservariable import *
 from .notification import *
