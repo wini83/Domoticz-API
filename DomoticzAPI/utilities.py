@@ -2,7 +2,7 @@ import platform
 from .server import Server
 
 __version_major__ = 0
-__version_minor__ = 5
+__version_minor__ = 6
 __version_micro__ = 0
 
 __version__ = "{}.{}.{}".format(__version_major__, __version_minor__, __version_micro__)

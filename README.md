@@ -18,14 +18,13 @@ Please look at the `test_*.py`-examples how to use this api. The `plugin.py` con
 | [UserVariable](https://github.com/Xorfor/Domoticz-API/wiki/UserVariable) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 | [Notification](https://github.com/Xorfor/Domoticz-API/wiki/Notification) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 | [Color](https://github.com/Xorfor/Domoticz-API/wiki/Color) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| Scene                                                                    | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
-| Group                                                                    | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
-| RoomPlan                                                                 | <img src="https://img.shields.io/badge/Status-NA-lightgrey.svg" />
+| [Plan](https://github.com/Xorfor/Domoticz-API/wiki/Plan) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 
 ## History
 
 | Version | Description
 | :---    | :---
+| 0.6.0   | Added (Room)Plan class
 | 0.4.3   | Added resetSecurityStatus in Device
 | 0.4.2   | Implemented Color class in Device
 | 0.4.1   | Code cleanup
