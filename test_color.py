@@ -9,7 +9,7 @@ def main():
     print("********************************************************************************")
     print("Test script ........... : {}".format(os.path.basename(__file__)))
     print("********************************************************************************")
-    server = dom.Server(address="192.168.0.16")
+    server = dom.Server()
     dev1 = dom.Device(server, 77)
     print("name .................. : {}".format(dev1.name))
     print("color ................. : {}".format(dev1.color))
