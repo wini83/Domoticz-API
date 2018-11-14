@@ -23,14 +23,15 @@ from ast import literal_eval
 
 class Color:
     # Color Modes
-    _ColorModeNone = 0  # Illegal
-    _ColorModeWhite = 1  # White. Valid fields: none
-    _ColorModeTemp = 2  # White with color temperature. Valid fields: t
-    _ColorModeRGB = 3  # Color. Valid fields: r, g, b.
+    MODE_NONE = 0  # Illegal
+    MODE_WHITE = 1  # White. Valid fields: none
+    MODE_TEMP = 2  # White with color temperature. Valid fields: t
+    MODE_RGB = 3  # Color. Valid fields: r, g, b.
     # Custom (color + white). Valid fields: r, g, b, cw, ww, depending on device capabilities
-    _ColorModeCustom = 4
-    _ColorModeFirst = _ColorModeNone
-    _ColorModeLast = _ColorModeCustom
+    MODE_CUSTOM = 4
+    #
+    _ColorModeFirst = MODE_NONE
+    _ColorModeLast = MODE_CUSTOM
 
     def __init__(self, **kwargs):
         self._m = 0
@@ -73,8 +74,10 @@ class Color:
     # ..........................................................................
     # Private methods
     # ..........................................................................
+    def _minmax(self, v):
+        return int(min(max(v, 0), 255))
 
-     # ..........................................................................
+    # ..........................................................................
     # Public methods
     # ..........................................................................
 
@@ -101,21 +104,21 @@ class Color:
         if mode >= self._ColorModeFirst and mode <= self._ColorModeLast:
             self._m = int(mode)
         else:
-            self._m = self._ColorModeNone
-        if self._m == self._ColorModeNone or self._m == self._ColorModeWhite:
+            self._m = self.MODE_NONE
+        if self._m == self.MODE_NONE or self._m == self.MODE_WHITE:
             self._t = 0
             self._r = 0
             self._g = 0
             self._b = 0
             self._cw = 0
             self._ww = 0
-        elif self._m == self._ColorModeTemp:
+        elif self._m == self.MODE_TEMP:
             self._r = 0
             self._g = 0
             self._b = 0
             self._cw = 0
             self._ww = 0
-        elif self._m == self._ColorModeRGB:
+        elif self._m == self.MODE_RGB:
             self._t = 0
             self._cw = 0
             self._ww = 0
@@ -128,8 +131,8 @@ class Color:
 
     @t.setter
     def t(self, temperature):
-        if self._m == self._ColorModeTemp and 0 <= temperature <= 255:
-            self._t = int(temperature)
+        if self._m == self.MODE_TEMP:
+            self._t = self._minmax(temperature)
         else:
             self._t = 0
 
@@ -139,8 +142,8 @@ class Color:
 
     @r.setter
     def r(self, red):
-        if self._m in (self._ColorModeRGB, self._ColorModeCustom) and 0 <= red <= 255:
-            self._r = int(red)
+        if self._m in (self.MODE_RGB, self.MODE_CUSTOM):
+            self._r = self._minmax(red)
         else:
             self._r = 0
 
@@ -150,8 +153,8 @@ class Color:
 
     @g.setter
     def g(self, green):
-        if self._m in (self._ColorModeRGB, self._ColorModeCustom) and 0 <= green <= 255:
-            self._g = int(green)
+        if self._m in (self.MODE_RGB, self.MODE_CUSTOM):
+            self._g = self._minmax(green)
         else:
             self._g = 0
 
@@ -161,8 +164,8 @@ class Color:
 
     @b.setter
     def b(self, blue):
-        if self._m in (self._ColorModeRGB, self._ColorModeCustom) and 0 <= blue <= 255:
-            self._b = int(blue)
+        if self._m in (self.MODE_RGB, self.MODE_CUSTOM):
+            self._b = self._minmax(blue)
         else:
             self._b = 0
 
@@ -172,8 +175,8 @@ class Color:
 
     @cw.setter
     def cw(self, cold):
-        if self._m == self._ColorModeCustom and 0 <= cold <= 255:
-            self._cw = int(cold)
+        if self._m == self.MODE_CUSTOM:
+            self._cw = self._minmax(cold)
         else:
             self._cw = 0
 
@@ -183,7 +186,7 @@ class Color:
 
     @ww.setter
     def ww(self, warm):
-        if self._m == self._ColorModeCustom and 0 <= warm <= 255:
-            self._ww = int(warm)
+        if self._m == self.MODE_CUSTOM:
+            self._ww = self._minmax(warm)
         else:
             self._ww = 0
