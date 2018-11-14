@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import DomoticzAPI as dom
-
+import os
 
 def main():
     print("********************************************************************************")
-    print("DomoticzAPI: test_utilities")
+    print("Test script ........... : {}".format(os.path.basename(__file__)))
     print("********************************************************************************")
 
     print("\r")
@@ -54,7 +54,6 @@ def main():
     print("********************************************************************************")
     res = dom.os_command("/opt/vc/bin/vcgencmd", "measure_temp")
     print("CPU temperature ....... : {}".format(res.split("=")[1][:-3]))
-    
     res = dom.os_command("ls", "-al")
     print("ls:\n{}".format(res))
 

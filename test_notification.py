@@ -1,12 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # --------------------------------------------------------------------------------
 # Look in Domoticz log for the results
 # --------------------------------------------------------------------------------
 import DomoticzAPI as dom
-
+import os
 
 def main():
+    print("********************************************************************************")
+    print("Test script ........... : {}".format(os.path.basename(__file__)))
+    print("********************************************************************************")
     server = dom.Server()
     dom.Notification(server, subject="Test 1 subject", body="Hello World!").send()
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from .server import Server
 
@@ -56,6 +56,9 @@ class Plan:
     # ..........................................................................
     # Properties
     # ..........................................................................
+    @property
+    def api(self):
+        return "{}({}): {}".format(self._api_title, self._api_querystring, self._api_status)
 
     @property
     def api_message(self):

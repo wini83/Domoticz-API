@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from .server import Server
 from .hardware import Hardware
@@ -17,7 +17,7 @@ class Device:
     _type_create_dummy = "createvirtualsensor"
     _type_delete_device = "deletedevice"
     _type_set_used = "setused"
-    
+
     _param_make_favorite = "makefavorite"
     _param_rename_device = "renamedevice"
     _param_update_device = "udevice"
@@ -113,7 +113,8 @@ class Device:
 
     def _initDevice(self):
         if self._idx is not None:
-            querystring = "type={}&rid={}".format(self._type_devices, self._idx)
+            querystring = "type={}&rid={}".format(
+                self._type_devices, self._idx)
         elif self._Name is not None:
             querystring = "type={}&filter=all".format(self._type_devices)
         else:

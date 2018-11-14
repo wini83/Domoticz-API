@@ -1,9 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import platform
 from .server import Server
 
+"""
+    Utilities
+"""
+
 __version_major__ = 0
 __version_minor__ = 6
-__version_micro__ = 0
+__version_micro__ = 1
 
 __version__ = "{}.{}.{}".format(__version_major__, __version_minor__, __version_micro__)
 

@@ -1,5 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from ast import literal_eval
+
 """
     Domoticz Color class
 
@@ -17,7 +19,6 @@
           ww: # Range: 0 .. 255, Warm white level (also used as level for monochrome white)
         }
 """
-from ast import literal_eval
 
 
 class Color:

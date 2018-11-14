@@ -1,17 +1,20 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import DomoticzAPI as dom
-
+import os
 
 def main():
+    print("********************************************************************************")
+    print("Test script ........... : {}".format(os.path.basename(__file__)))
+    print("********************************************************************************")
     server = dom.Server()
-    print("{}: {} - {}".format(server, server.api_status, server.api_title))
     dev1 = dom.Device(server, 11)
-    print("Name: " + dev1.name)
-    print("Color: " + str(dev1.color))
+    print("dev1 .................. : {}".format(dev1))
+    print("Name .................. : {}".format(dev1.name))
+    print("Color ................. : {}".format(dev1.color))
     color = dev1.color
-    print("m: " + str(color.m))
-    print("color: " + str(color))
+    print("m ..................... : {}".format(color.m))
+    print("color ................. : {}".format(color))
 
 
 if __name__ == "__main__":

@@ -1,12 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import DomoticzAPI as dom
 from datetime import datetime
 import time
+import os
 
 def main():
     print("********************************************************************************")
-    print("DomoticzAPI: test_device")
+    print("Test script ........... : {}".format(os.path.basename(__file__)))
     print("********************************************************************************")
     server = dom.Server()
 
@@ -17,7 +18,7 @@ def main():
     dev2 = dom.Device(server, name="xyz")
     print(dev2)
     if dev2.exists():
-        print("Value: " + str(dev2.data))
+        print("Value .................. : {}".format(dev2.data))
     else:
         print("Device {} does not exist!!!".format(dev2.name))
 
@@ -35,7 +36,7 @@ def main():
         print("Add device to new hardware")
         print("********************************************************************************")
         dev3 = dom.Device(server, hw3, "Test Device", type=244, subtype=73)  # Switch
-        print("dev3.hardware: " + str(dev3.hardware))
+        print("dev3.hardware: {}".format(dev3.hardware))
         print("{}: {} - {}".format(dev3, dev3.api_status, dev3.api_title))
 
         dev3.add()

@@ -1,6 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 import json
 import os
 import subprocess
@@ -70,7 +69,8 @@ class Server:
             self._api_message = "Authorization is required"
 
     def __str__(self):
-        txt = "{}(\"{}\", \"{}\")".format(self.__class__.__name__, self._address, self._port)
+        txt = "{}(\"{}\", \"{}\")".format(
+            self.__class__.__name__, self._address, self._port)
         return txt
 
     # ..........................................................................
@@ -189,7 +189,8 @@ class Server:
             Send text to the Domoticz log
         """
         if self.exists():
-            querystring = self._param.format(self._param_log) + "&message={}".format(quote(text))
+            querystring = self._param.format(
+                self._param_log) + "&message={}".format(quote(text))
             self._api_querystring = querystring
             res = self._call_command(querystring)
             self._set_status(res)
@@ -201,7 +202,8 @@ class Server:
         try:
             if options is None:
                 options = ""
-            p = subprocess.Popen(command + " " + options, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = subprocess.Popen(command + " " + options, shell=True,
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             p.wait()
             data, errors = p.communicate()
             if p.returncode != 0:
@@ -390,7 +392,8 @@ class Server:
         self._getSunRiseSet()
         if self._api_status == self._return_ok:
             self._currentdate = self._ServerTime[:10]  # yyyy-mm-dd
-            self._currentdate_dt = datetime.strptime(self._ServerTime, "%Y-%m-%d %H:%M:%S").date()
+            self._currentdate_dt = datetime.strptime(
+                self._ServerTime, "%Y-%m-%d %H:%M:%S").date()
         else:
             self._ServerTime = None
         return self._ServerTime
