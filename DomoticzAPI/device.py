@@ -88,17 +88,17 @@ class Device:
                 self._Hardware = None
             self._Name = args[1]
             # Try to get named parameters
-            self._SubType = kwargs.get("subtype", None)
-            self._Type = kwargs.get("type", None)
-            self._TypeName = kwargs.get("typename", None)
+            self._SubType = kwargs.get("subtype")
+            self._Type = kwargs.get("type")
+            self._TypeName = kwargs.get("typename")
         else:
-            self._idx = kwargs.get("idx", None)
+            self._idx = kwargs.get("idx")
             if self._idx is None:
-                self._Hardware = kwargs.get("hardware", None)
-                self._Name = kwargs.get("name", None)
-                self._SubType = kwargs.get("subtype", None)
-                self._Type = kwargs.get("type", None)
-                self._TypeName = kwargs.get("typename", None)
+                self._Hardware = kwargs.get("hardware")
+                self._Name = kwargs.get("name")
+                self._SubType = kwargs.get("subtype")
+                self._Type = kwargs.get("type")
+                self._TypeName = kwargs.get("typename")
         if self._TypeName is not None:
             self._Type = None
             self._SubType = None
