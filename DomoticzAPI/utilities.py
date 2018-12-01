@@ -2,16 +2,11 @@
 # -*- coding: utf-8 -*-
 import platform
 from .server import Server
-
+from .const import(VERSION, VERSION_MAJOR, VERSION_MICRO,
+                   VERSION_MINOR, VERSION_SHORT)
 """
     Utilities
 """
-
-__version_major__ = 0
-__version_minor__ = 6
-__version_micro__ = 1
-
-__version__ = "{}.{}.{}".format(__version_major__, __version_minor__, __version_micro__)
 
 
 def machine():
@@ -49,22 +44,27 @@ def system():
 
 
 def version():
-    return __version__
+    return VERSION
 
 
 def version_major():
-    return __version_major__
+    return VERSION_MAJOR
 
 
 def version_minor():
-    return __version_minor__
+    return VERSION_MINOR
 
 
 def version_micro():
-    return __version_micro__
+    return VERSION_MICRO
 
+
+def version_short():
+    return VERSION_SHORT
 
 # Temperature conversion from Celsius to Fahrenheit
+
+
 def TempC2F(value):
     return (value * 1.8) + 32
 
@@ -74,11 +74,14 @@ def TempF2C(value):
     return (value - 32) / 1.8
 
 # Convert bearing in degrees to a direction
+
+
 def Bearing2Status(d):
     """
     Based on https://gist.github.com/RobertSudwarts/acf8df23a16afdb5837f
     """
-    dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
+    dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+            "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
 
     count = len(dirs)  # Number of entries in list
     step = 360 / count  # Wind direction is in steps of 22.5 degrees (360/16)
