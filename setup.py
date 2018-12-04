@@ -8,5 +8,5 @@ setup(
     name='DomoticzAPI',
     packages=['DomoticzAPI'],
     url='https://github.com/Xorfor/Domoticz-API/',
-    version='0.4.4'
+    version='0.6.2'
 )
