@@ -2,11 +2,15 @@
 # -*- coding: utf-8 -*-
 import platform
 from .server import Server
-from .const import(VERSION, VERSION_MAJOR, VERSION_MICRO,
-                   VERSION_MINOR, VERSION_SHORT)
 """
     Utilities
 """
+VERSION_MAJOR = 0
+VERSION_MINOR = 6
+VERSION_MICRO = 2
+
+VERSION_SHORT = '{}.{}'.format(VERSION_MAJOR, VERSION_MINOR)
+VERSION = "{}.{}.{}".format(VERSION_MAJOR, VERSION_MINOR, VERSION_MICRO)
 
 
 def machine():

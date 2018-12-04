@@ -10,13 +10,12 @@ def main():
     print("Test script ........... : {}".format(os.path.basename(__file__)))
     print("********************************************************************************")
     server = dom.Server()
-
+    print(server)
     print("\r")
     print("********************************************************************************")
     print("Non existing device")
     print("********************************************************************************")
     dev2 = dom.Device(server, name="xyz")
-    print(dev2)
     if dev2.exists():
         print("Value .................. : {}".format(dev2.data))
     else:
@@ -37,10 +36,10 @@ def main():
         print("********************************************************************************")
         dev3 = dom.Device(server, hw3, "Test Device", type=244, subtype=73)  # Switch
         print("dev3.hardware: {}".format(dev3.hardware))
-        print("{}: {} - {}".format(dev3, dev3.api_status, dev3.api_title))
+        print("{}: {} - {}".format(dev3, dev3.api.status, dev3.api.title))
 
         dev3.add()
-        print("{}: {} - {}".format(dev3, dev3.api_status, dev3.api_title))
+        print("{}: {} - {}".format(dev3, dev3.api.status, dev3.api.title))
         if dev3.exists():
             print("Switch successfully created")
             print("Status: {}".format(dev3.data))

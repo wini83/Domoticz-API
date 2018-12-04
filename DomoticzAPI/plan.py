@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from .server import Server
-
 """
     Domoticz (Room)Plan class
 """
+from .server import Server
+from .api import API
+
 
 class Plan:
 
@@ -17,6 +18,7 @@ class Plan:
             self._server = server
         else:
             self._server = None
+        self._api = API(self._server)
         self._idx = idx
         self._initPlan()
 
@@ -28,53 +30,34 @@ class Plan:
     # ..........................................................................
 
     def _initPlan(self):
-        # /json.htm?type=plans
-        querystring = "type={}".format(self._type_plans)
-        self._api_querystring = querystring
-        res = self._server._call_api(querystring)
-        self._set_status(res)
         myDict = {}
-        if self._api_status == self._server._return_ok:
-            if res.get("result"):
-                for resDict in res["result"]:
-                    if self._idx is not None and int(resDict.get("idx")) == self._idx:
-                        myDict = resDict
-                        break
+        if self._server is not None:
+            # /json.htm?type=plans
+            self._api.querystring = self._api.TYPE.format(self._type_plans)
+            self._api.call()
+            if self._api.status == self._api.OK:
+                if self._api.result:
+                    for resDict in self._api.result:
+                        if self._idx is not None and int(resDict.get("idx")) == self._idx:
+                            myDict = resDict
+                            break
+        self._idx = myDict.get("idx")
         self._Devices = myDict.get("Devices")
         self._Name = myDict.get("Name")
         self._Order = myDict.get("Order")
 
-    def _set_status(self, r):
-        self._api_message = r.get("message", self._server._return_empty)
-        self._api_status = r.get("status", self._server._return_error)
-        self._api_title = r.get("title", self._server._return_empty)
-
     # ..........................................................................
     # Public methods
     # ..........................................................................
+    def exists(self):
+        return self._idx is not None and self._Name is not None
 
     # ..........................................................................
     # Properties
     # ..........................................................................
     @property
     def api(self):
-        return "{}({}): {}".format(self._api_title, self._api_querystring, self._api_status)
-
-    @property
-    def api_message(self):
-        return self._api_message
-
-    @property
-    def api_querystring(self):
-        return self._api_querystring
-
-    @property
-    def api_status(self):
-        return self._api_status
-
-    @property
-    def api_title(self):
-        return self._api_title
+        return self._api
 
     @property
     def devices(self):

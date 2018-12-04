@@ -11,12 +11,12 @@ def main():
 
     hw2 = dom.Hardware(server, type=15, port=1, name="Sensors 1", enabled="true")
     hw2.add()
-    print("Add ................... : {}".format(hw2.api_querystring))
-    print("{}: {} - {}".format(hw2, hw2.api_status, hw2.api_title))
+    print("Add ................... : {}".format(hw2.api.querystring))
+    print("{}: {} - {}".format(hw2, hw2.api.status, hw2.api.title))
 
     hw1 = dom.Hardware(server, idx=hw2.idx)
-    print("__init__ .............. : {}".format(hw1.api_querystring))
-    print("{}: {} {}".format(hw1, hw1.api_status, hw1.api_title))
+    print("__init__ .............. : {}".format(hw1.api.querystring))
+    print("{}: {} - {}".format(hw1, hw1.api.status, hw1.api.title))
     if hw1.exists():
         print("Name .................. : {}".format(hw1.name))
     else:
@@ -24,18 +24,18 @@ def main():
 
     hw2.name = "Sensors 2"
     hw2.update()
-    print("Update ................ : {}".format(hw2.api_querystring))
-    print("{}: {} - {}".format(hw2, hw2.api_status, hw2.api_title))
+    print("Update ................ : {}".format(hw2.api.querystring))
+    print("{}: {} - {}".format(hw2, hw2.api.status, hw2.api.title))
     hw2.delete()
-    print("Delete ................ : {}".format(hw2.api_querystring))
-    print("{}: {} - {}".format(hw2, hw2.api_status, hw2.api_title))
+    print("Delete ................ : {}".format(hw2.api.querystring))
+    print("{}: {} - {}".format(hw2, hw2.api.status, hw2.api.title))
     hw2.address = "10.10.0.10"
     hw2.port = 9876
     hw2.serialport = "1234"
     hw2.add()
-    print("Add ................... : {}".format(hw2.api_querystring))
-    print("{}: {} - {}".format(hw2, hw2.api_status, hw2.api_title))
-    print(hw2.__dict__)
+    print("Add ................... : {}".format(hw2.api.querystring))
+    print("{}: {} - {}".format(hw2, hw2.api.status, hw2.api.title))
+    # print(hw2.__dict__)
     hw2.delete()
 
 

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from .server import Server
+from .api import API
 from datetime import datetime
 
 """
@@ -51,6 +53,10 @@ class UserVariable:
             type (:obj:`str`, optional): Type of the user variable
             value (:obj:`str`, optional): Value of the user variable
         """
+        if isinstance(server, Server) and server.exists():
+            self._server = server
+        else:
+            self._server = None
         if server is not None and len(name) > 0:
             self._server = server
             self._name = name
@@ -61,8 +67,7 @@ class UserVariable:
                 self._type = ""
                 self._typenum = ""
             self._value = self.__value(self._type, value)
-            self._api_status = ""
-            self._api_title = ""
+            self._api = API(self._server)
             self._idx = None
             self._lastupdate = ""
             self.__getvar()
@@ -76,12 +81,12 @@ class UserVariable:
     # ..........................................................................
 
     def __getvar(self):
-        querystring = "param={}".format(self._param_get_user_variables)
-        self._api_querystring = querystring
-        res = self._server._call_command(querystring)
-        self.__set_status(res)
-        if res.get("result"):
-            for var in res["result"]:
+        # /json.htm?type=command&param=getuservariables
+        self._api.querystring = "type=command&param={}".format(
+            self._param_get_user_variables)
+        self._api.call()
+        if self._api.result:
+            for var in self._api.result:
                 if var.get("Name") == self._name:
                     self._idx = var.get("idx")
                     self._value = var.get("Value")
@@ -129,71 +134,54 @@ class UserVariable:
             result = ""
         return result
 
-    def __set_status(self, r):
-        self._api_status = r.get("status", self._server._return_error)
-        self._api_title = r.get("title", self._server._return_empty)
-        self._api_message = r.get("message", self._server._return_empty)
-
     # ..........................................................................
     # Public methods
     # ..........................................................................
-
     def exists(self):
         if self._idx is None:
             return False
         else:
             return True
 
-    # json.htm?type=command&param=saveuservariable&vname=Test&vtype=1&vvalue=1.23
+    # /json.htm?type=command&param=saveuservariable&vname=Test&vtype=1&vvalue=1.23
     def add(self):
         if not self.exists():
             if len(self._name) > 0 and len(self._type) > 0 and len(self._value) > 0:
-                querystring = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_save_user_variable, self._name,
-                                                                            self._typenum, self._value)
-                self._api_querystring = querystring
-                res = self._server._call_command(querystring)
-                self.__set_status(res)
-                if self._api_status == self._server._return_ok:
+                self._api.querystring = "type=command&param={}&vname={}&vtype={}&vvalue={}".format(
+                    self._param_save_user_variable,
+                    self._name,
+                    self._typenum,
+                    self._value)
+                self._api.call()
+                if self._api.status == self._api.OK:
                     self.__getvar()
 
     # json.htm?type=command&param=updateuservariable&vname=Test&vtype=1&vvalue=1.23
     def update(self):
         if self.exists():
-            querystring = "param={}&vname={}&vtype={}&vvalue={}".format(self._param_update_user_variable, self._name,
-                                                                        self._typenum, self._value)
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self.__set_status(res)
+            self._api.querystring = "type=command&param={}&vname={}&vtype={}&vvalue={}".format(
+                self._param_update_user_variable,
+                self._name,
+                self._typenum,
+                self._value)
+            self._api.call()
             self.__getvar()
 
     # json.htm?type=command&param=deleteuservariable&idx=3
     def delete(self):
         if self.exists():
-            querystring = "param={}&idx={}".format(self._param_delete_user_variable, self._idx)
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self.__set_status(res)
+            self._api.querystring = "type=command&param={}&idx={}".format(
+                self._param_delete_user_variable,
+                self._idx)
+            self._api.call()
         self._idx = None
 
     # ..........................................................................
     # Properties
     # ..........................................................................
-
     @property
-    def api_message(self):
-        return self._api_message
-
-    @property
-    def api_status(self):
-        return self._api_status
-
-    @property
-    def api_title(self):
-        return self._api_title
-
-    @property
-    def api_querystring(self):
-        return self._api_querystring
+    def api(self):
+        return self._api
 
     @property
     def idx(self):

@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from ast import literal_eval
-from .const import(COLOR_MODE_CUSTOM, COLOR_MODE_NONE,
-                  COLOR_MODE_RGB, COLOR_MODE_TEMP, COLOR_MODE_WHITE,
-                  NUM_MAX, NUM_MIN)
+from .const import(NUM_MAX, NUM_MIN)
 
 """
     Domoticz Color class
@@ -26,8 +24,16 @@ from .const import(COLOR_MODE_CUSTOM, COLOR_MODE_NONE,
 
 class Color:
 
-    _ColorModeFirst = COLOR_MODE_NONE
-    _ColorModeLast = COLOR_MODE_CUSTOM
+    # Color Modes
+    MODE_NONE = 0  # Illegal
+    MODE_WHITE = 1  # White. Valid fields: none
+    MODE_TEMP = 2  # White with color temperature. Valid fields: t
+    MODE_RGB = 3  # Color. Valid fields: r, g, b.
+    # Custom (color + white). Valid fields: r, g, b, cw, ww, depending on device capabilities
+    MODE_CUSTOM = 4
+
+    _ColorModeFirst = MODE_NONE
+    _ColorModeLast = MODE_CUSTOM
 
     def __init__(self, **kwargs):
         self._m = NUM_MIN
@@ -57,15 +63,16 @@ class Color:
             self.ww = kwargs.get("ww", NUM_MIN)
 
     def __str__(self):
-        return "{}(m: {}, t: {}, r: {}, g: {}, b: {}, cw: {}, ww: {})".format(self.__class__.__name__,
-                                                                              self._m,
-                                                                              self._t,
-                                                                              self._r,
-                                                                              self._g,
-                                                                              self._b,
-                                                                              self._cw,
-                                                                              self._ww
-                                                                              )
+        return "{}(m: {}, t: {}, r: {}, g: {}, b: {}, cw: {}, ww: {})".format(
+            self.__class__.__name__,
+            self._m,
+            self._t,
+            self._r,
+            self._g,
+            self._b,
+            self._cw,
+            self._ww
+            )
 
     # ..........................................................................
     # Private methods
@@ -83,13 +90,15 @@ class Color:
 
     @property
     def color(self):
-        return "{" + "\"m\":{},\"t\":{},\"r\":{},\"g\":{},\"b\":{},\"cw\":{},\"ww\":{}".format(self._m,
-                                                                                               self._t,
-                                                                                               self._r,
-                                                                                               self._g,
-                                                                                               self._b,
-                                                                                               self._cw,
-                                                                                               self._ww) + "}"
+        return "{" + "\"m\":{},\"t\":{},\"r\":{},\"g\":{},\"b\":{},\"cw\":{},\"ww\":{}".format(
+            self._m,
+            self._t,
+            self._r,
+            self._g,
+            self._b,
+            self._cw,
+            self._ww
+            ) + "}"
 
     @property
     def m(self):
@@ -100,21 +109,21 @@ class Color:
         if mode >= self._ColorModeFirst and mode <= self._ColorModeLast:
             self._m = int(mode)
         else:
-            self._m = COLOR_MODE_NONE
-        if self._m == COLOR_MODE_NONE or self._m == COLOR_MODE_WHITE:
+            self._m = self.MODE_NONE
+        if self._m == self.MODE_NONE or self._m == self.MODE_WHITE:
             self._t = NUM_MIN
             self._r = NUM_MIN
             self._g = NUM_MIN
             self._b = NUM_MIN
             self._cw = NUM_MIN
             self._ww = NUM_MIN
-        elif self._m == COLOR_MODE_TEMP:
+        elif self._m == self.MODE_TEMP:
             self._r = NUM_MIN
             self._g = NUM_MIN
             self._b = NUM_MIN
             self._cw = NUM_MIN
             self._ww = NUM_MIN
-        elif self._m == COLOR_MODE_RGB:
+        elif self._m == self.MODE_RGB:
             self._t = NUM_MIN
             self._cw = NUM_MIN
             self._ww = NUM_MIN
@@ -127,7 +136,7 @@ class Color:
 
     @t.setter
     def t(self, temperature):
-        if self._m == COLOR_MODE_TEMP:
+        if self._m == self.MODE_TEMP:
             self._t = self._minmax(temperature)
         else:
             self._t = NUM_MIN
@@ -138,7 +147,7 @@ class Color:
 
     @r.setter
     def r(self, red):
-        if self._m in (COLOR_MODE_RGB, COLOR_MODE_CUSTOM):
+        if self._m in (self.MODE_RGB, self.MODE_CUSTOM):
             self._r = self._minmax(red)
         else:
             self._r = NUM_MIN
@@ -149,7 +158,7 @@ class Color:
 
     @g.setter
     def g(self, green):
-        if self._m in (COLOR_MODE_RGB, COLOR_MODE_CUSTOM):
+        if self._m in (self.MODE_RGB, self.MODE_CUSTOM):
             self._g = self._minmax(green)
         else:
             self._g = NUM_MIN
@@ -160,7 +169,7 @@ class Color:
 
     @b.setter
     def b(self, blue):
-        if self._m in (COLOR_MODE_RGB, COLOR_MODE_CUSTOM):
+        if self._m in (self.MODE_RGB, self.MODE_CUSTOM):
             self._b = self._minmax(blue)
         else:
             self._b = NUM_MIN
@@ -171,7 +180,7 @@ class Color:
 
     @cw.setter
     def cw(self, cold):
-        if self._m == COLOR_MODE_CUSTOM:
+        if self._m == self.MODE_CUSTOM:
             self._cw = self._minmax(cold)
         else:
             self._cw = NUM_MIN
@@ -182,7 +191,7 @@ class Color:
 
     @ww.setter
     def ww(self, warm):
-        if self._m == COLOR_MODE_CUSTOM:
+        if self._m == self.MODE_CUSTOM:
             self._ww = self._minmax(warm)
         else:
             self._ww = NUM_MIN

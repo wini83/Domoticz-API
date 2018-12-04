@@ -10,10 +10,8 @@ def main():
     print("Test script ........... : {}".format(os.path.basename(__file__)))
     print("********************************************************************************")
 
-    # server = dom.Server(address="localhost", port="8080")
     server = dom.Server()
-    # server = dom.Server(user="user", password="password")
-    if server.api_status == server._return_ok:
+    if server.api.status == server.api.OK:
         print("{}: {} - {}".format(server, server.api_status, server.api_title))
         print("Domoticz version ...... : {}".format(server.version))
         print("Build time ............ : {}".format(server.build_time_dt))
@@ -21,21 +19,18 @@ def main():
         print("Update available ...... : {}".format(server.haveupdate))
         print("\r")
 
-        print("Server ................ : {}".format(server.servertime))
-        print("ServerDT .............. : {}".format(server.servertime_dt))
+        print("Servertime ............ : {}".format(server.servertime))
+        print("ServertimeDT .......... : {}".format(server.servertime_dt))
         print("Sunrise ............... : {}".format(server.sunrise))
         print("Sunset ................ : {}".format(server.sunset))
         print("SunsetDT .............. : {}".format(server.sunset_dt))
-        print("{}: {} - {}".format(server, server.api_status, server.api_title))
+        print("{}: {} - {}".format(server, server.api.status, server.api.title))
         server.logmessage("Test 1")
-        print("querystring ........... : {}".format(server.api_querystring))
-        print("{}: {} - {}".format(server, server.api_status, server.api_title))
-        # print(server.__dict__)
-        res = server.os_command("/opt/vc/bin/vcgencmd", "measure_temp")
-        print("CPU temperature ....... : {}".format(res.split("=")[1][:-3]))
+        print("querystring ........... : {}".format(server.api.querystring))
+        print("{}: {} - {}".format(server, server.api.status, server.api.title))
     else:
         print("Server not found!!!")
-        print(server.api_message)
+        print(server.api.message)
 
 
 if __name__ == "__main__":

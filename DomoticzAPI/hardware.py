@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from .api import API
 from urllib.parse import quote
 
 """
@@ -22,9 +23,6 @@ class Hardware:
 
     # def __init__(self, server, idx):
     def __init__(self, server, *args, **kwargs):
-        self._api_status = ""
-        self._api_title = ""
-        self._api_querystring = ""
         self._Address = None
         self._DataTimeout = 0
         self._Enabled = "true"
@@ -41,6 +39,7 @@ class Hardware:
         self._Password = None
         self._Port = None
         self._server = server
+        self._api = API(server)
         self._SerialPort = None
         self._Type = None
         self._Username = None
@@ -85,14 +84,11 @@ class Hardware:
     # ..........................................................................
 
     def _initHardware(self):
-        querystring = "type={}".format(self._type_hardware)
-        self._api_querystring = querystring
-        res = self._server._call_api(querystring)
-        self._set_status(res)
-        result = res.get("result")
+        self._api.querystring = "type={}".format(self._type_hardware)
+        self._api.call()
         myDict = {}
-        if len(result) > 0:
-            for myDict in result:
+        if self._api.payload:
+            for myDict in self._api.payload:
                 if myDict.get("idx") == str(self._idx):
                     break
         self.address = myDict.get("Address")
@@ -112,11 +108,6 @@ class Hardware:
         self.type = myDict.get("Type")
         self.username = myDict.get("Username")
 
-    def _set_status(self, r):
-        self._api_status = r.get("status", self._server._return_error)
-        self._api_title = r.get("title", self._server._return_empty)
-        self._api_message = r.get("message", self._server._return_empty)
-
     # ..........................................................................
     # Public methods
     # ..........................................................................
@@ -125,14 +116,11 @@ class Hardware:
         return self._idx is not None and self._Name is not None
 
     def add(self):
-        self._api_querystring = self._server._return_empty
-        self._api_title = self._server._return_empty
-        self._api_status = self._server._return_error
         # At least Name and Type are required
         if self._idx is None and self._Name is not None and self._Type is not None:
             # Currently only Dummy device is allowed to create
             if self._Type == self._htype_dummy:
-                querystring = "param={}".format(self._param_add_hardware)
+                querystring = "type=command&param={}".format(self._param_add_hardware)
                 querystring += "&address={}".format(self._Address) if self._Address is not None else ""
                 querystring += "&datatimeout={}".format(self._DataTimeout)
                 querystring += "&enabled={}".format(self._Enabled)
@@ -149,11 +137,10 @@ class Hardware:
                 querystring += "&port={}".format(self._Port) if self._Port is not None else ""
                 querystring += "&serialport={}".format(self._SerialPort) if self._SerialPort is not None else ""
                 querystring += "&username={}".format(self._Username) if self._Username is not None else ""
-                self._api_querystring = querystring
-                res = self._server._call_command(querystring)
-                self._set_status(res)
-                if self._api_status == self._server._return_ok:
-                    self._idx = int(res.get("idx"))
+                self._api.querystring = querystring
+                self._api.call()
+                if self._api.status == self._api.OK:
+                    self._idx = int(self._api.data.get("idx"))
                     self._initHardware()
 
     def add_virtual(self):
@@ -161,16 +148,12 @@ class Hardware:
         self.add()
 
     def delete(self):
-        self._api_querystring = self._server._return_empty
-        self._api_title = self._server._return_empty
-        self._api_status = self._server._return_error
         if self.exists():
-            querystring = "param={}".format(self._param_delete_hardware)
-            querystring += "&idx={}".format(self.idx)
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._set_status(res)
-            if self._api_status == self._server._return_ok:
+            self._api.querystring = "type=command&param={}&idx={}".format(
+                self._param_delete_hardware,
+                self.idx)
+            self._api.call()
+            if self._api.status == self._api.OK:
                 self._idx = None
 
     def isDummy(self):
@@ -182,7 +165,7 @@ class Hardware:
     def update(self):
         # json.htm?type=command&param=updatehardware&htype=94&idx=idx
         if self.exists():
-            querystring = "param={}".format(self._param_update_hardware)
+            querystring = "type=command&param={}".format(self._param_update_hardware)
             querystring += "&idx={}".format(self._idx)
             querystring += "&address={}".format(self._Address) if self._Address is not None else ""
             querystring += "&datatimeout={}".format(self._DataTimeout)
@@ -201,9 +184,8 @@ class Hardware:
             querystring += "&port={}".format(self._Port) if self._Port is not None else ""
             querystring += "&serialport={}".format(self._SerialPort) if self._SerialPort is not None else ""
             querystring += "&username={}".format(self._Username) if self._Username is not None else ""
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._set_status(res)
+            self._api.querystring = querystring
+            self._api.call()
 
     # **************************************************************************
     # Properties
@@ -218,20 +200,8 @@ class Hardware:
         self._Address = str(value) if value is not None else None
 
     @property
-    def api_message(self):
-        return self._api_message
-
-    @property
-    def api_status(self):
-        return self._api_status
-
-    @property
-    def api_title(self):
-        return self._api_title
-
-    @property
-    def api_querystring(self):
-        return self._api_querystring
+    def api(self):
+        return self._api
 
     @property
     def datatimeout(self):

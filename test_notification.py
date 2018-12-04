@@ -16,14 +16,14 @@ def main():
     notification = dom.Notification(server, subject="Test 2 subject", body="Test body")
     notification.send()
 
-    print("{}: {} - {}".format(notification, notification.api_status, notification.api_title))
+    print("{}: {} - {}".format(notification, notification.api.status, notification.api.title))
 
     notification.subject = "Test 3 only for Kodi"
     notification.body = "Hello Kodi"
     notification.subsystem = "kodi"
     notification.send()
 
-    print("{}: {} - {}".format(notification, notification.api_status, notification.api_title))
+    print("{}: {} - {}".format(notification, notification.api.status, notification.api.title))
 
 
 if __name__ == "__main__":

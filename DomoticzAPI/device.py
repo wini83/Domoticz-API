@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from .api import API
 from .server import Server
 from .hardware import Hardware
 from .color import Color
+from .const import(NUM_MAX, NUM_MIN)
 from urllib.parse import quote
 
 """
@@ -102,6 +104,7 @@ class Device:
         if self._TypeName is not None:
             self._Type = None
             self._SubType = None
+        self._api = API(self._server)
         self._initDevice()
 
     def __str__(self):
@@ -119,28 +122,28 @@ class Device:
             querystring = "type={}&filter=all".format(self._type_devices)
         else:
             querystring = ""
-        self._api_querystring = querystring
-        res = self._server._call_api(querystring)
-        self._set_status(res)
+        self._api.querystring = querystring
+        self._api.call()
         myDict = {}
-        if self._api_status == self._server._return_ok:
+        if self._api.status == self._api.OK:
+            d = self._api.data
             # For some reason next property is only given in device calls. No idea about the meaning!
-            self._server._ActTime = res.get("ActTime")
+            self._server._ActTime = d.get("ActTime")
             # Update the server properties.
-            self._server._AstrTwilightEnd = res.get("AstrTwilightEnd")
-            self._server._AstrTwilightStart = res.get("AstrTwilightStart")
-            self._server._CivTwilightEnd = res.get("CivTwilightEnd")
-            self._server._CivTwilightStart = res.get("CivTwilightStart")
-            self._server._NautTwilightEnd = res.get("NautTwilightEnd")
-            self._server._NautTwilightStart = res.get("NautTwilightStart")
-            self._server._Sunrise = res.get("Sunrise")
-            self._server._Sunset = res.get("Sunset")
-            self._server._SunAtSouth = res.get("SunAtSouth")
-            self._server._DayLength = res.get("DayLength")
-            self._server._ServerTime = res.get("ServerTime")
+            self._server._AstrTwilightEnd = d.get("AstrTwilightEnd")
+            self._server._AstrTwilightStart = d.get("AstrTwilightStart")
+            self._server._CivTwilightEnd = d.get("CivTwilightEnd")
+            self._server._CivTwilightStart = d.get("CivTwilightStart")
+            self._server._NautTwilightEnd = d.get("NautTwilightEnd")
+            self._server._NautTwilightStart = d.get("NautTwilightStart")
+            self._server._Sunrise = d.get("Sunrise")
+            self._server._Sunset = d.get("Sunset")
+            self._server._SunAtSouth = d.get("SunAtSouth")
+            self._server._DayLength = d.get("DayLength")
+            self._server._ServerTime = d.get("ServerTime")
             # Search for the given device
-            if res.get("result"):
-                for resDict in res["result"]:
+            if self._api.result:
+                for resDict in self._api.result:
                     if (self._idx is not None and int(resDict.get("idx")) == self._idx) \
                             or (self._Name is not None and resDict.get("Name") == self._Name):
                         # Found device :)
@@ -153,7 +156,7 @@ class Device:
         self._AddjValue = myDict.get("AddjValue")
         self._AddjValue2 = myDict.get("AddjValue2")
         self._Barometer = myDict.get("Barometer")
-        self._BatteryLevel = myDict.get("BatteryLevel", 255)
+        self._BatteryLevel = myDict.get("BatteryLevel", NUM_MAX)
         self._CameraIdx = myDict.get("CameraIdx")
         self._Chill = myDict.get("Chill")
         self._Color = Color(color=myDict.get("Color", "{}"))
@@ -252,15 +255,9 @@ class Device:
             else:
                 self._Hardware = None
 
-    def _set_status(self, r):
-        self._api_status = r.get("status", self._server._return_error)
-        self._api_title = r.get("title", self._server._return_empty)
-        self._api_message = r.get("message", self._server._return_empty)
-
     # ..........................................................................
     # Public methods
     # ..........................................................................
-
     def add(self):
         if self._idx is None \
                 and self._Hardware is not None \
@@ -268,24 +265,25 @@ class Device:
                 and self._Type is not None \
                 and self._SubType is not None:
             # type=createdevice&idx=IDX&sensorname=SENSORNAME&devicetype=DEVICETYPE&devicesubtype=SUBTYPE
-            querystring = "type={}&idx={}&sensorname={}&devicetype={}&devicesubtype={}".format(
-                self._type_create_device, self._Hardware._idx, quote(self._Name), self._Type, self._SubType)
-            self._api_querystring = querystring
-            res = self._server._call_api(querystring)
-            self._set_status(res)
-            if self._api_status == self._server._return_ok:
-                self._idx = res.get("idx", None)
+            self._api.querystring = "type={}&idx={}&sensorname={}&devicetype={}&devicesubtype={}".format(
+                self._type_create_device,
+                self._Hardware._idx,
+                quote(self._Name),
+                self._Type,
+                self._SubType)
+            self._api.call()
+            if self._api.status == self._api.OK:
+                self._idx = self._api.data.get("idx", None)
                 self._initDevice()
 
     def delete(self):
         if self.exists():
             # type=deletedevice&idx=29
-            querystring = "type={}&idx={}".format(
-                self._type_delete_device, self._idx)
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._set_status(res)
-            if self._api_status == self._server._return_ok:
+            self._api.querystring = "type={}&idx={}".format(
+                self._type_delete_device,
+                self._idx)
+            self._api.call()
+            if self._api.status == self._api.OK:
                 self._Hardware = None
                 self._idx = None
 
@@ -299,7 +297,7 @@ class Device:
         """
             Check if this device is using a battery
         """
-        return not (self._BatteryLevel is None or self._BatteryLevel == 255)
+        return not (self._BatteryLevel is None or self._BatteryLevel == NUM_MAX)
 
     def isDimmer(self):
         return ((self.isSwitch() and self._SwitchType == "Dimmer") or (self._isDimmer == True))
@@ -324,26 +322,24 @@ class Device:
             if self.isSwitch():
                 if value in self.switch_reset_security_statuses:
                     # type=command&param=resetsecuritystatus&idx=IDX&switchcmd=VALUE
-                    querystring = "param={}&idx={}&switchcmd={}".format(
+                    self._api.querystring = "type=command&param={}&idx={}&switchcmd={}".format(
                         self._param_reset_security_status,
                         self._idx,
                         value
                     )
-                    self._api_querystring = querystring
-                    res = self._server._call_command(querystring)
-                    self._set_status(res)
+                    self._api.call()
                     self._initDevice()
 
     def update(self, nvalue=0, svalue=""):
         # type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
         if self.exists():
-            querystring = "param={}&idx={}&nvalue={}".format(
-                self._param_update_device, self._idx, nvalue)
+            self._api.querystring = "type=command&param={}&idx={}&nvalue={}".format(
+                self._param_update_device,
+                self._idx,
+                nvalue)
             if len(svalue) > 0:
-                querystring += "&svalue={}".format(svalue)
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._set_status(res)
+                self._api.querystring += "&svalue={}".format(svalue)
+            self._api.call()
             self._initDevice()
 
     def updateSwitch(self, value, level=0):
@@ -353,19 +349,20 @@ class Device:
                     # type=command&param=switchlight&idx=IDX&switchcmd=On
                     # type=command&param=switchlight&idx=IDX&switchcmd=Off
                     # type=command&param=switchlight&idx=IDX&switchcmd=Toggle
-                    querystring = "param={}&idx={}&switchcmd={}".format(
+                    self._api.querystring = "type=command&param={}&idx={}&switchcmd={}".format(
                         self._param_switch_light,
                         self._idx,
                         value
                     )
-                    self._api_querystring = querystring
-                    res = self._server._call_command(querystring)
-                    self._set_status(res)
+                    self._api.call()
                     self._initDevice()
 
     # ..........................................................................
     # Properties
     # ..........................................................................
+    @property
+    def api(self):
+        return self._api
 
     @property
     def addjmulti(self):
@@ -382,22 +379,6 @@ class Device:
     @property
     def addjvalue2(self):
         return self._AddjValue2
-
-    @property
-    def api_message(self):
-        return self._api_message
-
-    @property
-    def api_querystring(self):
-        return self._api_querystring
-
-    @property
-    def api_status(self):
-        return self._api_status
-
-    @property
-    def api_title(self):
-        return self._api_title
 
     @property
     def barometer(self):
@@ -424,15 +405,13 @@ class Device:
         if isinstance(value, Color) and self.exists():
             if self.isSwitch():
                 # type=command&param=setcolbrightnessvalue&idx=IDX&color=COLOR&brightness=LEVEL
-                querystring = "param={}&idx={}&color={}&brightness={}".format(
+                self._api.querystring = "type=command&param={}&idx={}&color={}&brightness={}".format(
                     self._param_set_color_brightness,
                     self._idx,
                     quote(value.color),
                     self._Level
                 )
-                self._api_querystring = querystring
-                res = self._server._call_command(querystring)
-                self._set_status(res)
+                self._api.call()
                 self._initDevice()
 
     @property
@@ -511,13 +490,13 @@ class Device:
                 int_value = self._int_value_on
             else:
                 int_value = self._int_value_off
-            querystring = self._server._param.format(self._param_make_favorite)
-            querystring += "&idx={}&isfavorite={}".format(
-                self._idx, str(int_value))
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._set_status(res)
-            if self._api_status == self._server._return_ok:
+            self._api.querystring = "type=command&param={}&idx={}&isfavorite={}".format(
+                self._param_make_favorite,
+                self._idx,
+                str(int_value)
+                )
+            self._api.call()
+            if self._api.status == self._api.OK:
                 self._Favorite = int_value
 
     @property
@@ -588,15 +567,13 @@ class Device:
     def level(self, value):
         if self.isSwitch():
             # type=command&param=switchlight&idx=IDX&switchcmd=Set%20Level&level=LEVEL
-            querystring = "param={}&idx={}&switchcmd={}&level={}".format(
+            self._api.querystring = "type=command&param={}&idx={}&switchcmd={}&level={}".format(
                 self._param_switch_light,
                 self._idx,
                 quote(self.switchSetLevel),
                 value
             )
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._set_status(res)
+            self._api.call()
             self._initDevice()
 
     @property
@@ -635,13 +612,13 @@ class Device:
     def name(self, value):
         if self.exists():
             # json.htm?type=command&param=renamedevice&idx=idx&name=
-            querystring = self._server._param.format(self._param_rename_device)
-            querystring += "&idx={}&name={}".format(
-                self._idx, quote(str(value)))
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._set_status(res)
-            if self._api_status == self._server._return_ok:
+            self._api.querystring = "type=command&param={}&idx={}&name={}".format(
+                self._param_rename_device,
+                self._idx,
+                quote(str(value))
+                )
+            self._api.call()
+            if self._api.status == self._api.OK:
                 self._Name = value
 
     @property
@@ -775,12 +752,13 @@ class Device:
                 int_value = self._int_value_off
                 str_value = "false"
             # json.htm?type=setused&idx=IDX&used=true|false
-            querystring = "type={}&idx={}&used={}".format(
-                self._type_set_used, self._idx, str_value)
-            self._api_querystring = querystring
-            res = self._server._call_api(querystring)
-            self._set_status(res)
-            if self._api_status == self._server._return_ok:
+            self._api.querystring = "type={}&idx={}&used={}".format(
+                self._type_set_used,
+                self._idx,
+                str_value
+                )
+            self._api.call()
+            if self._api.status == self._api.OK:
                 self._Used = int_value
 
     @property

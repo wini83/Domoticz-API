@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from .server import Server
+from .api import API
 from urllib.parse import quote
 
 """
@@ -27,7 +28,7 @@ class Notification:
     }
 
     def __init__(self, server, subject=None, body=None, subsystem=None):
-        if isinstance(server, Server):
+        if isinstance(server, Server) and server.exists():
             self._server = server
         else:
             self._server = None
@@ -37,7 +38,7 @@ class Notification:
             self._subsystem = subsystem
         else:
             self._subsystem = None
-        self._initNotification()
+        self._api = API(self._server)
 
     def __str__(self):
         return "{}({})".format(self.__class__.__name__, self._subject)
@@ -46,49 +47,30 @@ class Notification:
     # Private methods
     # ..........................................................................
 
-    def _initNotification(self):
-        self._api_status = Server._return_error
-        self._api_title = Server._return_empty
-        self._api_querystring = Server._return_empty
-
-    def _set_status(self, r):
-        self._api_status = r.get("status", self._server._return_error)
-        self._api_title = r.get("title", self._server._return_empty)
-        self._api_message = r.get("message", self._server._return_empty)
-
     # ..........................................................................
     # Public methods
     # ..........................................................................
 
     def send(self):
+        # /json.htm?type=command&param=sendnotification&subject=SUBJECT&body=THEBODY
+        # /json.htm?type=command&param=sendnotification&subject=SUBJECT&body=THEBODY&subsystem=SUBSYSTEM
         if self._server is not None and self._subject is not None and self._body is not None:
-            querystring = self._server._param.format(self._param_notification) + "&subject={}&body={}".format(
-                quote(self._subject), quote(self._body))
+            self._api.querystring = "type=command&param={}&subject={}&body={}".format(
+                self._param_notification,
+                quote(self._subject),
+                quote(self._body)
+            )
             if self._subsystem is not None:
-                querystring += "&subsystem={}".format(self._subsystem)
-            self._api_querystring = querystring
-            res = self._server._call_command(querystring)
-            self._set_status(res)
+                self._api.querystring += "&subsystem={}".format(
+                    self._subsystem)
+            self._api.call()
 
     # ..........................................................................
     # Properties
     # ..........................................................................
-
     @property
-    def api_message(self):
-        return self._api_message
-
-    @property
-    def api_status(self):
-        return self._api_status
-
-    @property
-    def api_title(self):
-        return self._api_title
-
-    @property
-    def api_querystring(self):
-        return self._api_querystring
+    def api(self):
+        return self._api
 
     @property
     def body(self):
