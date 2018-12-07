@@ -81,6 +81,10 @@ class API:
         self._message = value
 
     @property
+    def payload(self):
+        return self._payload
+
+    @property
     def querystring(self):
         return self._querystring
 
@@ -88,12 +92,9 @@ class API:
     def querystring(self, value):
         self._querystring = value
 
+    # Obsolete!
     @property
     def result(self):
-        return self._payload
-
-    @property
-    def payload(self):
         return self._payload
 
     @property

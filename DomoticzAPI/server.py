@@ -17,7 +17,7 @@ class Server:
     """
     The Server class represents the Domoticz server
     """
-    DEFAULT_ADDRESS = "192.168.0.13"
+    DEFAULT_ADDRESS = "localhost"
     DEFAULT_PORT = "8080"
 
     # type parameter
