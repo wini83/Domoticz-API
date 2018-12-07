@@ -38,7 +38,7 @@ class Notification:
             self._subsystem = subsystem
         else:
             self._subsystem = None
-        self._api = API(self._server)
+        self._api = self._server.api
 
     def __str__(self):
         return "{}({})".format(self.__class__.__name__, self._subject)
@@ -68,10 +68,6 @@ class Notification:
     # ..........................................................................
     # Properties
     # ..........................................................................
-    @property
-    def api(self):
-        return self._api
-
     @property
     def body(self):
         return self._body

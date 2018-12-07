@@ -39,7 +39,7 @@ class Hardware:
         self._Password = None
         self._Port = None
         self._server = server
-        self._api = API(server)
+        self._api = self._server.api
         self._SerialPort = None
         self._Type = None
         self._Username = None

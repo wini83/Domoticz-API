@@ -67,7 +67,7 @@ class UserVariable:
                 self._type = ""
                 self._typenum = ""
             self._value = self.__value(self._type, value)
-            self._api = API(self._server)
+            self._api = self._server.api
             self._idx = None
             self._lastupdate = ""
             self.__getvar()

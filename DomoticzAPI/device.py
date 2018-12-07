@@ -104,7 +104,7 @@ class Device:
         if self._TypeName is not None:
             self._Type = None
             self._SubType = None
-        self._api = API(self._server)
+        self._api = self._server.api
         self._initDevice()
 
     def __str__(self):
@@ -360,10 +360,6 @@ class Device:
     # ..........................................................................
     # Properties
     # ..........................................................................
-    @property
-    def api(self):
-        return self._api
-
     @property
     def addjmulti(self):
         return self._AddjMulti

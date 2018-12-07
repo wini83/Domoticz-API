@@ -18,7 +18,7 @@ class Plan:
             self._server = server
         else:
             self._server = None
-        self._api = API(self._server)
+        self._api = self._server.api
         self._idx = idx
         self._initPlan()
 
@@ -55,10 +55,6 @@ class Plan:
     # ..........................................................................
     # Properties
     # ..........................................................................
-    @property
-    def api(self):
-        return self._api
-
     @property
     def devices(self):
         return self._Devices
