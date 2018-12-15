@@ -1,4 +1,5 @@
 from setuptools import setup
+from DomoticzAPI import version
 
 setup(
     author='Xorfor',
@@ -8,5 +9,5 @@ setup(
     name='DomoticzAPI',
     packages=['DomoticzAPI'],
     url='https://github.com/Xorfor/Domoticz-API/',
-    version='0.6.2'
+    version=version()
 )
