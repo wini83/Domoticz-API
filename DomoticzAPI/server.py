@@ -3,8 +3,6 @@
 #from .const import(RETURN_EMPTY, RETURN_ERROR, RETURN_OK)
 from .api import API
 import json
-import os
-import subprocess
 from datetime import datetime
 from urllib.parse import quote
 
