@@ -7,10 +7,12 @@ from .server import Server
 """
 VERSION_MAJOR = 0
 VERSION_MINOR = 7
-VERSION_MICRO = 0
+VERSION_PATCH = 0
+VERSION_IDENTIFIER = "beta"
 
 VERSION_SHORT = '{}.{}'.format(VERSION_MAJOR, VERSION_MINOR)
-VERSION = "{}.{}.{}".format(VERSION_MAJOR, VERSION_MINOR, VERSION_MICRO)
+VERSION = "{}.{}.{}-{}".format(VERSION_MAJOR,
+                               VERSION_MINOR, VERSION_PATCH, VERSION_IDENTIFIER)
 
 
 def machine():
@@ -51,6 +53,10 @@ def version():
     return VERSION
 
 
+def version_identifier():
+    return VERSION_IDENTIFIER
+
+
 def version_major():
     return VERSION_MAJOR
 
@@ -59,8 +65,8 @@ def version_minor():
     return VERSION_MINOR
 
 
-def version_micro():
-    return VERSION_MICRO
+def version_patch():
+    return VERSION_PATCH
 
 
 def version_short():
