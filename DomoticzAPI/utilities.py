@@ -3,7 +3,6 @@
 import platform
 import os
 import subprocess
-from .server import Server
 """
     Utilities
 """

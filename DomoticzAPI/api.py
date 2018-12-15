@@ -6,7 +6,7 @@
 """
 import json
 import subprocess
-
+from .utilities import(os_command)
 
 class API:
 
@@ -45,14 +45,7 @@ class API:
             command += " -s -X GET \"http://{}:{}/{}?{}\"".format(
                 self._server._address, self._server._port, self.URL, self._querystring)
             try:
-                p = subprocess.Popen(
-                    command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                p.wait()
-                data, errors = p.communicate()
-                if p.returncode != 0:
-                    r = None
-                else:
-                    r = json.loads(data.decode("utf-8", "ignore"))
+                r = json.loads(os_command(command))
                 self._data = r
                 self._message = r.get(self.MESSAGE)
                 self._payload = r.get(self.RESULT)
