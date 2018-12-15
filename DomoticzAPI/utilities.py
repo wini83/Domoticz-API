@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import platform
+import os
+import subprocess
 from .server import Server
 """
     Utilities
@@ -23,10 +25,16 @@ def node():
     return platform.node()
 
 
-def os_command(command, options):
-    server = Server()
-    res = server.os_command(command, options)
-    return res
+def os_command(command):
+    p = subprocess.Popen(command, shell=True,
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p.wait()
+    data, errors = p.communicate()
+    if p.returncode != 0:
+        r = None
+    else:
+        r = data.decode("utf-8", "ignore")
+    return r
 
 
 def os_release():

@@ -52,16 +52,16 @@ def main():
     print("********************************************************************************")
     print("OS commands (Unix)")
     print("********************************************************************************")
-    res = dom.os_command("/opt/vc/bin/vcgencmd", "measure_temp")
+    res = dom.os_command("/opt/vc/bin/vcgencmd measure_temp")
     print("CPU temperature ....... : {}".format(res.split("=")[1][:-3]))
-    res = dom.os_command("ls", "-al")
+    res = dom.os_command("ls -al")
     print("ls:\n{}".format(res))
 
     print("\r")
     print("********************************************************************************")
     print("OS commands (Windows)")
     print("********************************************************************************")
-    res = dom.os_command("vol", "")
+    res = dom.os_command("vol")
     print("vol:\n{}".format(res))
 
 
