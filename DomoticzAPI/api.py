@@ -42,7 +42,7 @@ class API:
             if self._server._rights == self._server._rights_login_required:
                 command += " -u {}:{}".format(self._server._user,
                                               self._server._password)
-            command += " -s -X GET 'http://{}:{}/{}?{}'".format(
+            command += " -s -X GET \"http://{}:{}/{}?{}\"".format(
                 self._server._address, self._server._port, self.URL, self._querystring)
             try:
                 p = subprocess.Popen(
