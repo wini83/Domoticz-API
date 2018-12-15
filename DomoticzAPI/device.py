@@ -134,13 +134,15 @@ class Device:
             self._server._AstrTwilightStart = d.get("AstrTwilightStart")
             self._server._CivTwilightEnd = d.get("CivTwilightEnd")
             self._server._CivTwilightStart = d.get("CivTwilightStart")
+            self._server._DayLength = d.get("DayLength")
             self._server._NautTwilightEnd = d.get("NautTwilightEnd")
             self._server._NautTwilightStart = d.get("NautTwilightStart")
+            self._server._ServerTime = d.get("ServerTime")
+            self._server._SunAtSouth = d.get("SunAtSouth")
             self._server._Sunrise = d.get("Sunrise")
             self._server._Sunset = d.get("Sunset")
-            self._server._SunAtSouth = d.get("SunAtSouth")
-            self._server._DayLength = d.get("DayLength")
-            self._server._ServerTime = d.get("ServerTime")
+            # In param=getversion it is "version"
+            self._server._version = d.get("app_version") 
             # Search for the given device
             if self._api.result:
                 for resDict in self._api.result:
