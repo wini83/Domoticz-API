@@ -8,6 +8,7 @@ setup(
     license='MIT License',
     name='DomoticzAPI',
     packages=['DomoticzAPI'],
+    python_requires='>3',
     url='https://github.com/Xorfor/Domoticz-API/',
     version=version()
 )
