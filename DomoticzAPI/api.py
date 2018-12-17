@@ -10,9 +10,17 @@ from .utilities import(os_command)
 
 class API:
 
-    URL = "json.htm"
-
+    # type parameter
     TYPE = "type={}"
+    TYPE_COMMAND = TYPE.format("command")
+
+    PARAM = "param={}"
+    IDX = "idx={}"
+
+    TYPE_COMMAND_PARAM = "{}&{}".format(TYPE_COMMAND, PARAM)
+
+    # Constants used by api
+    URL = "json.htm"
 
     RESULT = "result"
     MESSAGE = "message"
@@ -21,6 +29,9 @@ class API:
 
     OK = "OK"
     ERROR = "ERR"
+    UNKNOWN = "???"
+
+    RESULTS = [OK, ERROR, UNKNOWN]
 
     def __init__(self, server):
         self._message = None
@@ -49,13 +60,13 @@ class API:
                 self._data = r
                 self._message = r.get(self.MESSAGE)
                 self._payload = r.get(self.RESULT)
-                self.status = r.get(self.STATUS)
+                self.status = r.get(self.STATUS) # set correct value
                 self._title = r.get(self.TITLE)
             except:
                 self._data = {}
                 self._message = "Invalid call"
                 self._payload = None
-                self.status = None
+                self._status = None
                 self._title = None
 
     # ..........................................................................
@@ -104,7 +115,12 @@ class API:
             self._status = self.ERROR
         else:
             # Sometimes ERROR is returned, so truncated to first 3 characters
-            self._status = value[:3]
+            value = value[:3]
+            if value in self.RESULTS:
+                self._status = value
+            else:
+                self._status = self.ERROR
+
 
     @property
     def title(self):
