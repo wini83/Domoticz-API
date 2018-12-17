@@ -238,7 +238,7 @@ class Hardware:
         return self._Mode1
 
     @mode1.setter
-   def mode1(self, value):
+    def mode1(self, value):
         self._Mode1 = str(value) if value is not None else None
 
     @property

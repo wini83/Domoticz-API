@@ -28,15 +28,15 @@ class Device:
     _param_reset_security_status = "resetsecuritystatus"
 
     # Parameters used for: setcolbrightnessvalue
-    switchOn = "On"
-    switchOff = "Off"
-    switchToggle = "Toggle"
-    switchSetLevel = "Set Level"
+    SWITCH_ON = "On"
+    SWITCH_OFF = "Off"
+    SWITCH_TOGGLE = "Toggle"
+    SWITCH_SET_LEVEL = "Set Level"
 
     switch_light_values = {
-        switchOn,
-        switchOff,
-        switchToggle,
+        SWITCH_ON,
+        SWITCH_OFF,
+        SWITCH_TOGGLE,
     }
 
     # Parameters used for: resetsecuritystatus
@@ -570,7 +570,7 @@ class Device:
             self._api.querystring = "type=command&param={}&idx={}&switchcmd={}&level={}".format(
                 self._param_switch_light,
                 self._idx,
-                quote(self.switchSetLevel),
+                quote(self.SWITCH_SET_LEVEL),
                 value
             )
             self._api.call()
