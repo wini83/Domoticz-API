@@ -116,9 +116,11 @@ class Device:
 
     def _initDevice(self):
         if self._idx is not None:
+            # Retrieve status of specific device: /json.htm?type=devices&rid=IDX
             querystring = "type={}&rid={}".format(
                 self._type_devices, self._idx)
         elif self._Name is not None:
+            # Get all devices: /json.htm?type=devices&filter=all
             querystring = "type={}&filter=all".format(self._type_devices)
         else:
             querystring = ""
@@ -189,8 +191,8 @@ class Device:
         self._ID = myDict.get("ID")
         self._idx = myDict.get("idx", self._idx)
         # Next property available with:
-        #     type=command&param=getlightswitches
-        #     type=devices&filter=light&used=true&order=Name
+        #     /json.htm?type=command&param=getlightswitches
+        #     /json.htm?type=devices&filter=light&used=true&order=Name
         self._isDimmer = myDict.get("IsDimmer")
         self._Image = myDict.get("Image")
         self._InternalState = myDict.get("InternalState")
@@ -266,7 +268,7 @@ class Device:
                 and self._Name is not None \
                 and self._Type is not None \
                 and self._SubType is not None:
-            # type=createdevice&idx=IDX&sensorname=SENSORNAME&devicetype=DEVICETYPE&devicesubtype=SUBTYPE
+            # /json.htm?type=createdevice&idx=IDX&sensorname=SENSORNAME&devicetype=DEVICETYPE&devicesubtype=SUBTYPE
             self._api.querystring = "type={}&idx={}&sensorname={}&devicetype={}&devicesubtype={}".format(
                 self._type_create_device,
                 self._Hardware._idx,
@@ -280,7 +282,7 @@ class Device:
 
     def delete(self):
         if self.exists():
-            # type=deletedevice&idx=29
+            # /json.htm?type=deletedevice&idx=IDX
             self._api.querystring = "type={}&idx={}".format(
                 self._type_delete_device,
                 self._idx)
@@ -323,7 +325,7 @@ class Device:
         if self.exists():
             if self.isSwitch():
                 if value in self.switch_reset_security_statuses:
-                    # type=command&param=resetsecuritystatus&idx=IDX&switchcmd=VALUE
+                    # /json.htm?type=command&param=resetsecuritystatus&idx=IDX&switchcmd=VALUE
                     self._api.querystring = "type=command&param={}&idx={}&switchcmd={}".format(
                         self._param_reset_security_status,
                         self._idx,
@@ -333,7 +335,7 @@ class Device:
                     self._initDevice()
 
     def update(self, nvalue=0, svalue=""):
-        # type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
+        # /json.htm?type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
         if self.exists():
             self._api.querystring = "type=command&param={}&idx={}&nvalue={}".format(
                 self._param_update_device,
@@ -348,9 +350,9 @@ class Device:
         if self.exists():
             if self.isSwitch():
                 if value in self.switch_light_values:
-                    # type=command&param=switchlight&idx=IDX&switchcmd=On
-                    # type=command&param=switchlight&idx=IDX&switchcmd=Off
-                    # type=command&param=switchlight&idx=IDX&switchcmd=Toggle
+                    # /json.htm?type=command&param=switchlight&idx=IDX&switchcmd=On
+                    # /json.htm?type=command&param=switchlight&idx=IDX&switchcmd=Off
+                    # /json.htm?type=command&param=switchlight&idx=IDX&switchcmd=Toggle
                     self._api.querystring = "type=command&param={}&idx={}&switchcmd={}".format(
                         self._param_switch_light,
                         self._idx,
@@ -402,7 +404,7 @@ class Device:
     def color(self, value):
         if isinstance(value, Color) and self.exists():
             if self.isSwitch():
-                # type=command&param=setcolbrightnessvalue&idx=IDX&color=COLOR&brightness=LEVEL
+                # /json.htm?type=command&param=setcolbrightnessvalue&idx=IDX&color=COLOR&brightness=LEVEL
                 self._api.querystring = "type=command&param={}&idx={}&color={}&brightness={}".format(
                     self._param_set_color_brightness,
                     self._idx,
@@ -482,7 +484,7 @@ class Device:
 
     @favorite.setter
     def favorite(self, value):
-        # json.htm?type=command&param=makefavorite&idx=" + id + "&isfavorite=" + isfavorite
+        # /json.htm?type=command&param=makefavorite&idx=IDX&isfavorite=FAVORITE
         if isinstance(value, bool) and self.exists():
             if value:
                 int_value = self._int_value_on
@@ -564,7 +566,7 @@ class Device:
     @level.setter
     def level(self, value):
         if self.isSwitch():
-            # type=command&param=switchlight&idx=IDX&switchcmd=Set%20Level&level=LEVEL
+            # /json.htm?type=command&param=switchlight&idx=IDX&switchcmd=Set%20Level&level=LEVEL
             self._api.querystring = "type=command&param={}&idx={}&switchcmd={}&level={}".format(
                 self._param_switch_light,
                 self._idx,
@@ -609,7 +611,7 @@ class Device:
     @name.setter
     def name(self, value):
         if self.exists():
-            # json.htm?type=command&param=renamedevice&idx=idx&name=
+            # /json.htm?type=command&param=renamedevice&idx=idx&name=
             self._api.querystring = "type=command&param={}&idx={}&name={}".format(
                 self._param_rename_device,
                 self._idx,
@@ -749,7 +751,7 @@ class Device:
             else:
                 int_value = self._int_value_off
                 str_value = "false"
-            # json.htm?type=setused&idx=IDX&used=true|false
+            # /json.htm?type=setused&idx=IDX&used=true|false
             self._api.querystring = "type={}&idx={}&used={}".format(
                 self._type_set_used,
                 self._idx,
