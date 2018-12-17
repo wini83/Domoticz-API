@@ -156,14 +156,14 @@ class Hardware:
             if self._api.status == self._api.OK:
                 self._idx = None
 
-    def isDummy(self):
+    def is_dummy(self):
         return self._Type == self._htype_dummy
 
-    def isPythonPlugin(self):
+    def is_python_plugin(self):
         return self._Type == self._htype_python_plugin
 
     def update(self):
-        # json.htm?type=command&param=updatehardware&htype=94&idx=idx
+        # /json.htm?type=command&param=updatehardware&htype=94&idx=idx
         if self.exists():
             querystring = "type=command&param={}".format(self._param_update_hardware)
             querystring += "&idx={}".format(self._idx)
@@ -229,7 +229,7 @@ class Hardware:
         self._Extra = str(value) if value is not None else None
 
     @property
-    # In / json.htm?type = devices: HardwareID
+    # In /json.htm?type=devices: HardwareID
     def idx(self):
         return self._idx
 
@@ -238,7 +238,7 @@ class Hardware:
         return self._Mode1
 
     @mode1.setter
-    def mode1(self, value):
+   def mode1(self, value):
         self._Mode1 = str(value) if value is not None else None
 
     @property
@@ -282,7 +282,7 @@ class Hardware:
         self._Mode6 = str(value) if value is not None else None
 
     @property
-    # In / json.htm?type = devices: HardwareName
+    # In /json.htm?type=devices: HardwareName
     def name(self):
         return self._Name
 

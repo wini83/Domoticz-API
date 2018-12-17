@@ -156,7 +156,7 @@ class UserVariable:
                 if self._api.status == self._api.OK:
                     self.__getvar()
 
-    # json.htm?type=command&param=updateuservariable&vname=Test&vtype=1&vvalue=1.23
+    # /json.htm?type=command&param=updateuservariable&vname=Test&vtype=1&vvalue=1.23
     def update(self):
         if self.exists():
             self._api.querystring = "type=command&param={}&vname={}&vtype={}&vvalue={}".format(
@@ -167,7 +167,7 @@ class UserVariable:
             self._api.call()
             self.__getvar()
 
-    # json.htm?type=command&param=deleteuservariable&idx=3
+    # /json.htm?type=command&param=deleteuservariable&idx=3
     def delete(self):
         if self.exists():
             self._api.querystring = "type=command&param={}&idx={}".format(

@@ -82,18 +82,18 @@ def version_short():
 # Temperature conversion from Celsius to Fahrenheit
 
 
-def TempC2F(value):
+def c_2_f(value):
     return (value * 1.8) + 32
 
 
 # Temperature conversion from Fahrenheit to Celsius
-def TempF2C(value):
+def f_2_c(value):
     return (value - 32) / 1.8
 
 # Convert bearing in degrees to a direction
 
 
-def Bearing2Status(d):
+def bearing_2_status(d):
     """
     Based on https://gist.github.com/RobertSudwarts/acf8df23a16afdb5837f
     """

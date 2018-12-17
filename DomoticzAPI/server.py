@@ -76,7 +76,7 @@ class Server:
     # Private methods
     # ..........................................................................
     def _getAuth(self):
-        # json.htm?type=command&param=getauth
+        # /json.htm?type=command&param=getauth
         self._api.querystring = "type=command&param={}".format(
             self._param_getauth)
         self._api.call()
@@ -84,7 +84,7 @@ class Server:
             self._rights = self._api.data.get("rights")
 
     def _getVersion(self):
-        # json.htm?type=command&param=getversion
+        # /json.htm?type=command&param=getversion
         self._api.querystring = "type=command&param={}".format(
             self._param_version)
         self._api.call()
@@ -99,7 +99,7 @@ class Server:
         self._version = self._api.data.get("version")
 
     def _checkForUpdate(self):
-        # json.htm?type=command&param=checkforupdate
+        # /json.htm?type=command&param=checkforupdate
         self._api.querystring = "type=command&param={}".format(
             self._param_checkforupdate)
         self._api.call()
@@ -110,7 +110,7 @@ class Server:
         self._statuscode = self._api.data.get("statuscode")
 
     def _getSunRiseSet(self, now=False):
-        # json.htm?type=command&param=getSunRiseSet
+        # /json.htm?type=command&param=getSunRiseSet
         if isinstance(self._currentdate_dt, datetime):
             if datetime.now().date() > self._currentdate_dt:
                 now = True
@@ -132,7 +132,7 @@ class Server:
             self._ServerTime = self._api.data.get("ServerTime")
 
     def _getConfig(self):
-        # json.htm?type=command&param=getconfig
+        # /json.htm?type=command&param=getconfig
         # Not required yet. May be interesting to get latitude and longitude. Most is GUI stuff.
         pass
 
@@ -174,12 +174,12 @@ class Server:
     # ..........................................................................
     # Properties
     # ..........................................................................
-    # json.htm?type=command&param=getSunRiseSet
+    # /json.htm?type=command&param=getSunRiseSet
     #
     # Used undocumented url's:
     #
-    # json.htm?type=command&param=getversion
-    # json.htm?type=command&param=checkforupdate
+    # /json.htm?type=command&param=getversion
+    # /json.htm?type=command&param=checkforupdate
     # ..........................................................................
 
     @property

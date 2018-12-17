@@ -297,33 +297,33 @@ class Device:
         """
         return not (self._idx is None or self._Hardware is None)
 
-    def hasBattery(self):
+    def has_battery(self):
         """
             Check if this device is using a battery
         """
         return not (self._BatteryLevel is None or self._BatteryLevel == NUM_MAX)
 
-    def isDimmer(self):
-        return ((self.isSwitch() and self._SwitchType == "Dimmer") or (self._isDimmer == True))
+    def is_dimmer(self):
+        return ((self.is_switch() and self._SwitchType == "Dimmer") or (self._isDimmer == True))
 
-    def isFavorite(self):
+    def is_favorite(self):
         return not (self._Favorite is None or self._Favorite == 0)
 
-    def isSwitch(self):
+    def is_switch(self):
         return self._SwitchType is not None
 
-    def isThermometer(self):
+    def is_thermometer(self):
         return self._Temp is not None
 
-    def isHygrometer(self):
+    def is_hygrometer(self):
         return self._Humidity is not None
 
-    def resetSecurityStatus(self, value):
+    def reset_security_status(self, value):
         """
             Reset security status for eg. Smoke detectors
         """
         if self.exists():
-            if self.isSwitch():
+            if self.is_switch():
                 if value in self.switch_reset_security_statuses:
                     # /json.htm?type=command&param=resetsecuritystatus&idx=IDX&switchcmd=VALUE
                     self._api.querystring = "type=command&param={}&idx={}&switchcmd={}".format(
@@ -346,9 +346,9 @@ class Device:
             self._api.call()
             self._initDevice()
 
-    def updateSwitch(self, value, level=0):
+    def update_switch(self, value, level=0):
         if self.exists():
-            if self.isSwitch():
+            if self.is_switch():
                 if value in self.switch_light_values:
                     # /json.htm?type=command&param=switchlight&idx=IDX&switchcmd=On
                     # /json.htm?type=command&param=switchlight&idx=IDX&switchcmd=Off
@@ -403,7 +403,7 @@ class Device:
     @color.setter
     def color(self, value):
         if isinstance(value, Color) and self.exists():
-            if self.isSwitch():
+            if self.is_switch():
                 # /json.htm?type=command&param=setcolbrightnessvalue&idx=IDX&color=COLOR&brightness=LEVEL
                 self._api.querystring = "type=command&param={}&idx={}&color={}&brightness={}".format(
                     self._param_set_color_brightness,
@@ -565,7 +565,7 @@ class Device:
 
     @level.setter
     def level(self, value):
-        if self.isSwitch():
+        if self.is_switch():
             # /json.htm?type=command&param=switchlight&idx=IDX&switchcmd=Set%20Level&level=LEVEL
             self._api.querystring = "type=command&param={}&idx={}&switchcmd={}&level={}".format(
                 self._param_switch_light,
