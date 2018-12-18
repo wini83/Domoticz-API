@@ -38,7 +38,7 @@ class UserVariable:
 
     _param_get_user_variable = "getuservariable"
     _param_get_user_variables = "getuservariables"
-    _param_save_user_variable = "saveuservariable"
+    _param_add_user_variable = "adduservariable"
     _param_update_user_variable = "updateuservariable"
     _param_delete_user_variable = "deleteuservariable"
 
@@ -73,7 +73,7 @@ class UserVariable:
             self.__getvar()
 
     def __str__(self):
-        return "{}({}, \"{}\", \"{}\", \"{}\")".format(self.__class__.__name__, str(self._server), self._name,
+        return "{}({}, {}: \"{}\", \"{}\", \"{}\")".format(self.__class__.__name__, str(self._server), self._idx, self._name,
                                                        self._type, self._value)
 
     # ..........................................................................
@@ -143,12 +143,12 @@ class UserVariable:
         else:
             return True
 
-    # /json.htm?type=command&param=saveuservariable&vname=Test&vtype=1&vvalue=1.23
+    # /json.htm?type=command&param=saveuservariable&vname=NAME&vtype=TYPE&vvalue=VALUE
     def add(self):
         if not self.exists():
             if len(self._name) > 0 and len(self._type) > 0 and len(self._value) > 0:
                 self._api.querystring = "type=command&param={}&vname={}&vtype={}&vvalue={}".format(
-                    self._param_save_user_variable,
+                    self._param_add_user_variable,
                     self._name,
                     self._typenum,
                     self._value)
@@ -156,18 +156,19 @@ class UserVariable:
                 if self._api.status == self._api.OK:
                     self.__getvar()
 
-    # /json.htm?type=command&param=updateuservariable&vname=Test&vtype=1&vvalue=1.23
+    # /json.htm?type=command&param=updateuservariable&idx=IDX&vname=NAME&vtype=TYPE&vvalue=VALUE
     def update(self):
         if self.exists():
-            self._api.querystring = "type=command&param={}&vname={}&vtype={}&vvalue={}".format(
+            self._api.querystring = "type=command&param={}&idx={}&vname={}&vtype={}&vvalue={}".format(
                 self._param_update_user_variable,
+                self._idx,
                 self._name,
                 self._typenum,
                 self._value)
             self._api.call()
             self.__getvar()
 
-    # /json.htm?type=command&param=deleteuservariable&idx=3
+    # /json.htm?type=command&param=deleteuservariable&idx=IDX
     def delete(self):
         if self.exists():
             self._api.querystring = "type=command&param={}&idx={}".format(

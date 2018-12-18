@@ -18,6 +18,7 @@ def main():
     else:
         print("{} NOT exists in Domoticz".format(var0.name))
     print("\r")
+    
     # Define an user variable only by name, which does not exists in Domoticz
     var1 = dom.UserVariable(server, "Test1")
     print(var1)
@@ -27,6 +28,7 @@ def main():
     else:
         print("{} NOT exists in Domoticz".format(var1.name))
     print("\r")
+
     # Create an new user variable
     var2 = dom.UserVariable(server, "Test2", "float", "1.23")
     print("Add {}".format(var2.name))
@@ -47,6 +49,7 @@ def main():
     else:
         print("{} NOT exists in Domoticz".format(var2.name))
     print("\r")
+
     var3 = dom.UserVariable(server, "Test3", "integer")
     print(var3)
     flt = 4.56
