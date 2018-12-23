@@ -7,13 +7,11 @@ from .color import Color
 from .const import(NUM_MAX, NUM_MIN)
 from urllib.parse import quote
 
-"""
-    Device class
-"""
-
 
 class Device:
-
+    """
+        Device class
+    """
     _type_devices = "devices"
     _type_create_device = "createdevice"
     _type_create_dummy = "createvirtualsensor"
@@ -624,6 +622,15 @@ class Device:
     @property
     def notifications(self):
         return self._Notifications
+
+    @property
+    def nvalue(self):
+        if self._Usage is not None:
+            return float(self._Usage.split()[0])
+        elif self._Data is not None:
+            return float(self._Data.split()[0])
+        else:
+            return None
 
     @property
     def options(self):

@@ -16,6 +16,7 @@ def main():
     print("Non existing device")
     print("********************************************************************************")
     dev2 = dom.Device(server, name="xyz")
+    print("dev2 ................... : {}".format(dev2.__doc__))
     if dev2.exists():
         print("Value .................. : {}".format(dev2.data))
     else:

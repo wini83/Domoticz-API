@@ -3,27 +3,24 @@
 from ast import literal_eval
 from .const import(NUM_MAX, NUM_MIN)
 
-"""
-    Domoticz Color class
-
-    Domoticz color format:
-
-    Example: color={"m":3,"t":0,"r":0,"g":0,"b":50,"cw":0,"ww":0}
-
-        Color {
-          m:  # Above color mode 0 .. 4
-          t:  # Range: 0 .. 255, Color temperature (warm / cold ratio, 0 is coldest, 255 is warmest)
-          r:  # Range: 0 .. 255, Red level
-          g:  # Range: 0 .. 255, Green level
-          b:  # Range: 0 .. 255, Blue level
-          cw: # Range: 0 .. 255, Cold white level
-          ww: # Range: 0 .. 255, Warm white level (also used as level for monochrome white)
-        }
-"""
-
-
 class Color:
+    """
+        Domoticz Color class
 
+        Domoticz color format:
+
+        Example: color={"m":3,"t":0,"r":0,"g":0,"b":50,"cw":0,"ww":0}
+
+            Color {
+            m:  # Above color mode 0 .. 4
+            t:  # Range: 0 .. 255, Color temperature (warm / cold ratio, 0 is coldest, 255 is warmest)
+            r:  # Range: 0 .. 255, Red level
+            g:  # Range: 0 .. 255, Green level
+            b:  # Range: 0 .. 255, Blue level
+            cw: # Range: 0 .. 255, Cold white level
+            ww: # Range: 0 .. 255, Warm white level (also used as level for monochrome white)
+            }
+    """
     # Color Modes
     MODE_NONE = 0  # Illegal
     MODE_WHITE = 1  # White. Valid fields: none
