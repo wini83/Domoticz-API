@@ -6,14 +6,17 @@
 import DomoticzAPI as dom
 import os
 
+
 def main():
     print("********************************************************************************")
     print("Test script ........... : {}".format(os.path.basename(__file__)))
     print("********************************************************************************")
     server = dom.Server()
-    dom.Notification(server, subject="Test 1 subject", body="Hello World!").send()
+    dom.Notification(server, subject="Test 1 subject",
+                     body="Hello World!").send()
 
-    notification = dom.Notification(server, subject="Test 2 subject", body="Test body")
+    notification = dom.Notification(
+        server, subject="Test 2 subject", body="Test body")
     notification.send()
 
     print("{}: {} - {}".format(notification,

@@ -4,7 +4,7 @@ from .const import *
 from .server import *
 from .hardware import *
 from .device import *
-from .plan import *
+from .roomplan import *
 from .color import *
 from .uservariable import *
 from .notification import *

@@ -4,12 +4,11 @@ from .server import Server
 from .api import API
 from urllib.parse import quote
 
-"""
-    Notification
-"""
-
 
 class Notification:
+    """
+        Notification
+    """
 
     _param_notification = "sendnotification"
 
