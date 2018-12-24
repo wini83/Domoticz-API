@@ -120,9 +120,9 @@ class RoomPlan:
                     self._idx,
                     value)
                 self._api.call()
-                if self._api.status == self._api.OK:
-                    self._name = value
-
+        self._name = value
+        self._init()
+        
     @property
     def order(self):
         """ 

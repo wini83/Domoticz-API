@@ -25,9 +25,23 @@ def main():
     print("Name .................. : {}".format(roomplan2.name))
     print("Order ................. : {}".format(roomplan2.order))
     print("Devices ............... : {}".format(roomplan2.devices))
+
+    roomplan3 = dom.RoomPlan(server, name="XXX")
+    roomplan3.name = "RoomPlan3"
+    print("Add roomplan3")
+    roomplan3.add()
+    print("exists ................ : {}".format(roomplan3.exists()))
+    print("idx ................... : {}".format(roomplan3.idx))
+    print("Name .................. : {}".format(roomplan3.name))
+    print("Order ................. : {}".format(roomplan3.order))
+    print("Devices ............... : {}".format(roomplan3.devices))
+
     print("Delete roomplan2")
     roomplan2.delete()
     print("exists ................ : {}".format(roomplan2.exists()))
+    print("Delete roomplan3")
+    roomplan3.delete()
+    print("exists ................ : {}".format(roomplan3.exists()))
 
 if __name__ == "__main__":
     main()
