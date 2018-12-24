@@ -47,7 +47,6 @@ class RoomPlan:
         if self._server is not None:
             # /json.htm?type=plans
             self._api.querystring = self._api.TYPE.format(self._type_roomplans)
-            print(self._api.querystring)
             self._api.call()
             if self._api.status == self._api.OK:
                 if self._api.result:
@@ -60,7 +59,7 @@ class RoomPlan:
                             break
         self._idx = myDict.get("idx")
         self._devices = myDict.get("Devices")
-        self._name = myDict.get("Name")
+        self._name = myDict.get("Name", self._name)
         self._order = myDict.get("Order")
 
     # ..........................................................................
