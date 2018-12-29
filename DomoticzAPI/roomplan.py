@@ -36,7 +36,8 @@ class RoomPlan:
             self._server = None
         self._api = self._server.api
         self._devices = None
-        self._idx = int(kwargs.get("idx"))
+        self._idx = int(kwargs.get("idx")) if kwargs.get(
+            "idx") is not None else None
         self._name = kwargs.get("name")
         self._order = None
         self._init()
