@@ -76,7 +76,7 @@ class Device:
         # Existing device: def __init__(self, server, idx)
         if len(args) == 1:
             # For existing device
-            #   hw = dom.Device(server, 180)
+            #   dev = dom.Device(server, 180)
             self._idx = args[0]
         # New device:      def __init__(self, server, hardware, name, type=None, subtype=None):
         elif len(args) == 2:

@@ -9,11 +9,21 @@ def main():
     print("********************************************************************************")
     server = dom.Server()
     # Or use an other number as can be found as planid in a device
-    roomplan1 = dom.RoomPlan(server, idx=9999)
+    roomplan1 = dom.RoomPlan(server, idx=2)
     print(roomplan1)
     print("api ................... : {}".format(server.api))
     print("querystring ........... : {}".format(server.api.querystring))
     print("exists ................ : {}".format(roomplan1.exists()))
+    print("Devices ............... : {}".format(roomplan1.devices))
+    
+    dev = dom.Device(server, 61)
+    print(dev)
+    roomplan1.delete_device(dev)
+    print("querystring ........... : {}".format(server.api.querystring))
+    print("Devices ............... : {}".format(roomplan1.devices))
+    roomplan1.add_device(dev)
+    print("querystring ........... : {}".format(server.api.querystring))
+    print("Devices ............... : {}".format(roomplan1.devices))
 
     roomplan2 = dom.RoomPlan(server, name="RoomPlan2")
     print(roomplan2)
