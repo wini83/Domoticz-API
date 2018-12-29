@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import DomoticzAPI as dom
-import os
+
 
 def main():
     print("********************************************************************************")
-    print("Test script ........... : {}".format(os.path.basename(__file__)))
+    print("Test script ........... : {}".format(__file__))
     print("********************************************************************************")
 
     print("\r")

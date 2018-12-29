@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import DomoticzAPI as dom
-import os
+
 
 def main():
     print("********************************************************************************")
-    print("Test script ........... : {}".format(os.path.basename(__file__)))
+    print("Test script ........... : {}".format(__file__))
     print("********************************************************************************")
     server = dom.Server()
 
-    hw2 = dom.Hardware(server, type=15, port=1, name="Sensors 1", enabled="true")
+    hw2 = dom.Hardware(server, type=15, port=1,
+                       name="Sensors 1", enabled="true")
     hw2.add()
     print("Add ................... : {}".format(server.api.querystring))
     print("{}: {} - {}".format(hw2, server.api.status, server.api.title))

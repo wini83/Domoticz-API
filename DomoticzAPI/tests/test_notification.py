@@ -4,12 +4,11 @@
 # Look in Domoticz log for the results
 # --------------------------------------------------------------------------------
 import DomoticzAPI as dom
-import os
 
 
 def main():
     print("********************************************************************************")
-    print("Test script ........... : {}".format(os.path.basename(__file__)))
+    print("Test script ........... : {}".format(__file__))
     print("********************************************************************************")
     server = dom.Server()
     dom.Notification(server, subject="Test 1 subject",

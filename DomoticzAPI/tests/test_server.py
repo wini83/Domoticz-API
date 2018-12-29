@@ -2,17 +2,18 @@
 # -*- coding: utf-8 -*-
 import DomoticzAPI as dom
 from datetime import datetime
-import os
 
 
 def main():
     print("********************************************************************************")
-    print("Test script ........... : {}".format(os.path.basename(__file__)))
+    print("Test script ........... : {}".format(__file__))
     print("********************************************************************************")
 
     server = dom.Server()
     if server.api.status == server.api.OK:
-        print("{}: {} - {}".format(server, server.api_status, server.api_title))
+        print("server ................ : {}: {} - {}".format(server,
+                                                             server.api.status,
+                                                             server.api.title))
         print("Domoticz version ...... : {}".format(server.version))
         print("Build time ............ : {}".format(server.build_time_dt))
         print("DomoticzUpdateURL ..... : {}".format(server.domoticzupdateurl))
@@ -24,10 +25,16 @@ def main():
         print("Sunrise ............... : {}".format(server.sunrise))
         print("Sunset ................ : {}".format(server.sunset))
         print("SunsetDT .............. : {}".format(server.sunset_dt))
-        print("{}: {} - {}".format(server, server.api.status, server.api.title))
+        print("server ................ : {}: {} - {}".format(server,
+                                                             server.api.status,
+                                                             server.api.title))
+        print("\r")
+
         server.logmessage("Test 1")
         print("querystring ........... : {}".format(server.api.querystring))
-        print("{}: {} - {}".format(server, server.api.status, server.api.title))
+        print("server ................ : {}: {} - {}".format(server,
+                                                             server.api.status,
+                                                             server.api.title))
     else:
         print("Server not found!!!")
         print(server.api.message)

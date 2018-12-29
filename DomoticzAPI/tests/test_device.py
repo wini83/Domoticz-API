@@ -3,11 +3,11 @@
 import DomoticzAPI as dom
 from datetime import datetime
 import time
-import os
+
 
 def main():
     print("********************************************************************************")
-    print("Test script ........... : {}".format(os.path.basename(__file__)))
+    print("Test script ........... : {}".format(__file__))
     print("********************************************************************************")
     server = dom.Server()
     print(server)
@@ -35,7 +35,8 @@ def main():
         print("********************************************************************************")
         print("Add device to new hardware")
         print("********************************************************************************")
-        dev3 = dom.Device(server, hw3, "Test Device", type=244, subtype=73)  # Switch
+        dev3 = dom.Device(server, hw3, "Test Device",
+                          type=244, subtype=73)  # Switch
         print("dev3.hardware: {}".format(dev3.hardware))
         print("{}: {} - {}".format(dev3, server.api.status, server.api.title))
 
@@ -69,6 +70,7 @@ def main():
             dev3.color = new_color
     # Cleanup test data
     hw3.delete()
+
 
 if __name__ == "__main__":
     main()

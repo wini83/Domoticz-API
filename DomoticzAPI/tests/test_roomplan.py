@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import DomoticzAPI as dom
-import os
 
 
 def main():
     print("********************************************************************************")
-    print("Test script ........... : {}".format(os.path.basename(__file__)))
+    print("Test script ........... : {}".format(__file__))
     print("********************************************************************************")
     server = dom.Server()
     # Or use an other number as can be found as planid in a device
@@ -42,6 +41,7 @@ def main():
     print("Delete roomplan3")
     roomplan3.delete()
     print("exists ................ : {}".format(roomplan3.exists()))
+
 
 if __name__ == "__main__":
     main()

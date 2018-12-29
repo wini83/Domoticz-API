@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import DomoticzAPI as dom
-import os
+
 
 def main():
     print("********************************************************************************")
-    print("Test script ........... : {}".format(os.path.basename(__file__)))
+    print("Test script ........... : {}".format(__file__))
     print("********************************************************************************")
     server = dom.Server()
 
@@ -18,7 +18,7 @@ def main():
     else:
         print("{} NOT exists in Domoticz".format(var0.name))
     print("\r")
-    
+
     # Define an user variable only by name, which does not exists in Domoticz
     var1 = dom.UserVariable(server, "Test1")
     print(var1)
