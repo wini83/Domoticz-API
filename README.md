@@ -12,14 +12,14 @@ Please look at the `test_*.py`-examples how to use this api. The `plugin.py` con
 ## Status
 | Class                                                                    | Status
 | :---                                                                     | :---
-| [Server](https://github.com/Xorfor/Domoticz-API/wiki/Server)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [API](https://github.com/Xorfor/Domoticz-API/wiki/API)                   | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [Hardware](https://github.com/Xorfor/Domoticz-API/wiki/Hardware)         | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [Device](https://github.com/Xorfor/Domoticz-API/wiki/Device)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [UserVariable](https://github.com/Xorfor/Domoticz-API/wiki/UserVariable) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [Notification](https://github.com/Xorfor/Domoticz-API/wiki/Notification) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [Color](https://github.com/Xorfor/Domoticz-API/wiki/Color)               | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [Plan](https://github.com/Xorfor/Domoticz-API/wiki/Plan)                 | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [Server](../../wiki/Server)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [API](../../wiki/API)                   | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [Hardware](../../wiki/Hardware)         | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [Device](../../wiki/Device)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [UserVariable](../../wiki/UserVariable) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [Notification](../../wiki/Notification) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [Color](../../wiki/Color)               | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [Plan](../../wiki/RoomPlan)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 
 ## History
 
