@@ -539,7 +539,7 @@ class Device:
 
     @property
     def idx(self):
-        return self._idx
+        return int(self._idx)
 
     @property
     def image(self):

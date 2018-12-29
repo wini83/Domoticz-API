@@ -231,7 +231,7 @@ class Hardware:
     @property
     # In /json.htm?type=devices: HardwareID
     def idx(self):
-        return self._idx
+        return int(self._idx)
 
     @property
     def mode1(self):
