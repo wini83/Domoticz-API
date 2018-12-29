@@ -19,12 +19,13 @@ Please look at the `test_*.py`-examples how to use this api. The `plugin.py` con
 | [UserVariable](../../wiki/UserVariable) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 | [Notification](../../wiki/Notification) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 | [Color](../../wiki/Color)               | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [Plan](../../wiki/RoomPlan)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [RoomPlan](../../wiki/RoomPlan)         | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
 
 ## History
 
 | Version | Description
 | :---    | :---
+| 0.7.1   | Added functions to add, list and delete devices in RoomPlans
 | 0.7.0   | Introduced API class as property of Server for more flexibility
 | 0.6.0   | Added (Room)Plan class
 | 0.4.3   | Added resetSecurityStatus in Device
