@@ -207,8 +207,8 @@ class Device:
         self._Name = myDict.get("Name", self._Name)
         self._Notifications = myDict.get("Notifications")
         self._Options = myDict.get("Options")
-        self._PlanID = myDict.get("PlanID")
-        self._PlanIDs = myDict.get("PlanIDs")
+        self._PlanID = myDict.get("PlanID") # The first RoomPlan to which this device was assigned?
+        self._PlanIDs = myDict.get("PlanIDs") # List of RoomPlan idxs containg this device
         self._Pressure = myDict.get("Pressure")
         self._Protected = myDict.get("Protected")
         self._Quality = myDict.get("Quality")
@@ -638,7 +638,7 @@ class Device:
 
     @property
     def planid(self):
-        return self._PlanID
+        return int(self._PlanID) if self._PlanID is not None else None
 
     @property
     def planids(self):
