@@ -10,23 +10,36 @@ class Notification:
         Notification
     """
 
+    NSS_ALL = None
+    NSS_GOOGLE_CLOUD_MESSAGING = "gcm"
+    NSS_HTTP = "http"
+    NSS_KODI = "kodi"
+    NSS_LOGITECH_MEDIASERVER = "lms"
+    NSS_NMA = "nma"
+    NSS_PROWL = "prowl"
+    NSS_PUSHALOT = "pushalot"
+    NSS_PUSHBULLET = "pushbullet"
+    NSS_PUSHOVER = "pushover"
+    NSS_PUSHSAFER = "pushsafer"
+    NSS_TELEGRAM = "telegram"
+
     _param_notification = "sendnotification"
 
     _subsystems = {
-        "gcm",
-        "http",
-        "kodi",
-        "lms",
-        "nma",
-        "prowl",
-        "pushalot",
-        "pushbullet",
-        "pushover",
-        "pushsafer",
-        "telegram",
+        NSS_GOOGLE_CLOUD_MESSAGING,
+        NSS_HTTP,
+        NSS_KODI,
+        NSS_LOGITECH_MEDIASERVER,
+        NSS_NMA,
+        NSS_PROWL,
+        NSS_PUSHALOT,
+        NSS_PUSHBULLET,
+        NSS_PUSHOVER,
+        NSS_PUSHSAFER,
+        NSS_TELEGRAM,
     }
 
-    def __init__(self, server, subject=None, body=None, subsystem=None):
+    def __init__(self, server, subject=None, body=None, subsystem=NSS_ALL):
         if isinstance(server, Server) and server.exists():
             self._server = server
         else:
@@ -36,7 +49,7 @@ class Notification:
         if subsystem in self._subsystems:
             self._subsystem = subsystem
         else:
-            self._subsystem = None
+            self._subsystem = self.NSS_ALL
         self._api = self._server.api
 
     def __str__(self):
@@ -96,4 +109,4 @@ class Notification:
         if value in self._subsystems:
             self._subsystem = value
         else:
-            self._subsystem = None
+            self._subsystem = self.NSS_ALL
