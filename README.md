@@ -12,16 +12,16 @@ Please look at the `test_*.py`-examples how to use this api. The `plugin.py` con
 ## Status
 | Class                                                                    | Status
 | :---                                                                     | :---
-| [Server](../../wiki/Server)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [API](../../wiki/API)                   | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [Server](../../wiki/Server)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
+| [API](../../wiki/API)                   | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
 | Setting                                 |
 | Translation                             |
-| [Hardware](../../wiki/Hardware)         | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [Device](../../wiki/Device)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [UserVariable](../../wiki/UserVariable) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [Notification](../../wiki/Notification) | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [Color](../../wiki/Color)               | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
-| [RoomPlan](../../wiki/RoomPlan)         | <img src="https://img.shields.io/badge/Status-Stable-green.svg" />
+| [Hardware](../../wiki/Hardware)         | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
+| [Device](../../wiki/Device)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
+| [UserVariable](../../wiki/UserVariable) | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
+| [Notification](../../wiki/Notification) | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
+| [Color](../../wiki/Color)               | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
+| [RoomPlan](../../wiki/RoomPlan)         | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
 
 ## History
 
