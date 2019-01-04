@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #from .const import(RETURN_EMPTY, RETURN_ERROR, RETURN_OK)
 from .api import API
+from .setting import Setting
 import json
 from datetime import datetime
 from urllib.parse import quote
@@ -48,6 +49,7 @@ class Server:
         self._rights = self._rights_not_defined
         self._currentdate_dt = None
         self._api = API(self)
+        self._setting = Setting(self)
         # Check if authorization is required
         self._getAuth()
         if self._rights == self._rights_logged_in or (
@@ -150,7 +152,7 @@ class Server:
         # /i18n/domoticz-XX.json
         # Get ranslation for language with code XX, eg. uk, en, fr, nl, ru, etc.
         pass
-        
+
     def checkForUpdate(self):
         """
         Retrieves Domoticz version information
@@ -332,6 +334,10 @@ class Server:
     def rights(self):
         return self._rights
 
+    @property
+    def setting(self):
+        return self._setting
+        
     @property
     # getSunRiseSet
     def servertime(self):
