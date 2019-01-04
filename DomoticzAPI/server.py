@@ -51,7 +51,7 @@ class Server:
         self._password = kwargs.get("password")
         self._rights = self._rights_not_defined
         self._currentdate_dt = None
-        self._language = "en"
+        self._language = self.DEFAULT_LANGUAGE
         self._api = API(self)
         self._setting = Setting(self)
         # Check if authorization is required
