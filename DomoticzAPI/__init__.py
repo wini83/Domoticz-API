@@ -11,3 +11,4 @@ from .notification import *
 from .utilities import *
 from .api import *
 from .setting import *
+from .translation import *

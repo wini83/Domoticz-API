@@ -7,7 +7,7 @@ import subprocess
     Utilities
 """
 VERSION_MAJOR = 0
-VERSION_MINOR = 8
+VERSION_MINOR = 9
 VERSION_PATCH = 0
 VERSION_IDENTIFIER = "beta"
 

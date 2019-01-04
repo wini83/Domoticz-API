@@ -3,6 +3,7 @@
 #from .const import(RETURN_EMPTY, RETURN_ERROR, RETURN_OK)
 from .api import API
 from .setting import Setting
+from .translation import Translation
 import json
 from datetime import datetime
 from urllib.parse import quote
@@ -18,6 +19,7 @@ class Server:
     """
     DEFAULT_ADDRESS = "localhost"
     DEFAULT_PORT = "8080"
+    DEFAULT_LANGUAGE = "en"
 
     # type parameter
     _type = "type"
@@ -30,6 +32,7 @@ class Server:
     _param_checkforupdate = "checkforupdate"
     _param_execute_script = "execute_script"
     _param_getauth = "getauth"
+    _param_getlanguage = "getlanguage"
     _param_log = "addlogmessage"
     _param_reboot = "system_reboot"
     _param_shutdown = "system_shutdown"
@@ -48,6 +51,7 @@ class Server:
         self._password = kwargs.get("password")
         self._rights = self._rights_not_defined
         self._currentdate_dt = None
+        self._language = "en"
         self._api = API(self)
         self._setting = Setting(self)
         # Check if authorization is required
@@ -65,6 +69,8 @@ class Server:
         else:
             self._api.status = self._api.ERROR
             self._api.message = "Authorization is required"
+        self._getLanguage()
+        self._translation = Translation(self, language=self._language)
 
     def __str__(self):
         txt = "{}(\"{}\", \"{}\")".format(
@@ -110,6 +116,13 @@ class Server:
         self._Revision = self._api.data.get("Revision")
         self._SystemName = self._api.data.get("SystemName")
         self._statuscode = self._api.data.get("statuscode")
+
+    def _getLanguage(self):
+        # /json.htm?type=command&param=getlanguage
+        self._api.querystring = "type=command&param={}".format(
+            self._param_getlanguage)
+        self._api.call()
+        self._language = self._api.data.get("language")
 
     def _getSunRiseSet(self, now=False):
         # /json.htm?type=command&param=getSunRiseSet
@@ -292,6 +305,11 @@ class Server:
         return self._hash
 
     @property
+    # getlanguage
+    def language(self):
+        return self._language
+
+    @property
     # getSunRiseSet
     def nauttwilightend(self):
         self._getSunRiseSet()
@@ -396,6 +414,10 @@ class Server:
     # getversion & checkforupdate
     def systemname(self):
         return self._SystemName
+
+    @property
+    def translation(self):
+        return self._translation
 
     @property
     # getversion
