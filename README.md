@@ -14,7 +14,7 @@ Please look at the `test_*.py`-examples how to use this api. The `plugin.py` con
 | :---                                                                     | :---
 | [Server](../../wiki/Server)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
 | [API](../../wiki/API)                   | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
-| Setting                                 |
+| [Setting](../../wiki/Setting)           | <img src="https://img.shields.io/badge/Status-Developement-yellow.svg?style=flat-square" />
 | Translation                             |
 | [Hardware](../../wiki/Hardware)         | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
 | [Device](../../wiki/Device)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
