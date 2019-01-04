@@ -27,6 +27,8 @@ Please look at the [`test_*.py`](https://github.com/Xorfor/Domoticz-API/tree/mas
 
 | Version | Description
 | :---    | :---
+| 0.9.0   | Added Translation class
+| 0.8.0   | Added Setting class
 | 0.7.1   | Added functions to add, list and delete devices in RoomPlans
 | 0.7.0   | Introduced API class as property of Server for more flexibility
 | 0.6.0   | Added (Room)Plan class
