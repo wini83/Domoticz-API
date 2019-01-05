@@ -40,9 +40,9 @@ class BasePlugin:
         ]
         # Devices that generates energy, eg. windmills and solar panels
         self.__return = [
-            dom.Device(self.__server, 82), 
-            dom.Device(self.__server, 91), 
-            dom.Device(self.__server, 105), 
+            dom.Device(self.__server, 82),
+            dom.Device(self.__server, 91),
+            dom.Device(self.__server, 105),
         ]
 
     def onCommand(self, Unit, Command, Level, Color):
@@ -108,7 +108,8 @@ class BasePlugin:
             _energy = 0.0
             for dev in self.__return:
                 dev._initDevice()
-                Domoticz.Debug(str(dev) + ": " + str(dev.nvalue) + " - " + str(dev.idx))
+                Domoticz.Debug(str(dev) + ": " +
+                               str(dev.nvalue) + " - " + str(dev.idx))
                 _energy += dev.nvalue
             Domoticz.Debug("Return: " + str(_energy))
             # Get usage
