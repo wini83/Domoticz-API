@@ -6,7 +6,7 @@
 # Author: Xorfor
 #
 """
-<plugin key="xfr_api" name="API test" author="Xorfor" version="1.0.0">
+<plugin key="xfr_api" name="API test 1" author="Xorfor" version="1.0.0">
     <params>
         <!--
         <param field="Address" label="IP Address" width="200px" required="true" default="127.0.0.1"/>
@@ -34,7 +34,7 @@ class BasePlugin:
 
     def __init__(self):
         self.__runAgain = 0
-        self.__server = DomoticzAPI.Server("192.168.0.13")
+        self.__server = DomoticzAPI.Server()
         return
 
     def onStart(self):
