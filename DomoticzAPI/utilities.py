@@ -79,9 +79,8 @@ def version_patch():
 def version_short():
     return VERSION_SHORT
 
+
 # Temperature conversion from Celsius to Fahrenheit
-
-
 def c_2_f(value):
     return (value * 1.8) + 32
 
@@ -90,9 +89,8 @@ def c_2_f(value):
 def f_2_c(value):
     return (value - 32) / 1.8
 
+
 # Convert bearing in degrees to a direction
-
-
 def bearing_2_status(d):
     """
     Based on https://gist.github.com/RobertSudwarts/acf8df23a16afdb5837f
