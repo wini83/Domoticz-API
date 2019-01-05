@@ -23,6 +23,9 @@ class Color:
             ww: # Range: 0 .. 255, Warm white level (also used as level for monochrome white)
             }
     """
+    # Key
+    COLOR_KEY = "color"
+
     # Parameters
     COLOR_PARAMETER_MODE = "m"
     COLOR_PARAMETER_TEMP = "t"
@@ -55,7 +58,7 @@ class Color:
         self._b = NUM_MIN
         self._cw = NUM_MIN
         self._ww = NUM_MIN
-        myDict = literal_eval(kwargs.get("color"))
+        myDict = literal_eval(kwargs.get(self.COLOR_KEY))
         #  myDict = kwargs.get("color")
         if myDict is not None:
             self.m = myDict.get(self.COLOR_PARAMETER_MODE, NUM_MIN)
@@ -63,19 +66,19 @@ class Color:
             self.r = myDict.get(self.COLOR_PARAMETER_R, NUM_MIN)
             self.g = myDict.get(self.COLOR_PARAMETER_G, NUM_MIN)
             self.b = myDict.get(self.COLOR_PARAMETER_B, NUM_MIN)
-            self.cw = myDict.get("cw", NUM_MIN)
-            self.ww = myDict.get("ww", NUM_MIN)
+            self.cw = myDict.get(self.COLOR_PARAMETER_COLD_WHITE, NUM_MIN)
+            self.ww = myDict.get(self.COLOR_PARAMETER_WARM_WHITE, NUM_MIN)
         else:
             self.m = kwargs.get(self.COLOR_PARAMETER_MODE, NUM_MIN)
             self.t = kwargs.get(self.COLOR_PARAMETER_TEMP, NUM_MIN)
             self.r = kwargs.get(self.COLOR_PARAMETER_R, NUM_MIN)
             self.g = kwargs.get(self.COLOR_PARAMETER_G, NUM_MIN)
             self.b = kwargs.get(self.COLOR_PARAMETER_B, NUM_MIN)
-            self.cw = kwargs.get("cw", NUM_MIN)
-            self.ww = kwargs.get("ww", NUM_MIN)
+            self.cw = kwargs.get(self.COLOR_PARAMETER_COLD_WHITE, NUM_MIN)
+            self.ww = kwargs.get(self.COLOR_PARAMETER_WARM_WHITE, NUM_MIN)
 
     def __str__(self):
-        return "{}({}: {}, {}: {}, {}: {}, {}: {}, {}: {}, cw: {}, ww: {})".format(
+        return "{}({}: {}, {}: {}, {}: {}, {}: {}, {}: {}, {}: {}, {}: {})".format(
             self.__class__.__name__,
             self.COLOR_PARAMETER_MODE,
             self._m,
@@ -87,7 +90,9 @@ class Color:
             self._g,
             self.COLOR_PARAMETER_B,
             self._b,
+            self.COLOR_PARAMETER_COLD_WHITE,
             self._cw,
+            self.COLOR_PARAMETER_WARM_WHITE,
             self._ww
         )
 
@@ -110,7 +115,7 @@ class Color:
     # ..........................................................................
     @property
     def color(self):
-        return "{" + "\"{}\":{},\"{}\":{},\"{}\":{},\"{}\":{},\"{}\":{},\"cw\":{},\"ww\":{}".format(
+        return "{" + "\"{}\":{},\"{}\":{},\"{}\":{},\"{}\":{},\"{}\":{},\"{}\":{},\"{}\":{}".format(
             self.COLOR_PARAMETER_MODE,
             self._m,
             self.COLOR_PARAMETER_TEMP,
@@ -121,7 +126,9 @@ class Color:
             self._g,
             self.COLOR_PARAMETER_B,
             self._b,
+            self.COLOR_PARAMETER_COLD_WHITE,
             self._cw,
+            self.COLOR_PARAMETER_WARM_WHITE,
             self._ww
         ) + "}"
 
