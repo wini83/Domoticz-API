@@ -541,7 +541,7 @@ class Device:
 
     @property
     def idx(self):
-        return int(self._idx)
+        return int(self._idx) if self._idx is not None else None
 
     @property
     def image(self):
