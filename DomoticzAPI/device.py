@@ -17,6 +17,7 @@ class Device:
     _type_create_dummy = "createvirtualsensor"
     _type_delete_device = "deletedevice"
     _type_set_used = "setused"
+    _type_events = "events"
 
     _param_make_favorite = "makefavorite"
     _param_rename_device = "renamedevice"
@@ -24,6 +25,7 @@ class Device:
     _param_switch_light = "switchlight"
     _param_set_color_brightness = "setcolbrightnessvalue"
     _param_reset_security_status = "resetsecuritystatus"
+    _param_current_states = "currentstates"
 
     # Parameters used for: setcolbrightnessvalue
     SWITCH_ON = "On"
@@ -625,12 +627,46 @@ class Device:
 
     @property
     def nvalue(self):
-        if self._Usage is not None:
-            return float(self._Usage.split()[0])
-        elif self._Data is not None:
-            return float(self._Data.split()[0])
-        else:
-            return None
+        # The only way to get a current value from a device is by calling:
+        #
+        #   /type=events&param=currentstates
+        #
+        # Where:
+        #   idx = self._idx
+        #   value = nvalue (if string, then take value before '/' in values)
+        #
+        if self.exists():
+            # /json.htm?type=events&param=currentstates
+            self._api.querystring = "type={}&param={}".format(
+                self._type_events,
+                self._param_current_states
+            )
+            self._api.call()
+            myDict = {}
+            if self._api.status == self._api.OK and self._api.payload:
+                for resDict in self._api.payload:
+                    if self._idx is not None and resDict.get("id") == self.idx:
+                        # Found device :)
+                        myDict = resDict
+                        break
+            value = myDict.get("value")
+            values = myDict.get("values")
+            try:
+                nvalue = float(value)
+            except:
+                nvalue = None
+            if nvalue is None:
+                try:
+                    nvalue = float(values.partition("/")[0])
+                except:
+                    nvalue = None
+            return nvalue
+        # if self._Usage is not None:
+        #     return float(self._Usage.split()[0])
+        # elif self._Data is not None:
+        #     return float(self._Data.split()[0])
+        # else:
+        #     return None
 
     @property
     def options(self):
