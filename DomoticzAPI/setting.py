@@ -106,6 +106,8 @@ class Setting:
     # Public method
     # ..........................................................................
     def value(self, key):
+        # Requery settings
+        self._getSettings() 
         if key not in (self._server._api.STATUS, self._server._api.TITLE):
             return self._settings.get(key)
         else:
