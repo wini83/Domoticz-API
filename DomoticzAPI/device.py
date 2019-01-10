@@ -255,7 +255,7 @@ class Device:
             hw = Hardware(self._server, idx=HardwareID)
             if hw.exists():
                 self._Hardware = hw
-                self._Hardware._HardwareType = myDict.get("HardwareType")
+                self._Hardware._hardwaretype = myDict.get("HardwareType")
             else:
                 self._Hardware = None
 
