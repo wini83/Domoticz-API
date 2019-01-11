@@ -79,8 +79,10 @@ class BasePlugin:
         # Validate parameters
         # Create devices
         if len(Devices) == 0:
-            Domoticz.Device(Unit=self.__UNIT_ENERGY, Name="Energy",
-                            Type=248, Subtype=1, Used=1).Create()
+            Domoticz.Device(Unit=self.__UNIT_ENERGY,
+                            Name="Energy",
+                            TypeName="kWh",
+                            Used=1).Create()
         # Log config
         DumpAllToLog()
         # Connection
@@ -118,7 +120,9 @@ class BasePlugin:
                 Domoticz.Debug(str(dev) + ": " + str(dev.nvalue))
                 _energy -= dev.nvalue
             Domoticz.Debug("Total: " + str(_energy))
-            UpdateDevice(self.__UNIT_ENERGY, int(_energy), str(_energy))
+            UpdateDevice(self.__UNIT_ENERGY,
+                         int(_energy),
+                         str(_energy) + ";" + str(_energy))
         else:
             Domoticz.Debug("onHeartbeat called, run again in " +
                            str(self.__runAgain) + " heartbeats.")
