@@ -9,11 +9,15 @@ def main():
     print("********************************************************************************")
     server = dom.Server()
 
+    print("\r")
     print("--------------------------------------------------------------------------------")
     print("Add")
     print("--------------------------------------------------------------------------------")
     var1 = dom.UserVariable(
-        server, "API Test 1", dom.UserVariable.UVE_TYPE_FLOAT, "1.23")
+        server,
+        "API Test 1",
+        dom.UserVariable.UVE_TYPE_FLOAT,
+        "1.23")
     if var1.exists():
         print("'{}' exists in Domoticz".format(var1.name))
     else:
@@ -25,17 +29,20 @@ def main():
         print( "'{}' exists in Domoticz".format(var1.name))
     else:
         print("'{}' NOT exists in Domoticz".format(var1.name))
+    
     print("\r")
-
     print("--------------------------------------------------------------------------------")
     print("Add")
     print("--------------------------------------------------------------------------------")
     var2 = dom.UserVariable(
-        server, "API Test 2", dom.UserVariable.UVE_TYPE_INTEGER, "1.23")
+        server,
+        "API Test 2",
+        dom.UserVariable.UVE_TYPE_INTEGER,
+        "1.23")
     var2.add()
     print(var2)
-    print("\r")
 
+    print("\r")
     print("--------------------------------------------------------------------------------")
     print("Change value")
     print("--------------------------------------------------------------------------------")
@@ -43,8 +50,17 @@ def main():
     print(var1)
     var2.value = "11.87"
     print(var2)
-    print("\r")
 
+    print("\r")
+    print("--------------------------------------------------------------------------------")
+    print("Update variable")
+    print("--------------------------------------------------------------------------------")
+    var2.name = "API Test 3"
+    var2.type = var2.UVE_TYPE_STRING
+    var2.value = "Hello world"
+    print(var2)
+
+    print("\r")
     print("--------------------------------------------------------------------------------")
     print("Cleanup test data")
     print("--------------------------------------------------------------------------------")

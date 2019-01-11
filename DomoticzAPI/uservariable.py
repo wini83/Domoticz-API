@@ -85,7 +85,7 @@ class UserVariable:
         self._api.querystring = "type=command&param={}".format(
             self._param_get_user_variables)
         self._api.call()
-        if self._api.status == self._api.OK:
+        if self._api.status == self._api.OK and self._api.payload is not None:
             for var in self._api.payload:
                 if var.get("Name") == self._name:
                     self._idx = int(var.get("idx"))
@@ -93,6 +93,19 @@ class UserVariable:
                     self._type = int(var.get("Type"))
                     self._lastupdate = var.get("LastUpdate")
                     break
+
+    # /json.htm?type=command&param=updateuservariable&idx=IDX&vname=NAME&vtype=TYPE&vvalue=VALUE
+    def __update(self):
+        if self.exists():
+            self._api.querystring = "type=command&param={}&idx={}&vname={}&vtype={}&vvalue={}".format(
+                self._param_update_user_variable,
+                self._idx,
+                quote(self._name),
+                self._type,
+                quote(self._value))
+            print(self._api.querystring)
+            self._api.call()
+            self.__getvar()
 
     def __value(self, type, value):
         if value is None:
@@ -151,22 +164,10 @@ class UserVariable:
                     self._param_add_user_variable,
                     quote(self._name),
                     self._type,
-                    self._value)
+                    quote(self._value))
                 self._api.call()
                 if self._api.status == self._api.OK:
                     self.__getvar()
-
-    # /json.htm?type=command&param=updateuservariable&idx=IDX&vname=NAME&vtype=TYPE&vvalue=VALUE
-    def update(self):
-        if self.exists():
-            self._api.querystring = "type=command&param={}&idx={}&vname={}&vtype={}&vvalue={}".format(
-                self._param_update_user_variable,
-                self._idx,
-                quote(self._name),
-                self._type,
-                self._value)
-            self._api.call()
-            self.__getvar()
 
     # /json.htm?type=command&param=deleteuservariable&idx=IDX
     def delete(self):
@@ -196,6 +197,11 @@ class UserVariable:
     def name(self):
         return self._name
 
+    @name.setter
+    def name(self, value):
+        self._name = value
+        self.__update()
+
     @property
     def server(self):
         return self._server
@@ -204,6 +210,12 @@ class UserVariable:
     def type(self):
         return int(self._type) if self._type is not None else None
 
+    @type.setter
+    def type(self, value):
+        if value in self.UVE_TYPES:
+            self._type = value
+            self.__update()
+
     @property
     def value(self):
         return self._value
@@ -211,4 +223,4 @@ class UserVariable:
     @value.setter
     def value(self, value):
         self._value = self.__value(self._type, value)
-        self.update()
+        self.__update()
