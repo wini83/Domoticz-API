@@ -56,7 +56,9 @@ def main():
     print("Update variable")
     print("--------------------------------------------------------------------------------")
     var2.name = "API Test 3"
+    print(var2)
     var2.type = var2.UVE_TYPE_STRING
+    print(var2)
     var2.value = "Hello world"
     print(var2)
 
