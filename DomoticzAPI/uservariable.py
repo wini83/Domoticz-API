@@ -3,38 +3,39 @@
 from .server import Server
 from .api import API
 from datetime import datetime
-
-"""
-    User variable
-"""
+from urllib.parse import quote
 
 
 class UserVariable:
-    # Types
-    # 0 = Integer, e.g. -1, 1, 0, 2, 10
-    # 1 = Float, e.g. -1.1, 1.2, 3.1
-    # 2 = String
-    # 3 = Date in format DD/MM/YYYY
-    # 4 = Time in 24 hr format HH:MM
-    # 5 = DateTime (but the format is not checked)
+    """
+        UserVariable(server, name, type, value)
 
-    _vtype2num = {
-        "integer": "0",
-        "float": "1",
-        "string": "2",
-        "date": "3",
-        "time": "4",
-        "datetime": "5",
-    }
-
-    _vtype2string = {
-        "0": "integer",
-        "1": "float",
-        "2": "string",
-        "3": "date",
-        "4": "time",
-        "5": "datetime",
-    }
+        Args:
+            server (Server): Domoticz server object where to maintain the user variable
+            name (:obj:`str`): Name of the user variable
+            type (:obj:`int`, optional): Type of the user variable (default = UVE_TYPE_STRING)
+                UVE_TYPE_INTEGER    = Integer, e.g. -1, 1, 0, 2, 10
+                UVE_TYPE_FLOAT      = Float, e.g. -1.1, 1.2, 3.1
+                UVE_TYPE_STRING     = String
+                UVE_TYPE_DATE       = Date in format DD/MM/YYYY
+                UVE_TYPE_TIME       = Time in 24 hr format HH:MM
+                UVE_TYPE_DATETIME   = DateTime (but the format is not checked)
+            value (:obj:`str`, optional): Value of the user variable (default = None)
+    """
+    UVE_TYPE_INTEGER = 0
+    UVE_TYPE_FLOAT = 1
+    UVE_TYPE_STRING = 2
+    UVE_TYPE_DATE = 3
+    UVE_TYPE_TIME = 4
+    UVE_TYPE_DATETIME = 5
+    UVE_TYPES = [
+        UVE_TYPE_INTEGER,
+        UVE_TYPE_FLOAT,
+        UVE_TYPE_STRING,
+        UVE_TYPE_DATE,
+        UVE_TYPE_TIME,
+        UVE_TYPE_DATETIME,
+    ]
 
     _param_get_user_variable = "getuservariable"
     _param_get_user_variables = "getuservariables"
@@ -45,14 +46,7 @@ class UserVariable:
     _date = "%d/%m/%Y"
     _time = "%H:%M"
 
-    def __init__(self, server, name, type="string", value=""):
-        """
-        Args:
-            server (Server): Domoticz server object where to maintain the user variable
-            name (:obj:`str`): Name of the user variable
-            type (:obj:`str`, optional): Type of the user variable
-            value (:obj:`str`, optional): Value of the user variable
-        """
+    def __init__(self, server, name, type=UVE_TYPE_STRING, value=None):
         if isinstance(server, Server) and server.exists():
             self._server = server
         else:
@@ -60,48 +54,54 @@ class UserVariable:
         if server is not None and len(name) > 0:
             self._server = server
             self._name = name
-            if type in self._vtype2num:
+            if type in self.UVE_TYPES:
                 self._type = type
-                self._typenum = self._vtype2num[type]
             else:
-                self._type = ""
-                self._typenum = ""
-            self._value = self.__value(self._type, value)
+                self._type = None
+            if value is not None:
+                self._value = self.__value(self._type, value)
+            else:
+                self._value = None
             self._api = self._server.api
             self._idx = None
-            self._lastupdate = ""
+            self._lastupdate = None
             self.__getvar()
+        print(self)
 
     def __str__(self):
-        return "{}({}, {}: \"{}\", \"{}\", \"{}\")".format(self.__class__.__name__, str(self._server), self._idx, self._name,
-                                                       self._type, self._value)
+        return "{}({}, {}: \"{}\", {}, \"{}\")".format(
+            self.__class__.__name__,
+            str(self._server),
+            self._idx,
+            self._name,
+            self._type,
+            self._value)
 
     # ..........................................................................
     # Private methods
     # ..........................................................................
-
     def __getvar(self):
         # /json.htm?type=command&param=getuservariables
         self._api.querystring = "type=command&param={}".format(
             self._param_get_user_variables)
         self._api.call()
-        if self._api.result:
-            for var in self._api.result:
+        if self._api.status == self._api.OK:
+            for var in self._api.payload:
                 if var.get("Name") == self._name:
-                    self._idx = var.get("idx")
+                    self._idx = int(var.get("idx"))
                     self._value = var.get("Value")
-                    self._type = self._vtype2string[var.get("Type")]
+                    self._type = int(var.get("Type"))
                     self._lastupdate = var.get("LastUpdate")
                     break
 
     def __value(self, type, value):
-        if value == "":
+        if value is None:
             result = value
-        elif type == "integer":
+        elif type == self.UVE_TYPE_INTEGER:
             result = str(int(float(value)))
-        elif type == "float":
+        elif type == self.UVE_TYPE_FLOAT:
             result = str(float(value))
-        elif type == "date":
+        elif type == self.UVE_TYPE_DATE:
             try:
                 dt = datetime.strptime(value, self._date)
             except:
@@ -109,8 +109,8 @@ class UserVariable:
             if dt is not None:
                 result = dt.strftime(self._date)
             else:
-                result = ""
-        elif type == "time":
+                result = None
+        elif type == self.UVE_TYPE_TIME:
             try:
                 dt = datetime.strptime(value, self._time)
             except:
@@ -118,8 +118,8 @@ class UserVariable:
             if dt is not None:
                 result = dt.strftime(self._time)
             else:
-                result = ""
-        elif type == "datetime":
+                result = None
+        elif type == self.UVE_TYPE_DATETIME:
             try:
                 dt = datetime.strptime(value, self._date + " " + self._time)
             except:
@@ -127,11 +127,11 @@ class UserVariable:
             if dt is not None:
                 result = dt.strftime(self._date + " " + self._time)
             else:
-                result = ""
-        elif type == "string":
+                result = None
+        elif type == self.UVE_TYPE_STRING:
             result = value
         else:  # string
-            result = ""
+            result = None
         return result
 
     # ..........................................................................
@@ -146,11 +146,11 @@ class UserVariable:
     # /json.htm?type=command&param=saveuservariable&vname=NAME&vtype=TYPE&vvalue=VALUE
     def add(self):
         if not self.exists():
-            if len(self._name) > 0 and len(self._type) > 0 and len(self._value) > 0:
+            if len(self._name) > 0 and self._type in self.UVE_TYPES and len(self._value) > 0:
                 self._api.querystring = "type=command&param={}&vname={}&vtype={}&vvalue={}".format(
                     self._param_add_user_variable,
-                    self._name,
-                    self._typenum,
+                    quote(self._name),
+                    self._type,
                     self._value)
                 self._api.call()
                 if self._api.status == self._api.OK:
@@ -162,8 +162,8 @@ class UserVariable:
             self._api.querystring = "type=command&param={}&idx={}&vname={}&vtype={}&vvalue={}".format(
                 self._param_update_user_variable,
                 self._idx,
-                self._name,
-                self._typenum,
+                quote(self._name),
+                self._type,
                 self._value)
             self._api.call()
             self.__getvar()
@@ -186,7 +186,7 @@ class UserVariable:
 
     @property
     def idx(self):
-        return self._idx
+        return int(self._idx) if self._idx is not None else None
 
     @property
     def lastupdate(self):
@@ -202,7 +202,7 @@ class UserVariable:
 
     @property
     def type(self):
-        return self._type
+        return int(self._type) if self._type is not None else None
 
     @property
     def value(self):
@@ -211,3 +211,4 @@ class UserVariable:
     @value.setter
     def value(self, value):
         self._value = self.__value(self._type, value)
+        self.update()
