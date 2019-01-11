@@ -151,19 +151,9 @@ class Server:
         # Not required yet. May be interesting to get latitude and longitude. Most is GUI stuff.
         pass
 
-    def _getSettings(self):
-        # /json.htm?type=settings
-        # Not required yet. Perhaps in the near future to be sure that ALL setting are available for use.
-        pass
-
     def _setSettings(self):
         # /storesettings.webem
         # To store settings?
-        pass
-
-    def _getTranslation(self):
-        # /i18n/domoticz-XX.json
-        # Get ranslation for language with code XX, eg. uk, en, fr, nl, ru, etc.
         pass
 
     def checkForUpdate(self):
