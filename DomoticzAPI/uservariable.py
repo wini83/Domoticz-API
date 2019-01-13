@@ -7,21 +7,7 @@ from urllib.parse import quote
 
 
 class UserVariable:
-    """
-        UserVariable(server, name, type, value)
 
-        Args:
-            server (Server): Domoticz server object where to maintain the user variable
-            name (:obj:`str`): Name of the user variable
-            type (:obj:`int`, optional): Type of the user variable (default = UVE_TYPE_STRING)
-                UVE_TYPE_INTEGER    = Integer, e.g. -1, 1, 0, 2, 10
-                UVE_TYPE_FLOAT      = Float, e.g. -1.1, 1.2, 3.1
-                UVE_TYPE_STRING     = String
-                UVE_TYPE_DATE       = Date in format DD/MM/YYYY
-                UVE_TYPE_TIME       = Time in 24 hr format HH:MM
-                UVE_TYPE_DATETIME   = DateTime (but the format is not checked)
-            value (:obj:`str`, optional): Value of the user variable (default = None)
-    """
     UVE_TYPE_INTEGER = 0
     UVE_TYPE_FLOAT = 1
     UVE_TYPE_STRING = 2
@@ -47,26 +33,34 @@ class UserVariable:
     _time = "%H:%M"
 
     def __init__(self, server, name, type=UVE_TYPE_STRING, value=None):
+        """Args:
+                server (:obj:`Server`): Domoticz server object where to maintain the user variable
+                name (:obj:`str`): Name of the user variable
+                type (:obj:`int`, optional): Type of the user variable (default = UVE_TYPE_STRING)
+                    UVE_TYPE_INTEGER    = Integer, e.g. -1, 1, 0, 2, 10
+                    UVE_TYPE_FLOAT      = Float, e.g. -1.1, 1.2, 3.1
+                    UVE_TYPE_STRING     = String
+                    UVE_TYPE_DATE       = Date in format DD/MM/YYYY
+                    UVE_TYPE_TIME       = Time in 24 hr format HH:MM
+                    UVE_TYPE_DATETIME   = DateTime (but the format is not checked)
+                value (:obj:`str`, optional): Value of the user variable (default = None)
+        """
         if isinstance(server, Server) and server.exists():
             self._server = server
         else:
             self._server = None
+        self._idx = None
         if server is not None and len(name) > 0:
-            self._server = server
+            self._api = self._server.api
+            self._lastupdate = None
             self._name = name
+            self._server = server
             if type in self.UVE_TYPES:
                 self._type = type
             else:
                 self._type = None
-            if value is not None:
-                self._value = self.__value(self._type, value)
-            else:
-                self._value = None
-            self._api = self._server.api
-            self._idx = None
-            self._lastupdate = None
+            self._value = self.__value(self._type, value) # Function will handle None values
             self.__getvar()
-        print(self)
 
     def __str__(self):
         return "{}({}, {}: \"{}\", {}, \"{}\")".format(
@@ -94,8 +88,8 @@ class UserVariable:
                     self._lastupdate = var.get("LastUpdate")
                     break
 
-    # /json.htm?type=command&param=updateuservariable&idx=IDX&vname=NAME&vtype=TYPE&vvalue=VALUE
     def __update(self):
+        # /json.htm?type=command&param=updateuservariable&idx=IDX&vname=NAME&vtype=TYPE&vvalue=VALUE
         if self.exists():
             self._api.querystring = "type=command&param={}&idx={}&vname={}&vtype={}&vvalue={}".format(
                 self._param_update_user_variable,
@@ -103,7 +97,6 @@ class UserVariable:
                 quote(self._name),
                 self._type,
                 quote(self._value))
-            print(self._api.querystring)
             self._api.call()
             self.__getvar()
 
@@ -150,14 +143,9 @@ class UserVariable:
     # ..........................................................................
     # Public methods
     # ..........................................................................
-    def exists(self):
-        if self._idx is None:
-            return False
-        else:
-            return True
-
-    # /json.htm?type=command&param=saveuservariable&vname=NAME&vtype=TYPE&vvalue=VALUE
     def add(self):
+        """Add uservariable to Domoticz."""
+        # /json.htm?type=command&param=saveuservariable&vname=NAME&vtype=TYPE&vvalue=VALUE
         if not self.exists():
             if len(self._name) > 0 and self._type in self.UVE_TYPES and len(self._value) > 0:
                 self._api.querystring = "type=command&param={}&vname={}&vtype={}&vvalue={}".format(
@@ -169,32 +157,47 @@ class UserVariable:
                 if self._api.status == self._api.OK:
                     self.__getvar()
 
-    # /json.htm?type=command&param=deleteuservariable&idx=IDX
     def delete(self):
+        """Delete uservariable from Domoticz."""
+        # /json.htm?type=command&param=deleteuservariable&idx=IDX
         if self.exists():
             self._api.querystring = "type=command&param={}&idx={}".format(
                 self._param_delete_user_variable,
                 self._idx)
             self._api.call()
-        self._idx = None
+            self._idx = None
+
+    def exists(self):
+        """Checks if uservariable exists in Domoticz.
+
+            Returns:
+                True if uservariable exists in Domoticz, False otherwise.
+        """
+        if self._idx is None:
+            self.__getvar()
+        return self._idx is not None
 
     # ..........................................................................
     # Properties
     # ..........................................................................
     @property
     def api(self):
+        """:obj:`API`: API object."""
         return self._api
 
     @property
     def idx(self):
-        return int(self._idx) if self._idx is not None else None
+        """int: Unique id for this uservariable."""
+        return self._idx
 
     @property
     def lastupdate(self):
-        return self._lastupdate
+        """:obj:`datetime`: Date and time of the last update."""
+        return datetime.strptime(self._lastupdate, "%Y-%m-%d %H:%M:%S")
 
     @property
     def name(self):
+        """str: Name of the uservariable."""
         return self._name
 
     @name.setter
@@ -204,11 +207,13 @@ class UserVariable:
 
     @property
     def server(self):
+        """:obj:`Server`: Domoticz server object where to maintain the user variable"""
         return self._server
 
     @property
     def type(self):
-        return int(self._type) if self._type is not None else None
+        """int: Uservariable type, eg. UVE_TYPE_INTEGER."""
+        return self._type
 
     @type.setter
     def type(self, value):
@@ -218,6 +223,7 @@ class UserVariable:
 
     @property
     def value(self):
+        """str: Value for uservariable."""
         return self._value
 
     @value.setter

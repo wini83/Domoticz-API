@@ -26,10 +26,10 @@ def main():
     var1.add()
     print(var1)
     if var1.exists():
-        print( "'{}' exists in Domoticz".format(var1.name))
+        print("'{}' exists in Domoticz".format(var1.name))
     else:
         print("'{}' NOT exists in Domoticz".format(var1.name))
-    
+
     print("\r")
     print("--------------------------------------------------------------------------------")
     print("Add")
@@ -39,8 +39,11 @@ def main():
         "API Test 2",
         dom.UserVariable.UVE_TYPE_INTEGER,
         "1.23")
+    print("var2 exists: {}".format(var2.exists()))
     var2.add()
     print(var2)
+    print("var2 exists: {}".format(var2.exists()))
+    print("Last update: {}".format(var2.lastupdate))
 
     print("\r")
     print("--------------------------------------------------------------------------------")
@@ -50,6 +53,7 @@ def main():
     print(var1)
     var2.value = "11.87"
     print(var2)
+    print("Last update: {}".format(var2.lastupdate))
 
     print("\r")
     print("--------------------------------------------------------------------------------")
