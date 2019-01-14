@@ -5,6 +5,8 @@
     To maintain status of the API calls
 """
 from .utilities import (os_command)
+import urllib.request
+import base64
 import json
 import subprocess
 
@@ -50,19 +52,25 @@ class API:
     # ..........................................................................
     def call(self):
         if self._server is not None:
-            command = "curl"
+            req = urllib.request.Request("http://{}:{}/{}?{}".format(
+                self._server._address,
+                self._server._port,
+                self.URL,
+                self._querystring))
             if self._server._rights == self._server._rights_login_required:
-                command += " -u {}:{}".format(self._server._user,
-                                              self._server._password)
-            command += " -s -X GET \"http://{}:{}/{}?{}\"".format(
-                self._server._address, self._server._port, self.URL, self._querystring)
+                base64string = base64.encodestring(("{}:{}".format(
+                    self._server._user,
+                    self._server._password)).encode()).decode().replace("\n", "")
+                req.add_header("Authorization",
+                               "Basic {}".format(base64string))
             try:
-                r = json.loads(os_command(command))
-                self._data = r
-                self._message = r.get(self.MESSAGE)
-                self._payload = r.get(self.RESULT)
-                self.status = r.get(self.STATUS) # set correct value
-                self._title = r.get(self.TITLE)
+                response = urllib.request.urlopen(req).read()
+                data = json.loads(response.decode("utf-8"))
+                self._data = data
+                self._message = data.get(self.MESSAGE)
+                self._payload = data.get(self.RESULT)
+                self.status = data.get(self.STATUS)  # set correct value
+                self._title = data.get(self.TITLE)
             except:
                 self._data = {}
                 self._message = "Invalid call"
@@ -121,7 +129,6 @@ class API:
                 self._status = value
             else:
                 self._status = self.ERROR
-
 
     @property
     def title(self):
