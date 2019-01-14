@@ -2,12 +2,19 @@
 # -*- coding: utf-8 -*-
 from .server import Server
 from .api import API
-
+from urllib.parse import quote
 
 class RoomPlan:
     """
         Domoticz RoomPlan class
     """
+
+    ROOM_TYPE_DEVICE = 0
+    ROOM_TYPE_SCENE = 1
+    ROOM_TYPES = [
+        ROOM_TYPE_DEVICE,
+        ROOM_TYPE_SCENE,
+    ]
 
     _type_roomplans = "plans"
 
@@ -30,11 +37,19 @@ class RoomPlan:
     # /json.htm?type=command&param=changeplandeviceorder&idx=IDX&planid=PLANID&way=0|1(up|down)
 
     def __init__(self, server, **kwargs):
+        """
+        Args:
+            server (:obj:`Server`): Domoticz server
+            **kwargs: Keyword arguments:
+                        idx (int): idx of an existing roomplan
+                        name (:obj:`str`): Name of the roomplan
+        """
         if isinstance(server, Server) and server.exists():
             self._server = server
         else:
             self._server = None
         self._api = self._server.api
+        self._device_count = None
         self._devices = None
         self._idx = int(kwargs.get("idx")) if kwargs.get(
             "idx") is not None else None
@@ -56,8 +71,8 @@ class RoomPlan:
             self._api.querystring = self._api.TYPE.format(self._type_roomplans)
             self._api.call()
             if self._api.status == self._api.OK:
-                if self._api.result:
-                    for resDict in self._api.result:
+                if self._api.payload:
+                    for resDict in self._api.payload:
                         if self._idx is not None and int(resDict.get("idx")) == self._idx:
                             myDict = resDict
                             break
@@ -65,8 +80,11 @@ class RoomPlan:
                             myDict = resDict
                             break
         self._idx = myDict.get("idx", self._idx)
+        if self._idx is not None:
+            self._idx = int(self._idx)
         self._name = myDict.get("Name", self._name)
         self._order = myDict.get("Order")
+        self._device_count = int(myDict.get("Devices", 0))
         if self._idx is not None:
             self._api.querystring = "type=command&param={}&idx={}".format(
                 self._param_get_devices,
@@ -86,30 +104,32 @@ class RoomPlan:
     # Public methods
     # ..........................................................................
     def add(self):
+        """Create Roomplan in Domoticz"""
         if self._idx is None and self._name is not None:
             # /json.htm?type=command&param=addplan&name=NAME
             self._api.querystring = "type=command&param={}&name={}".format(
                 self._param_add_roomplan,
-                self._name)
+                quote(self._name))
             self._api.call()
             if self._api.status == self._api.OK:
                 self._init()  # Try to get idx? In Domoticz roomplan name is not unique!
-    
+
     def add_device(self, dev):
+        """:obj:`Device`: Add device to the roomplan"""
         if dev.exists():
             # /json.htm?type=command&param=addplanactivedevice&idx=IDX&activetype=0|1(device|scene)&activeidx=DEVICEIDX
             self._api.querystring = "type=command&param={}&idx={}&activetype={}&activeidx={}".format(
                 self._param_add_device,
                 self._idx,
-                0, # Device!!!
+                self.ROOM_TYPE_DEVICE,
                 dev.idx)
             self._api.call()
             if self._api.status == self._api.OK:
                 # Call always returns OK, also if device does not exist!!!
                 self._init()
 
- 
     def delete(self):
+        """Delete roomplan from Domoticz"""
         if self._idx is not None:
             # /json.htm?type=command&param=deleteplan&idx=IDX
             self._api.querystring = "type=command&param={}&idx={}".format(
@@ -123,6 +143,7 @@ class RoomPlan:
                 self._order = None
 
     def delete_device(self, dev):
+        """:obj:`Device`: Delete device from the roomplan"""
         if dev.exists():
             # /json.htm?type=command&param=deleteplandevice&idx=DEVICEIDX
             self._api.querystring = "type=command&param={}&idx={}".format(
@@ -131,43 +152,62 @@ class RoomPlan:
             self._api.call()
             if self._api.status == self._api.OK:
                 self._init()
-                
+
     def delete_all_devices(self):
-            # /json.htm?type=command&param=deleteallplandevices&idx=IDX
-            self._api.querystring = "type=command&param={}&idx={}".format(
-                self._param_delete_all_devices,
-                self._idx)
-            self._api.call()
-            if self._api.status == self._api.OK:
-                self._init()
-                
+        """Delete all devices from the roomplan"""
+        # /json.htm?type=command&param=deleteallplandevices&idx=IDX
+        self._api.querystring = "type=command&param={}&idx={}".format(
+            self._param_delete_all_devices,
+            self._idx)
+        self._api.call()
+        if self._api.status == self._api.OK:
+            self._init()
+
     def exists(self):
+        """Checks if roomplan exists in Domoticz.
+
+        Returns:
+            True if roomplan exists in Domoticz, False otherwise.
+        """
         return self._idx is not None and self._name is not None
+
+    def has_devices(self):
+        """Checks if roomplan has devices.
+
+        Returns:
+            True if devices are available in the roomplan, False otherwise.
+        """
+        return self._device_count > 0
 
     # ..........................................................................
     # Properties
     # ..........................................................................
-    # @property
-    # def devices(self):
-    #     """ Number of devices in this roomplan """
-    #     return self._devices
+    @property
+    def device_count(self):
+        """int: Number of devices in this roomplan """
+        return self._device_count
 
     @property
     def devices(self):
+        """:obj:`list` of :obj:`Device`: Devices assigned to this roomplan"""
         # /json.htm?type=command&param=getplandevices&idx=IDX
-        self._api.querystring = "type=command&param={}&idx={}".format(
-            self._param_get_devices,
-            self._idx)
-        self._api.call()
-        return self._api.payload
-
+        if self.exists():
+            self._api.querystring = "type=command&param={}&idx={}".format(
+                self._param_get_devices,
+                self._idx)
+            self._api.call()
+            return self._api.payload
+        else:
+            return None
 
     @property
     def idx(self):
+        """int: Unique id for this uservariable."""
         return int(self._idx)
 
     @property
     def name(self):
+        """str: Name of the roomplan"""
         return self._name
 
     @name.setter
@@ -178,15 +218,14 @@ class RoomPlan:
                 self._api.querystring = "type=command&param={}&idx={}&name={}".format(
                     self._param_update_roomplan,
                     self._idx,
-                    value)
+                    quote(value))
                 self._api.call()
         self._name = value
         self._init()
-        
+
     @property
     def order(self):
-        """ 
-        Order in list in the GUI. So not relevant to set in this API and useless for this API!
+        """int: Order in list in the GUI. So not relevant to set in this API and useless for this API!
 
         To set:
             /json.htm?type=command&param=changeplanorder&idx=IDX&way=WAY
@@ -196,4 +235,5 @@ class RoomPlan:
 
     @property
     def server(self):
+        """:obj:`Server`"""
         return self._server
