@@ -4,11 +4,9 @@
     API class
     To maintain status of the API calls
 """
-from .utilities import (os_command)
 import urllib.request
 import base64
 import json
-import subprocess
 
 
 class API:
