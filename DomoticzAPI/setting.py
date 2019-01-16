@@ -81,6 +81,10 @@ class Setting:
     ]
 
     def __init__(self, server):
+        """Settings class, to get Domoticz settings
+            Args:
+                server (:obj:`Server`): Domoticz server object where to maintain the device            
+        """
         self._settings = {}
         self._server = server
         self._getSettings()
@@ -106,6 +110,11 @@ class Setting:
     # Public method
     # ..........................................................................
     def value(self, key):
+        """Retrieve the value from a Domoticz setting
+        
+            Args:
+                key (str): key from a setting, eg. "AcceptNewHardware", "SecPassword", etc
+        """
         # Requery settings
         self._getSettings() 
         if key not in (self._server._api.STATUS, self._server._api.TITLE):

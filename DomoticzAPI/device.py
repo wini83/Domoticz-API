@@ -4,14 +4,13 @@ from .api import API
 from .server import Server
 from .hardware import Hardware
 from .color import Color
-from .const import(NUM_MAX, NUM_MIN)
+from .const import (NUM_MAX, NUM_MIN)
+from .utilities import (bool_2_int, bool_2_str, int_2_bool)
 from urllib.parse import quote
 
 
 class Device:
-    """
-        Device class
-    """
+
     _type_devices = "devices"
     _type_create_device = "createdevice"
     _type_create_dummy = "createvirtualsensor"
@@ -32,8 +31,7 @@ class Device:
     SWITCH_OFF = "Off"
     SWITCH_TOGGLE = "Toggle"
     SWITCH_SET_LEVEL = "Set Level"
-
-    switch_light_values = {
+    SWITCH_LIGHT_VALUES = {
         SWITCH_ON,
         SWITCH_OFF,
         SWITCH_TOGGLE,
@@ -48,11 +46,9 @@ class Device:
         switchNormal,
     }
 
-    _int_value_off = 0
-    _int_value_on = 1
-
     def __init__(self, server, *args, **kwargs):
-        """
+        """ Device class
+
             Args:
                 server (Server): Domoticz server object where to maintain the device            
                     idx (:obj:`int`, optional): ID of an existing device
@@ -144,7 +140,7 @@ class Device:
             self._server._Sunrise = d.get("Sunrise")
             self._server._Sunset = d.get("Sunset")
             # In param=getversion it is "version"
-            self._server._version = d.get("app_version") 
+            self._server._version = d.get("app_version")
             # Search for the given device
             if self._api.result:
                 for resDict in self._api.result:
@@ -209,8 +205,10 @@ class Device:
         self._Name = myDict.get("Name", self._Name)
         self._Notifications = myDict.get("Notifications")
         self._Options = myDict.get("Options")
-        self._PlanID = myDict.get("PlanID") # The first RoomPlan to which this device was assigned?
-        self._PlanIDs = myDict.get("PlanIDs") # List of RoomPlan idxs containg this device
+        # The first RoomPlan to which this device was assigned?
+        self._PlanID = myDict.get("PlanID")
+        # List of RoomPlan idxs containg this device
+        self._PlanIDs = myDict.get("PlanIDs")
         self._Pressure = myDict.get("Pressure")
         self._Protected = myDict.get("Protected")
         self._Quality = myDict.get("Quality")
@@ -292,22 +290,18 @@ class Device:
                 self._idx = None
 
     def exists(self):
-        """
-            Check if device exists in Domoticz
-        """
+        """ Check if device exists in Domoticz """
         return not (self._idx is None or self._Hardware is None)
 
     def has_battery(self):
-        """
-            Check if this device is using a battery
-        """
+        """ Check if this device is using a battery """
         return not (self._BatteryLevel is None or self._BatteryLevel == NUM_MAX)
 
     def is_dimmer(self):
         return ((self.is_switch() and self._SwitchType == "Dimmer") or (self._isDimmer == True))
 
     def is_favorite(self):
-        return not (self._Favorite is None or self._Favorite == 0)
+        return int_2_bool(self._Favorite)
 
     def is_switch(self):
         return self._SwitchType is not None
@@ -319,9 +313,7 @@ class Device:
         return self._Humidity is not None
 
     def reset_security_status(self, value):
-        """
-            Reset security status for eg. Smoke detectors
-        """
+        """ Reset security status for eg. Smoke detectors """
         if self.exists():
             if self.is_switch():
                 if value in self.switch_reset_security_statuses:
@@ -349,7 +341,7 @@ class Device:
     def update_switch(self, value, level=0):
         if self.exists():
             if self.is_switch():
-                if value in self.switch_light_values:
+                if value in self.SWITCH_LIGHT_VALUES:
                     # /json.htm?type=command&param=switchlight&idx=IDX&switchcmd=On
                     # /json.htm?type=command&param=switchlight&idx=IDX&switchcmd=Off
                     # /json.htm?type=command&param=switchlight&idx=IDX&switchcmd=Toggle
@@ -477,24 +469,18 @@ class Device:
     @property
     # For some reason this attribute in Domoticz is an 'int'. Boolean is more logical.
     def favorite(self):
-        if self._Favorite == 1:
-            return True
-        else:
-            return False
+        return int_2_bool(self._Favorite)
 
     @favorite.setter
     def favorite(self, value):
         # /json.htm?type=command&param=makefavorite&idx=IDX&isfavorite=FAVORITE
         if isinstance(value, bool) and self.exists():
-            if value:
-                int_value = self._int_value_on
-            else:
-                int_value = self._int_value_off
+            int_value = bool_2_int(value)
             self._api.querystring = "type=command&param={}&idx={}&isfavorite={}".format(
                 self._param_make_favorite,
                 self._idx,
                 str(int_value)
-                )
+            )
             self._api.call()
             if self._api.status == self._api.OK:
                 self._Favorite = int_value
@@ -616,7 +602,7 @@ class Device:
                 self._param_rename_device,
                 self._idx,
                 quote(str(value))
-                )
+            )
             self._api.call()
             if self._api.status == self._api.OK:
                 self._Name = value
@@ -639,8 +625,7 @@ class Device:
             # /json.htm?type=events&param=currentstates
             self._api.querystring = "type={}&param={}".format(
                 self._type_events,
-                self._param_current_states
-            )
+                self._param_current_states)
             self._api.call()
             myDict = {}
             if self._api.status == self._api.OK and self._api.payload:
@@ -661,12 +646,6 @@ class Device:
                 except:
                     nvalue = None
             return nvalue
-        # if self._Usage is not None:
-        #     return float(self._Usage.split()[0])
-        # elif self._Data is not None:
-        #     return float(self._Data.split()[0])
-        # else:
-        #     return None
 
     @property
     def options(self):
@@ -779,30 +758,21 @@ class Device:
     @property
     # For some reason this attribute in Domoticz is an 'int'. Boolean is more logical.
     def used(self):
-        if self._Used == 1:
-            return True
-        else:
-            return False
+        return int_2_bool(self._Used)
 
     @used.setter
     def used(self, value):
         # The url needs "true" or "false"!!!
         if isinstance(value, bool) and self.exists():
-            if value:
-                int_value = self._int_value_on
-                str_value = "true"
-            else:
-                int_value = self._int_value_off
-                str_value = "false"
             # /json.htm?type=setused&idx=IDX&used=true|false
             self._api.querystring = "type={}&idx={}&used={}".format(
                 self._type_set_used,
                 self._idx,
-                str_value
-                )
+                bool_2_str(value)
+            )
             self._api.call()
             if self._api.status == self._api.OK:
-                self._Used = int_value
+                self._Used = bool_2_int(value)
 
     @property
     def uvi(self):

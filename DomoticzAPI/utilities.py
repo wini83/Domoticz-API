@@ -3,6 +3,7 @@
 import platform
 import os
 import subprocess
+from urllib.parse import quote
 """
     Utilities
 """
@@ -102,3 +103,38 @@ def bearing_2_status(d):
     step = 360 / count  # Wind direction is in steps of 22.5 degrees (360/16)
     ix = int((d + (step / 2)) / step)  # Calculate index in the list
     return dirs[ix % count]
+
+def bool_2_int(value):
+    """Convert boolean to 0 or 1
+
+    Args:
+        value (bool)
+
+    Returns:
+        1 if True, else 0
+    """
+    if isinstance(value, bool):
+        return int(value)
+    else:
+        return 0
+
+
+def bool_2_str(value):
+    """Convert boolean to a string "true" or "false"
+
+    Args:
+        value (bool)
+
+    Returns:
+        "true" if True, else "false"
+    """
+    if isinstance(value, bool):
+        return str(value).lower()
+    else:
+        return "false"
+
+def int_2_bool(value):
+    if isinstance(value, int):
+        return (bool(value))
+    else:
+        return False

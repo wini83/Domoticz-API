@@ -7,23 +7,27 @@ from .setting import Setting
 class Security:
 
     SECURITY_STATUS_DISARMED = 0
-    SECURITY_STATUS_ARM_HOME = 1
-    SECURITY_STATUS_ARM_AWAY = 2
-    SECURITY_STATUS_ARM_UNKNOWN = 3
+    SECURITY_STATUS_ARMED_HOME = 1
+    SECURITY_STATUS_ARMED_AWAY = 2
+    SECURITY_STATUS_ARMED_UNKNOWN = 3
     SECURITY_STATUSSES = [
         SECURITY_STATUS_DISARMED,
-        SECURITY_STATUS_ARM_HOME,
-        SECURITY_STATUS_ARM_AWAY,
+        SECURITY_STATUS_ARMED_HOME,
+        SECURITY_STATUS_ARMED_AWAY,
     ]
 
     _param_getsecstatus = "getsecstatus"
     _param_setsecstatus = "setsecstatus"
 
     def __init__(self, server):
+        """
+            Args:
+                server (:obj:`Server`): Domoticz server object where to maintain the device            
+        """
         self._server = server
         self._api = self._server.api
         self._password = self._server.setting.value("SecPassword")
-        self._status = self.SECURITY_STATUS_ARM_UNKNOWN
+        self._status = self.SECURITY_STATUS_ARMED_UNKNOWN
         self._secondelay = 0
 
     # ..........................................................................

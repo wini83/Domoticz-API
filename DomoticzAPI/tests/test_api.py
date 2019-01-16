@@ -10,7 +10,7 @@ def main():
     print("********************************************************************************")
 
     server = dom.Server()
-    if server.api.status == server.api.OK:
+    if server.exists():
         print("Servertime ............... : {}".format(server.servertime))
         print("ServertimeDT ............. : {}".format(server.servertime_dt))
         print("Sunrise .................. : {}".format(server.sunrise))

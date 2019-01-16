@@ -31,19 +31,21 @@ class API:
     OK = "OK"
     ERROR = "ERR"
     UNKNOWN = "???"
-
-    RESULTS = [OK, ERROR, UNKNOWN]
+    RESULTS = [OK,
+               ERROR,
+               UNKNOWN,
+               ]
 
     def __init__(self, server):
         self._message = None
         self._querystring = None
         self._payload = None
         self._server = server
-        self._status = self.ERROR
+        self._status = self.UNKNOWN
         self._title = None
 
     def __str__(self):
-        return "{}({}): {}-{}-{}".format(self.__class__.__name__, self.url, self._title, self._status, self._message)
+        return "{}({}): {}-{}".format(self.__class__.__name__, self.url, self._title, self._status)
 
     # ..........................................................................
     # Public methods

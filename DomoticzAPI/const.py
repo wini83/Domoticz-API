@@ -13,3 +13,6 @@ DEG_MAX = 360
 # Limit in level, etc. used for Brightness, percentage, etc.
 LEVEL_MIN = 0
 LEVEL_MAX = 100
+
+OFF = 0
+ON = 1

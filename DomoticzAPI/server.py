@@ -14,9 +14,7 @@ from urllib.parse import quote
 
 
 class Server:
-    """
-    The Server class represents the Domoticz server
-    """
+
     DEFAULT_ADDRESS = "localhost"
     DEFAULT_PORT = "8080"
     DEFAULT_LANGUAGE = "en"
@@ -40,27 +38,34 @@ class Server:
     _param_version = "getversion"
 
     # rights
-    _rights_login_required = -1
-    _rights_not_defined = 0
-    _rights_logged_in = 2
+    RIGHTS_LOGIN_REQUIRED = -1
+    RIGHTS_NOT_DEFINED = 0
+    RIGHTS_LOGGED_IN = 2
 
     def __init__(self, address=DEFAULT_ADDRESS, port=DEFAULT_PORT, **kwargs):
+        """The Server class represents the Domoticz server
+            Args:
+                address (:obj:`str`, optional): the IP-address or hostname of your Domoticz installation. Default = "localhost".
+                port (:obj:`str`, optional): the port number of your Domoticz installation. Default = "8080"
+                user (:obj:`str`, optional): the username to access Domoticz.
+                password (:obj:`str`, optional): the password to access Domoticz.
+        """
         self._address = address
         self._port = port
         self._user = kwargs.get("user")
         self._password = kwargs.get("password")
-        self._rights = self._rights_not_defined
-        self._currentdate_dt = None
+        self._rights = self.RIGHTS_NOT_DEFINED
+        self._currentdate_dt = datetime.now().date()
         self._language = self.DEFAULT_LANGUAGE
         self._api = API(self)
         self._setting = Setting(self)
         # Check if authorization is required
         self._getAuth()
-        if self._rights == self._rights_logged_in or (
-                self._rights == self._rights_login_required and self._user is not None):
+        if self._rights == self.RIGHTS_LOGGED_IN or (
+                self._rights == self.RIGHTS_LOGIN_REQUIRED and self._user is not None):
             # No need to initialize all time properties. Next procedures will do that.
             self._getVersion()
-            if self._rights == self._rights_login_required and self._DomoticzUpdateURL is None:
+            if self._rights == self.RIGHTS_LOGIN_REQUIRED and self._DomoticzUpdateURL is None:
                 self._api.status = self._api.ERROR
                 self._api.message = "Invalid login"
             else:
@@ -178,6 +183,7 @@ class Server:
             self._api.call()
 
     def reboot(self):
+        """Reboot the Domoticz server"""
         # /json.htm?type=command&param=system_reboot
         if self.exists():
             self._api.querystring = "type=command&param={}".format(
@@ -185,6 +191,7 @@ class Server:
             self._api.call()
 
     def shutdown(self):
+        """Shutdown the Domoticz server"""
         # /json.htm?type=command&param=system_shutdown
         if self.exists():
             self._api.querystring = "type=command&param={}".format(
@@ -345,11 +352,11 @@ class Server:
     @property
     def setting(self):
         return self._setting
-        
+
     @property
     # getSunRiseSet
     def servertime(self):
-        self._getSunRiseSet()
+        self._getSunRiseSet(True)
         if self._api.status == self._api.OK:
             self._currentdate = self._ServerTime[:10]  # yyyy-mm-dd
             self._currentdate_dt = datetime.strptime(
