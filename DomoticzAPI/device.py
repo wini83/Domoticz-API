@@ -112,12 +112,13 @@ class Device:
 
     def _initDevice(self):
         if self._idx is not None:
-            # Retrieve status of specific device: /json.htm?type=devices&rid=IDX
-            querystring = "type={}&rid={}".format(
-                self._type_devices, self._idx)
+            # Retrieve status of specific device: /json.htm?type=devices&rid=IDX&displayhidden=1
+            querystring = "type={}&rid={}&displayhidden=1".format(
+                self._type_devices,
+                self._idx)
         elif self._Name is not None:
-            # Get all devices: /json.htm?type=devices&filter=all
-            querystring = "type={}&filter=all".format(self._type_devices)
+            # Get all devices: /json.htm?type=devices&displayhidden=1
+            querystring = "type={}&displayhidden=1".format(self._type_devices)
         else:
             querystring = ""
         self._api.querystring = querystring
@@ -303,14 +304,14 @@ class Device:
     def is_favorite(self):
         return int_2_bool(self._Favorite)
 
+    def is_hygrometer(self):
+        return self._Humidity is not None
+
     def is_switch(self):
         return self._SwitchType is not None
 
     def is_thermometer(self):
         return self._Temp is not None
-
-    def is_hygrometer(self):
-        return self._Humidity is not None
 
     def reset_security_status(self, value):
         """ Reset security status for eg. Smoke detectors """
@@ -512,6 +513,19 @@ class Device:
     @property
     def havetimeout(self):
         return self._HaveTimeout
+
+    @property
+    def hidden(self):
+        return self._Name[:1] == "$"
+
+    @hidden.setter
+    def hidden(self, value):
+        if value and self._Name[:1] != "$":
+            self.name = "${}".format(self._Name)
+        elif not value and self._Name[:1] == "$":
+            self.name = self._Name[1:]
+        else:
+            pass
 
     @property
     def humidity(self):
