@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-    API class
-    To maintain status of the API calls
-"""
 import urllib.request
 import base64
 import json
@@ -37,6 +33,12 @@ class API:
                ]
 
     def __init__(self, server):
+        """ API class
+            To maintain status of the API calls
+
+            Args:
+                server (:obj:`Server`): Domoticz server object where to maintain the device            
+        """
         self._message = None
         self._querystring = None
         self._payload = None
@@ -51,6 +53,7 @@ class API:
     # Public methods
     # ..........................................................................
     def call(self):
+        """Call the Domoticz API"""
         if self._server is not None:
             req = urllib.request.Request("http://{}:{}/{}?{}".format(
                 self._server._address,
@@ -83,10 +86,12 @@ class API:
     # ..........................................................................
     @property
     def data(self):
+        """ The complete response from the call """
         return self._data
 
     @property
     def message(self):
+        """ Sometimes a message is returned """
         return self._message
 
     @message.setter
@@ -95,10 +100,12 @@ class API:
 
     @property
     def payload(self):
+        """ The payload (result) part of the response """
         return self._payload
 
     @property
     def querystring(self):
+        """ The querystring used in the call """
         return self._querystring
 
     @querystring.setter
@@ -108,14 +115,17 @@ class API:
     # Obsolete!
     @property
     def result(self):
+        """ Obsolete """
         return self._payload
 
     @property
     def server(self):
+        """ The Domoticz server """
         return self._server
 
     @property
     def status(self):
+        """ The status in the response, OK, or ERR """
         return self._status
 
     @status.setter
@@ -132,6 +142,7 @@ class API:
 
     @property
     def title(self):
+        """ Title returned in the response """
         return self._title
 
     @title.setter
@@ -140,4 +151,5 @@ class API:
 
     @property
     def url(self):
+        """ The complete url used to call the Domoticz json/API """
         return "http://{}:{}/{}?{}".format(self._server._address, self._server._port, self.URL, self._querystring)

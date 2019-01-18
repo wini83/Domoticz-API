@@ -61,11 +61,11 @@ class Device:
                         typename (:obj:`str`, optional): Type name of the device
         """
         self._idx = None
-        self._Hardware = None
-        self._Name = None
-        self._Type = None
-        self._SubType = None
-        self._TypeName = None
+        self._hardware = None
+        self._name = None
+        self._type = None
+        self._subtype = None
+        self._typename = None
         self._htype = None
         if isinstance(server, Server) and server.exists():
             self._server = server
@@ -81,203 +81,206 @@ class Device:
             self._idx = None
             if isinstance(args[0], Hardware):
                 if args[0].exists():
-                    self._Hardware = args[0]
+                    self._hardware = args[0]
             else:
-                self._Hardware = None
-            self._Name = args[1]
+                self._hardware = None
+            self._name = args[1]
             # Try to get named parameters
-            self._SubType = kwargs.get("subtype")
-            self._Type = kwargs.get("type")
-            self._TypeName = kwargs.get("typename")
+            self._subtype = kwargs.get("subtype")
+            self._type = kwargs.get("type")
+            self._typename = kwargs.get("typename")
         else:
             self._idx = kwargs.get("idx")
             if self._idx is None:
-                self._Hardware = kwargs.get("hardware")
-                self._Name = kwargs.get("name")
-                self._SubType = kwargs.get("subtype")
-                self._Type = kwargs.get("type")
-                self._TypeName = kwargs.get("typename")
-        if self._TypeName is not None:
-            self._Type = None
-            self._SubType = None
+                self._hardware = kwargs.get("hardware")
+                self._name = kwargs.get("name")
+                self._subtype = kwargs.get("subtype")
+                self._type = kwargs.get("type")
+                self._typename = kwargs.get("typename")
+        if self._typename is not None:
+            self._type = None
+            self._subtype = None
         self._api = self._server.api
-        self._initDevice()
+        self._init()
 
     def __str__(self):
-        return "{}({}, {}: \"{}\")".format(self.__class__.__name__, str(self._server), self._idx, self._Name)
+        return "{}({}, {}: \"{}\")".format(self.__class__.__name__,
+                                           str(self._server),
+                                           self._idx,
+                                           self._name)
 
     # ..........................................................................
     # Private methods
     # ..........................................................................
-
-    def _initDevice(self):
+    def _init(self):
         if self._idx is not None:
             # Retrieve status of specific device: /json.htm?type=devices&rid=IDX&displayhidden=1
-            querystring = "type={}&rid={}&displayhidden=1".format(
+            querystring = "type={}&rid={}".format(
                 self._type_devices,
                 self._idx)
-        elif self._Name is not None:
+        elif self._name is not None:
             # Get all devices: /json.htm?type=devices&displayhidden=1
-            querystring = "type={}&displayhidden=1".format(self._type_devices)
+            querystring = "type={}&displayhidden=1".format(
+                self._type_devices)
         else:
             querystring = ""
         self._api.querystring = querystring
         self._api.call()
-        myDict = {}
+        found_dict = {}
         if self._api.status == self._api.OK:
             d = self._api.data
             # For some reason next property is only given in device calls. No idea about the meaning!
-            self._server._ActTime = d.get("ActTime")
+            self._server._acttime = d.get("ActTime")
             # Update the server properties.
-            self._server._AstrTwilightEnd = d.get("AstrTwilightEnd")
-            self._server._AstrTwilightStart = d.get("AstrTwilightStart")
-            self._server._CivTwilightEnd = d.get("CivTwilightEnd")
-            self._server._CivTwilightStart = d.get("CivTwilightStart")
-            self._server._DayLength = d.get("DayLength")
-            self._server._NautTwilightEnd = d.get("NautTwilightEnd")
-            self._server._NautTwilightStart = d.get("NautTwilightStart")
-            self._server._ServerTime = d.get("ServerTime")
-            self._server._SunAtSouth = d.get("SunAtSouth")
-            self._server._Sunrise = d.get("Sunrise")
-            self._server._Sunset = d.get("Sunset")
+            self._server._astrtwilightend = d.get("AstrTwilightEnd")
+            self._server._astrtwilightstart = d.get("AstrTwilightStart")
+            self._server._civtwilightend = d.get("CivTwilightEnd")
+            self._server._civtwilightstart = d.get("CivTwilightStart")
+            self._server._daylength = d.get("DayLength")
+            self._server._nauttwilightend = d.get("NautTwilightEnd")
+            self._server._nauttwilightstart = d.get("NautTwilightStart")
+            self._server._servertime = d.get("ServerTime")
+            self._server._sunatsouth = d.get("SunAtSouth")
+            self._server._sunrise = d.get("Sunrise")
+            self._server._sunset = d.get("Sunset")
             # In param=getversion it is "version"
             self._server._version = d.get("app_version")
             # Search for the given device
             if self._api.result:
-                for resDict in self._api.result:
-                    if (self._idx is not None and int(resDict.get("idx")) == self._idx) \
-                            or (self._Name is not None and resDict.get("Name") == self._Name):
+                for result_dict in self._api.result:
+                    if (self._idx is not None and int(result_dict.get("idx")) == self._idx) \
+                            or (self._name is not None and result_dict.get("Name") == self._name):
                         # Found device :)
-                        myDict = resDict
+                        found_dict = result_dict
                         break
         # Update device properties
         # The list below may be not complete!!!
-        self._AddjMulti = myDict.get("AddjMulti")
-        self._AddjMulti2 = myDict.get("AddjMulti2")
-        self._AddjValue = myDict.get("AddjValue")
-        self._AddjValue2 = myDict.get("AddjValue2")
-        self._Barometer = myDict.get("Barometer")
-        self._BatteryLevel = myDict.get("BatteryLevel", NUM_MAX)
-        self._CameraIdx = myDict.get("CameraIdx")
-        self._Chill = myDict.get("Chill")
-        self._Color = Color(color=myDict.get("Color", "{}"))
-        self._Counter = myDict.get("Counter")
-        self._CounterDeliv = myDict.get("CounterDeliv")
-        self._CounterDelivToday = myDict.get("CounterDelivToday")
-        self._CounterToday = myDict.get("CounterToday")
-        self._Current = myDict.get("Current")
-        self._CustomImage = myDict.get("CustomImage")
-        self._Data = myDict.get("Data")
-        self._DayTime = myDict.get("DayTime")
-        self._Description = myDict.get("Description")
-        self._Desc = myDict.get("Desc")
-        self._DewPoint = myDict.get("DewPoint")
-        self._DimmerType = myDict.get("DimmerType")
-        self._Direction = myDict.get("Direction")
-        self._DirectionStr = myDict.get("DirectionStr")
-        self._displaytype = myDict.get("displaytype")
-        self._Favorite = myDict.get("Favorite")
-        self._Forecast = myDict.get("Forecast")
-        self._ForecastStr = myDict.get("ForecastStr")
-        self._Gust = myDict.get("Gust")
-        self._HaveDimmer = myDict.get("HaveDimmer")
-        self._HaveGroupCmd = myDict.get("HaveGroupCmd")
-        self._HaveTimeout = myDict.get("HaveTimeout")
-        self._Humidity = myDict.get("Humidity")
-        self._HumidityStatus = myDict.get("HumidityStatus")
-        self._ID = myDict.get("ID")
-        self._idx = myDict.get("idx", self._idx)
+        self._addjmulti = found_dict.get("AddjMulti")
+        self._addjmulti2 = found_dict.get("AddjMulti2")
+        self._addjvalue = found_dict.get("AddjValue")
+        self._addjvalue2 = found_dict.get("AddjValue2")
+        self._barometer = found_dict.get("Barometer")
+        self._batterylevel = found_dict.get("BatteryLevel", NUM_MAX)
+        self._cameraidx = found_dict.get("CameraIdx")
+        self._chill = found_dict.get("Chill")
+        self._color = Color(color=found_dict.get("Color", "{}"))
+        self._counter = found_dict.get("Counter")
+        self._counterdeliv = found_dict.get("CounterDeliv")
+        self._counterdelivtoday = found_dict.get("CounterDelivToday")
+        self._countertoday = found_dict.get("CounterToday")
+        self._current = found_dict.get("Current")
+        self._customimage = found_dict.get("CustomImage")
+        self._data = found_dict.get("Data")
+        self._daytime = found_dict.get("DayTime")
+        self._description = found_dict.get("Description")
+        self._desc = found_dict.get("Desc")
+        self._dewpoint = found_dict.get("DewPoint")
+        self._dimmertype = found_dict.get("DimmerType")
+        self._direction = found_dict.get("Direction")
+        self._directionstr = found_dict.get("DirectionStr")
+        self._displaytype = found_dict.get("displaytype")
+        self._favorite = found_dict.get("Favorite")
+        self._forecast = found_dict.get("Forecast")
+        self._forecaststr = found_dict.get("ForecastStr")
+        self._gust = found_dict.get("Gust")
+        self._havedimmer = found_dict.get("HaveDimmer")
+        self._havegroupcmd = found_dict.get("HaveGroupCmd")
+        self._havetimeout = found_dict.get("HaveTimeout")
+        self._humidity = found_dict.get("Humidity")
+        self._humiditystatus = found_dict.get("HumidityStatus")
+        self._id = found_dict.get("ID")
+        self._idx = found_dict.get("idx", self._idx)
         # Next property available with:
         #     /json.htm?type=command&param=getlightswitches
         #     /json.htm?type=devices&filter=light&used=true&order=Name
-        self._isDimmer = myDict.get("IsDimmer")
-        self._Image = myDict.get("Image")
-        self._InternalState = myDict.get("InternalState")
-        self._IsSubDevice = myDict.get("IsSubDevice")
-        self._LastUpdate = myDict.get("LastUpdate")
-        self._Level = myDict.get("Level")
-        self._LevelActions = myDict.get("LevelActions")
-        self._LevelInt = myDict.get("LevelInt")
-        self._LevelNames = myDict.get("LevelNames")
-        self._LevelOffHidden = myDict.get("LevelOffHidden")
-        self._MaxDimLevel = myDict.get("MaxDimLevel")
-        self._Mode = myDict.get("Mode")
-        self._Modes = myDict.get("Modes")
-        self._Name = myDict.get("Name", self._Name)
-        self._Notifications = myDict.get("Notifications")
-        self._Options = myDict.get("Options")
+        self._isdimmer = found_dict.get("IsDimmer")
+        self._image = found_dict.get("Image")
+        self._internalstate = found_dict.get("InternalState")
+        self._issubdevice = found_dict.get("IsSubDevice")
+        self._lastupdate = found_dict.get("LastUpdate")
+        self._level = found_dict.get("Level")
+        self._levelactions = found_dict.get("LevelActions")
+        self._levelint = found_dict.get("LevelInt")
+        self._levelnames = found_dict.get("LevelNames")
+        self._leveloffhidden = found_dict.get("LevelOffHidden")
+        self._maxdimlevel = found_dict.get("MaxDimLevel")
+        self._mode = found_dict.get("Mode")
+        self._modes = found_dict.get("Modes")
+        self._name = found_dict.get("Name", self._name)
+        self._notifications = found_dict.get("Notifications")
+        self._options = found_dict.get("Options")
         # The first RoomPlan to which this device was assigned?
-        self._PlanID = myDict.get("PlanID")
+        self._planid = found_dict.get("PlanID")
         # List of RoomPlan idxs containg this device
-        self._PlanIDs = myDict.get("PlanIDs")
-        self._Pressure = myDict.get("Pressure")
-        self._Protected = myDict.get("Protected")
-        self._Quality = myDict.get("Quality")
-        self._Radiation = myDict.get("Radiation")
-        self._Rain = myDict.get("Rain")
-        self._RainRate = myDict.get("RainRate")
-        self._SelectorStyle = myDict.get("SelectorStyle")
-        self._SensorType = myDict.get("SensorType")
-        self._SensorUnit = myDict.get("SensorUnit")
-        self._SetPoint = myDict.get("SetPoint")
-        self._ShowNotifications = myDict.get("ShowNotifications")
-        self._SignalLevel = myDict.get("SignalLevel")
-        self._Speed = myDict.get("Speed")
-        self._State = myDict.get("State")
-        self._Status = myDict.get("Status")
-        self._StrParam1 = myDict.get("StrParam1")
-        self._StrParam2 = myDict.get("StrParam2")
-        self._SubType = myDict.get("SubType", self._SubType)
-        self._SwitchType = myDict.get("SwitchType")
-        self._SwitchTypeVal = myDict.get("SwitchTypeVal")
-        self._Temp = myDict.get("Temp")
-        self._Timers = myDict.get("Timers")
-        self._Type = myDict.get("Type", self._Type)
-        self._TypeImg = myDict.get("TypeImg")
-        self._Unit = myDict.get("Unit")
-        self._Until = myDict.get("Until")
-        self._Used = myDict.get("Used")
-        self._Usage = myDict.get("Usage")
-        self._UsageDeliv = myDict.get("UsageDeliv")
-        self._UsedByCamera = myDict.get("UsedByCamera")
-        self._UVI = myDict.get("UVI")
-        self._ValueQuantity = myDict.get("ValueQuantity")
-        self._ValueUnits = myDict.get("ValueUnits")
-        self._Visibility = myDict.get("Visibility")
-        self._Voltage = myDict.get("Voltage")
-        self._XOffset = myDict.get("XOffset")
-        self._YOffset = myDict.get("YOffset")
+        self._planids = found_dict.get("PlanIDs")
+        self._pressure = found_dict.get("Pressure")
+        self._protected = found_dict.get("Protected")
+        self._quality = found_dict.get("Quality")
+        self._radiation = found_dict.get("Radiation")
+        self._rain = found_dict.get("Rain")
+        self._rainrate = found_dict.get("RainRate")
+        self._selectorstyle = found_dict.get("SelectorStyle")
+        self._sensortype = found_dict.get("SensorType")
+        self._sensorunit = found_dict.get("SensorUnit")
+        self._setpoint = found_dict.get("SetPoint")
+        self._shownotifications = found_dict.get("ShowNotifications")
+        self._signallevel = found_dict.get("SignalLevel")
+        self._speed = found_dict.get("Speed")
+        self._state = found_dict.get("State")
+        self._status = found_dict.get("Status")
+        self._strparam1 = found_dict.get("StrParam1")
+        self._strparam2 = found_dict.get("StrParam2")
+        self._subtype = found_dict.get("SubType", self._subtype)
+        self._switchtype = found_dict.get("SwitchType")
+        self._switchtypeval = found_dict.get("SwitchTypeVal")
+        self._temp = found_dict.get("Temp")
+        self._timers = found_dict.get("Timers")
+        self._type = found_dict.get("Type", self._type)
+        self._typeimg = found_dict.get("TypeImg")
+        self._unit = found_dict.get("Unit")
+        self._until = found_dict.get("Until")
+        self._used = found_dict.get("Used")
+        self._usage = found_dict.get("Usage")
+        self._usagedeliv = found_dict.get("UsageDeliv")
+        self._usedbycamera = found_dict.get("UsedByCamera")
+        self._uvi = found_dict.get("UVI")
+        self._valuequantity = found_dict.get("ValueQuantity")
+        self._valueunits = found_dict.get("ValueUnits")
+        self._visibility = found_dict.get("Visibility")
+        self._voltage = found_dict.get("Voltage")
+        self._xoffset = found_dict.get("XOffset")
+        self._yoffset = found_dict.get("YOffset")
 
         # Some info from the hardware also comes
-        HardwareID = myDict.get("HardwareID")
-        if HardwareID is not None:
-            hw = Hardware(self._server, idx=HardwareID)
+        hardwareid = found_dict.get("HardwareID")
+        if hardwareid is not None:
+            hw = Hardware(self._server, idx=hardwareid)
             if hw.exists():
-                self._Hardware = hw
-                self._Hardware._hardwaretype = myDict.get("HardwareType")
+                self._hardware = hw
+                self._hardware._hardwaretype = found_dict.get("HardwareType")
             else:
-                self._Hardware = None
+                self._hardware = None
 
     # ..........................................................................
     # Public methods
     # ..........................................................................
     def add(self):
         if self._idx is None \
-                and self._Hardware is not None \
-                and self._Name is not None \
-                and self._Type is not None \
-                and self._SubType is not None:
+                and self._hardware is not None \
+                and self._name is not None \
+                and self._type is not None \
+                and self._subtype is not None:
             # /json.htm?type=createdevice&idx=IDX&sensorname=SENSORNAME&devicetype=DEVICETYPE&devicesubtype=SUBTYPE
             self._api.querystring = "type={}&idx={}&sensorname={}&devicetype={}&devicesubtype={}".format(
                 self._type_create_device,
-                self._Hardware._idx,
-                quote(self._Name),
-                self._Type,
-                self._SubType)
+                self._hardware._idx,
+                quote(self._name),
+                self._type,
+                self._subtype)
             self._api.call()
             if self._api.status == self._api.OK:
                 self._idx = self._api.data.get("idx", None)
-                self._initDevice()
+                self._init()
 
     def delete(self):
         if self.exists():
@@ -287,31 +290,31 @@ class Device:
                 self._idx)
             self._api.call()
             if self._api.status == self._api.OK:
-                self._Hardware = None
+                self._hardware = None
                 self._idx = None
 
     def exists(self):
         """ Check if device exists in Domoticz """
-        return not (self._idx is None or self._Hardware is None)
+        return not (self._idx is None or self._hardware is None)
 
     def has_battery(self):
         """ Check if this device is using a battery """
-        return not (self._BatteryLevel is None or self._BatteryLevel == NUM_MAX)
+        return not (self._batterylevel is None or self._batterylevel == NUM_MAX)
 
     def is_dimmer(self):
-        return ((self.is_switch() and self._SwitchType == "Dimmer") or (self._isDimmer == True))
+        return ((self.is_switch() and self._switchtype == "Dimmer") or (self._isdimmer == True))
 
     def is_favorite(self):
-        return int_2_bool(self._Favorite)
+        return int_2_bool(self._favorite)
 
     def is_hygrometer(self):
-        return self._Humidity is not None
+        return self._humidity is not None
 
     def is_switch(self):
-        return self._SwitchType is not None
+        return self._switchtype is not None
 
     def is_thermometer(self):
-        return self._Temp is not None
+        return self._temp is not None
 
     def reset_security_status(self, value):
         """ Reset security status for eg. Smoke detectors """
@@ -325,7 +328,7 @@ class Device:
                         value
                     )
                     self._api.call()
-                    self._initDevice()
+                    self._init()
 
     def update(self, nvalue=0, svalue=""):
         # /json.htm?type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
@@ -337,7 +340,7 @@ class Device:
             if len(svalue) > 0:
                 self._api.querystring += "&svalue={}".format(svalue)
             self._api.call()
-            self._initDevice()
+            self._init()
 
     def update_switch(self, value, level=0):
         if self.exists():
@@ -352,46 +355,46 @@ class Device:
                         value
                     )
                     self._api.call()
-                    self._initDevice()
+                    self._init()
 
     # ..........................................................................
     # Properties
     # ..........................................................................
     @property
     def addjmulti(self):
-        return self._AddjMulti
+        return self._addjmulti
 
     @property
     def addjmulti2(self):
-        return self._AddjMulti2
+        return self._addjmulti2
 
     @property
     def addjvalue(self):
-        return self._AddjValue
+        return self._addjvalue
 
     @property
     def addjvalue2(self):
-        return self._AddjValue2
+        return self._addjvalue2
 
     @property
     def barometer(self):
-        return self._Barometer
+        return self._barometer
 
     @property
     def batterylevel(self):
-        return self._BatteryLevel
+        return self._batterylevel
 
     @property
     def cameraidx(self):
-        return self._CameraIdx
+        return self._cameraidx
 
     @property
     def chill(self):
-        return self._Chill
+        return self._chill
 
     @property
     def color(self):
-        return self._Color
+        return self._color
 
     @color.setter
     def color(self, value):
@@ -402,66 +405,66 @@ class Device:
                     self._param_set_color_brightness,
                     self._idx,
                     quote(value.color),
-                    self._Level
+                    self._level
                 )
                 self._api.call()
-                self._initDevice()
+                self._init()
 
     @property
     def counter(self):
-        return self._Counter
+        return self._counter
 
     @property
     def counterdeliv(self):
-        return self._CounterDeliv
+        return self._counterdeliv
 
     @property
     def counterdelivtoday(self):
-        return self._CounterDelivToday
+        return self._counterdelivtoday
 
     @property
     def countertoday(self):
-        return self._CounterToday
+        return self._countertoday
 
     @property
     def current(self):
-        return self._Current
+        return self._current
 
     @property
     def customimage(self):
-        return self._CustomImage
+        return self._customimage
 
     @property
     def data(self):
-        return self._Data
+        return self._data
 
     @property
     def daytime(self):
-        return self._DayTime
+        return self._daytime
 
     @property
     def description(self):
-        return self._Description
+        return self._description
 
     @property
     def desc(self):
-        return self._Desc
+        return self._desc
 
     @property
     def dewpoint(self):
-        return self._DewPoint
+        return self._dewpoint
 
     @property
     def dimmertype(self):
-        return self._DimmerType
+        return self._dimmertype
 
     @property
     def direction(self):
-        return self._Direction
+        return self._direction
 
     @property
     def directionstr(self):
-        return self._DirectionStr
+        return self._directionstr
 
     @property
     def displaytype(self):
@@ -470,7 +473,7 @@ class Device:
     @property
     # For some reason this attribute in Domoticz is an 'int'. Boolean is more logical.
     def favorite(self):
-        return int_2_bool(self._Favorite)
+        return int_2_bool(self._favorite)
 
     @favorite.setter
     def favorite(self, value):
@@ -484,60 +487,60 @@ class Device:
             )
             self._api.call()
             if self._api.status == self._api.OK:
-                self._Favorite = int_value
+                self._favorite = int_value
 
     @property
     def forecast(self):
-        return self._Forecast
+        return self._forecast
 
     @property
     def forecaststr(self):
-        return self._ForecastStr
+        return self._forecaststr
 
     @property
     def gust(self):
-        return self._Gust
+        return self._gust
 
     @property
     def hardware(self):
-        return self._Hardware
+        return self._hardware
 
     @property
     def havedimmer(self):
-        return self._HaveDimmer
+        return self._havedimmer
 
     @property
     def havegroupcmd(self):
-        return self._HaveGroupCmd
+        return self._havegroupcmd
 
     @property
     def havetimeout(self):
-        return self._HaveTimeout
+        return self._havetimeout
 
     @property
     def hidden(self):
-        return self._Name[:1] == "$"
+        return self._name[:1] == "$"
 
     @hidden.setter
     def hidden(self, value):
-        if value and self._Name[:1] != "$":
-            self.name = "${}".format(self._Name)
-        elif not value and self._Name[:1] == "$":
-            self.name = self._Name[1:]
+        if value and self._name[:1] != "$":
+            self.name = "${}".format(self._name)
+        elif not value and self._name[:1] == "$":
+            self.name = self._name[1:]
         else:
             pass
 
     @property
     def humidity(self):
-        return self._Humidity
+        return self._humidity
 
     @property
     def humiditystatus(self):
-        return self._HumidityStatus
+        return self._humiditystatus
 
     @property
     def id(self):
-        return self._ID
+        return self._id
 
     @property
     def idx(self):
@@ -545,23 +548,23 @@ class Device:
 
     @property
     def image(self):
-        return self._Image
+        return self._image
 
     @property
     def internalstate(self):
-        return self._InternalState
+        return self._internalstate
 
     @property
     def issubdevice(self):
-        return self._IsSubDevice
+        return self._issubdevice
 
     @property
     def lastupdate(self):
-        return self._LastUpdate
+        return self._lastupdate
 
     @property
     def level(self):
-        return self._Level
+        return self._level
 
     @level.setter
     def level(self, value):
@@ -574,39 +577,39 @@ class Device:
                 value
             )
             self._api.call()
-            self._initDevice()
+            self._init()
 
     @property
     def levelactions(self):
-        return self._LevelActions
+        return self._levelactions
 
     @property
     def levelint(self):
-        return self._LevelInt
+        return self._levelint
 
     @property
     def levelnames(self):
-        return self._LevelNames
+        return self._levelnames
 
     @property
     def leveloffhidden(self):
-        return self._LevelOffHidden
+        return self._leveloffhidden
 
     @property
     def maxdimlevel(self):
-        return self._MaxDimLevel
+        return self._maxdimlevel
 
     @property
     def mode(self):
-        return self._Mode
+        return self._mode
 
     @property
     def modes(self):
-        return self._Modes
+        return self._modes
 
     @property
     def name(self):
-        return self._Name
+        return self._name
 
     @name.setter
     def name(self, value):
@@ -619,11 +622,11 @@ class Device:
             )
             self._api.call()
             if self._api.status == self._api.OK:
-                self._Name = value
+                self._name = value
 
     @property
     def notifications(self):
-        return self._Notifications
+        return self._notifications
 
     @property
     def nvalue(self):
@@ -641,15 +644,15 @@ class Device:
                 self._type_events,
                 self._param_current_states)
             self._api.call()
-            myDict = {}
+            found_dict = {}
             if self._api.status == self._api.OK and self._api.payload:
-                for resDict in self._api.payload:
-                    if self._idx is not None and resDict.get("id") == self.idx:
+                for result_dict in self._api.payload:
+                    if self._idx is not None and result_dict.get("id") == self.idx:
                         # Found device :)
-                        myDict = resDict
+                        found_dict = result_dict
                         break
-            value = myDict.get("value")
-            values = myDict.get("values")
+            value = found_dict.get("value")
+            values = found_dict.get("values")
             try:
                 nvalue = float(value)
             except:
@@ -663,51 +666,51 @@ class Device:
 
     @property
     def options(self):
-        return self._Options
+        return self._options
 
     @property
     def planid(self):
-        return int(self._PlanID) if self._PlanID is not None else None
+        return int(self._planid) if self._planid is not None else None
 
     @property
     def planids(self):
-        return self._PlanIDs
+        return self._planids
 
     @property
     def pressure(self):
-        return self._Pressure
+        return self._pressure
 
     @property
     def protected(self):
-        return self._Protected
+        return self._protected
 
     @property
     def quality(self):
-        return self._Quality
+        return self._quality
 
     @property
     def radiation(self):
-        return self._Radiation
+        return self._radiation
 
     @property
     def rain(self):
-        return self._Rain
+        return self._rain
 
     @property
     def rainrate(self):
-        return self._RainRate
+        return self._rainrate
 
     @property
     def selectorstyle(self):
-        return self._SelectorStyle
+        return self._selectorstyle
 
     @property
     def sensortype(self):
-        return self._SensorType
+        return self._sensortype
 
     @property
     def sensorunit(self):
-        return self._SensorUnit
+        return self._sensorunit
 
     @property
     def server(self):
@@ -715,64 +718,64 @@ class Device:
 
     @property
     def setpoint(self):
-        return self._SetPoint
+        return self._setpoint
 
     @property
     def shownotifications(self):
-        return self._ShowNotifications
+        return self._shownotifications
 
     @property
     def signallevel(self):
-        return self._SignalLevel
+        return self._signallevel
 
     @property
     def speed(self):
-        return self._Speed
+        return self._speed
 
     @property
     def state(self):
-        return self._State
+        return self._state
 
     @property
     def subtype(self):
-        return self._SubType
+        return self._subtype
 
     @property
     def temp(self):
-        return self._Temp
+        return self._temp
 
     @property
     def timers(self):
-        return self._Timers
+        return self._timers
 
     @property
     def type(self):
-        return self._Type
+        return self._type
 
     @property
     def typeimg(self):
-        return self._TypeImg
+        return self._typeimg
 
     @property
     def unit(self):
-        return self._Unit
+        return self._unit
 
     @property
     def until(self):
-        return self._Until
+        return self._until
 
     @property
     def usage(self):
-        return self._Usage
+        return self._usage
 
     @property
     def usagedeliv(self):
-        return self._UsageDeliv
+        return self._usagedeliv
 
     @property
     # For some reason this attribute in Domoticz is an 'int'. Boolean is more logical.
     def used(self):
-        return int_2_bool(self._Used)
+        return int_2_bool(self._used)
 
     @used.setter
     def used(self, value):
@@ -786,32 +789,32 @@ class Device:
             )
             self._api.call()
             if self._api.status == self._api.OK:
-                self._Used = bool_2_int(value)
+                self._used = bool_2_int(value)
 
     @property
     def uvi(self):
-        return self._UVI
+        return self._uvi
 
     @property
     def valuequantity(self):
-        return self._ValueQuantity
+        return self._valuequantity
 
     @property
     def valueunits(self):
-        return self._ValueUnits
+        return self._valueunits
 
     @property
     def visibilty(self):
-        return self._Visibility
+        return self._visibility
 
     @property
     def voltage(self):
-        return self._Voltage
+        return self._voltage
 
     @property
     def xoffset(self):
-        return self._XOffset
+        return self._xoffset
 
     @property
     def yoffset(self):
-        return self._YOffset
+        return self._yoffset

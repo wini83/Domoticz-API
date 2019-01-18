@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from .api import API
+from .utilities import (str_2_bool, bool_2_str)
 from urllib.parse import quote
-
-"""
-    Hardware
-"""
 
 
 class Hardware:
@@ -23,6 +20,8 @@ class Hardware:
 
     # def __init__(self, server, idx):
     def __init__(self, server, *args, **kwargs):
+        """ Hardware
+        """
         self._address = None
         self._datatimeout = 0
         self._enabled = True
@@ -58,7 +57,7 @@ class Hardware:
                     #   hw = dom.Hardware(server, type=15, port=1, name="Sensors1", enabled="true")
                     self._address = kwargs.get("address")
                     self._datatimeout = kwargs.get("datatimeout", 0)
-                    self._enabled = kwargs.get("enabled", "true") == "true"
+                    self._enabled = str_2_bool(kwargs.get("enabled", "true"))
                     self._extra = kwargs.get("extra")
                     self._mode1 = kwargs.get("mode1")
                     self._mode2 = kwargs.get("mode2")
@@ -73,7 +72,7 @@ class Hardware:
                     self._type = kwargs.get("type")
                     self._username = kwargs.get("username")
         if self._idx is not None:
-            self._initHardware()
+            self._init()
 
     def __str__(self):
         return "{}({}, {}: \"{}\", {})".format(self.__class__.__name__, str(self.server), self.idx, self.name,
@@ -82,30 +81,30 @@ class Hardware:
     # ..........................................................................
     # Private methods
     # ..........................................................................
-    def _initHardware(self):
+    def _init(self):
         self._api.querystring = "type={}".format(self._type_hardware)
         self._api.call()
-        myDict = {}
+        found_dict = {}
         if self._api.payload:
-            for myDict in self._api.payload:
-                if myDict.get("idx") == str(self._idx):
+            for found_dict in self._api.payload:
+                if found_dict.get("idx") == str(self._idx):
                     break
-        self._address = myDict.get("Address")
-        self._datatimeout = myDict.get("DataTimeout")
-        self._enabled = myDict.get("Enabled", "true") == "true"
-        self._extra = myDict.get("Extra")
-        self._mode1 = myDict.get("Mode1")
-        self._mode2 = myDict.get("Mode2")
-        self._mode3 = myDict.get("Mode3")
-        self._mode4 = myDict.get("Mode4")
-        self._mode5 = myDict.get("Mode5")
-        self._mode6 = myDict.get("Mode6")
-        self._name = myDict.get("Name")
-        self._password = myDict.get("Password")
-        self._port = myDict.get("Port")
-        self._serialport = myDict.get("SerialPort")
-        self._type = myDict.get("Type")
-        self._username = myDict.get("Username")
+        self._address = found_dict.get("Address")
+        self._datatimeout = found_dict.get("DataTimeout")
+        self._enabled = found_dict.get("Enabled", "true") == "true"
+        self._extra = found_dict.get("Extra")
+        self._mode1 = found_dict.get("Mode1")
+        self._mode2 = found_dict.get("Mode2")
+        self._mode3 = found_dict.get("Mode3")
+        self._mode4 = found_dict.get("Mode4")
+        self._mode5 = found_dict.get("Mode5")
+        self._mode6 = found_dict.get("Mode6")
+        self._name = found_dict.get("Name")
+        self._password = found_dict.get("Password")
+        self._port = found_dict.get("Port")
+        self._serialport = found_dict.get("SerialPort")
+        self._type = found_dict.get("Type")
+        self._username = found_dict.get("Username")
 
     def _update(self, key, value):
         if value is not None and self._idx is not None:
@@ -134,9 +133,11 @@ class Hardware:
         if self._idx is None and self._name is not None and self._type is not None:
             # Currently only Dummy device is allowed to create
             if self._type == self._htype_dummy:
-                querystring = "type=command&param={}".format(self._param_add_hardware)
+                querystring = "type=command&param={}".format(
+                    self._param_add_hardware)
                 querystring += self._add_param("address", self._address)
-                querystring += self._add_param("datatimeout", self._datatimeout)
+                querystring += self._add_param("datatimeout",
+                                               self._datatimeout)
                 querystring += self._add_param("enabled", self._enabled)
                 querystring += self._add_param("extra", self._extra)
                 querystring += self._add_param("htype", self._type)
@@ -155,7 +156,7 @@ class Hardware:
                 self._api.call()
                 if self._api.status == self._api.OK:
                     self._idx = int(self._api.data.get("idx"))
-                    self._initHardware()
+                    self._init()
 
     def add_virtual(self):
         self._type = self._htype_dummy
@@ -207,9 +208,11 @@ class Hardware:
 
     @enabled.setter
     def enabled(self, value):
-        if str(value) in ("true", "false"):
-            self._enabled = value == "true"
-            self._update("enabled", str(self._enabled).lower)
+        if isinstance(value, bool):
+            self._enabled = value
+        else:
+            self._enabled = False
+        self._update("enabled", bool_2_str(self._enabled))
 
     @property
     def extra(self):

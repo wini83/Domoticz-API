@@ -65,7 +65,7 @@ class Server:
                 self._rights == self.RIGHTS_LOGIN_REQUIRED and self._user is not None):
             # No need to initialize all time properties. Next procedures will do that.
             self._getVersion()
-            if self._rights == self.RIGHTS_LOGIN_REQUIRED and self._DomoticzUpdateURL is None:
+            if self._rights == self.RIGHTS_LOGIN_REQUIRED and self._domoticzupdateurl is None:
                 self._api.status = self._api.ERROR
                 self._api.message = "Invalid login"
             else:
@@ -102,13 +102,13 @@ class Server:
             self._param_version)
         self._api.call()
         self._build_time = self._api.data.get("build_time")
-        self._DomoticzUpdateURL = self._api.data.get("DomoticzUpdateURL")
+        self._domoticzupdateurl = self._api.data.get("DomoticzUpdateURL")
         self._dzvents_version = self._api.data.get("dzvents_version")
         self._hash = self._api.data.get("hash")
-        self._HaveUpdate = self._api.data.get("HaveUpdate")
+        self._haveupdate = self._api.data.get("HaveUpdate")
         self._python_version = self._api.data.get("python_version")
-        self._Revision = self._api.data.get("Revision")
-        self._SystemName = self._api.data.get("SystemName")
+        self._revision = self._api.data.get("Revision")
+        self._systemname = self._api.data.get("SystemName")
         self._version = self._api.data.get("version")
 
     def _checkForUpdate(self):
@@ -116,10 +116,10 @@ class Server:
         self._api.querystring = "type=command&param={}".format(
             self._param_checkforupdate)
         self._api.call()
-        self._DomoticzUpdateURL = self._api.data.get("DomoticzUpdateURL")
-        self._HaveUpdate = self._api.data.get("HaveUpdate")
-        self._Revision = self._api.data.get("Revision")
-        self._SystemName = self._api.data.get("SystemName")
+        self._domoticzupdateurl = self._api.data.get("DomoticzUpdateURL")
+        self._haveupdate = self._api.data.get("HaveUpdate")
+        self._revision = self._api.data.get("Revision")
+        self._systemname = self._api.data.get("SystemName")
         self._statuscode = self._api.data.get("statuscode")
 
     def _getLanguage(self):
@@ -138,18 +138,18 @@ class Server:
             self._api.querystring = "type=command&param={}".format(
                 self._param_sun)
             self._api.call()
-            self._ActTime = self._api.data.get("ActTime")
-            self._AstrTwilightEnd = self._api.data.get("AstrTwilightEnd")
-            self._AstrTwilightStart = self._api.data.get("AstrTwilightStart")
-            self._CivTwilightEnd = self._api.data.get("CivTwilightEnd")
-            self._CivTwilightStart = self._api.data.get("CivTwilightStart")
-            self._NautTwilightEnd = self._api.data.get("NautTwilightEnd")
-            self._NautTwilightStart = self._api.data.get("NautTwilightStart")
-            self._Sunrise = self._api.data.get("Sunrise")
-            self._Sunset = self._api.data.get("Sunset")
-            self._SunAtSouth = self._api.data.get("SunAtSouth")
-            self._DayLength = self._api.data.get("DayLength")
-            self._ServerTime = self._api.data.get("ServerTime")
+            self._acttime = self._api.data.get("ActTime")
+            self._astrtwilightend = self._api.data.get("AstrTwilightEnd")
+            self._astrtwilightstart = self._api.data.get("AstrTwilightStart")
+            self._civtwilightend = self._api.data.get("CivTwilightEnd")
+            self._civtwilightstart = self._api.data.get("CivTwilightStart")
+            self._nauttwilightend = self._api.data.get("NautTwilightEnd")
+            self._nauttwilightstart = self._api.data.get("NautTwilightStart")
+            self._sunrise = self._api.data.get("Sunrise")
+            self._sunset = self._api.data.get("Sunset")
+            self._sunatsouth = self._api.data.get("SunAtSouth")
+            self._daylength = self._api.data.get("DayLength")
+            self._servertime = self._api.data.get("ServerTime")
 
     def _getConfig(self):
         # /json.htm?type=command&param=getconfig
@@ -212,7 +212,7 @@ class Server:
     @property
     # Returned from device calls, together with the getSunRiseSet values
     def act_time(self):
-        return self._ActTime
+        return self._acttime
 
     @property
     def address(self):
@@ -230,21 +230,21 @@ class Server:
     # getSunRiseSet
     def astrtwilightend(self):
         self._getSunRiseSet()
-        return self._AstrTwilightEnd
+        return self._astrtwilightend
 
     @property
     def astrtwilightend_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._AstrTwilightEnd, "%Y-%m-%d %H:%M")
+        return datetime.strptime(self._currentdate + " " + self._astrtwilightend, "%Y-%m-%d %H:%M")
 
     @property
     # getSunRiseSet
     def astrtwilightstart(self):
         self._getSunRiseSet()
-        return self._AstrTwilightStart
+        return self._astrtwilightstart
 
     @property
     def astrtwilightstart_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._AstrTwilightStart, "%Y-%m-%d %H:%M")
+        return datetime.strptime(self._currentdate + " " + self._astrtwilightstart, "%Y-%m-%d %H:%M")
 
     @property
     # getversion
@@ -259,32 +259,32 @@ class Server:
     # getSunRiseSet
     def civtwilightend(self):
         self._getSunRiseSet()
-        return self._CivTwilightEnd
+        return self._civtwilightend
 
     @property
     def civtwilightend_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._CivTwilightEnd, "%Y-%m-%d %H:%M")
+        return datetime.strptime(self._currentdate + " " + self._civtwilightend, "%Y-%m-%d %H:%M")
 
     @property
     # getSunRiseSet
     def civtwilightstart(self):
         self._getSunRiseSet()
-        return self._CivTwilightStart
+        return self._civtwilightstart
 
     @property
     def civtwilightstart_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._CivTwilightStart, "%Y-%m-%d %H:%M")
+        return datetime.strptime(self._currentdate + " " + self._civtwilightstart, "%Y-%m-%d %H:%M")
 
     @property
     # getSunRiseSet
     def daylength(self):
         self._getSunRiseSet()
-        return self._DayLength
+        return self._daylength
 
     @property
     # getversion & checkforupdate
     def domoticzupdateurl(self):
-        return self._DomoticzUpdateURL
+        return self._domoticzupdateurl
 
     @property
     # getversion
@@ -294,7 +294,7 @@ class Server:
     @property
     # getversion & checkforupdate
     def haveupdate(self):
-        return self._HaveUpdate
+        return self._haveupdate
 
     @property
     # getversion
@@ -310,21 +310,21 @@ class Server:
     # getSunRiseSet
     def nauttwilightend(self):
         self._getSunRiseSet()
-        return self._NautTwilightEnd
+        return self._nauttwilightend
 
     @property
     def nauttwilightend_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._NautTwilightEnd, "%Y-%m-%d %H:%M")
+        return datetime.strptime(self._currentdate + " " + self._nauttwilightend, "%Y-%m-%d %H:%M")
 
     @property
     # getSunRiseSet
     def nauttwilightstart(self):
         self._getSunRiseSet()
-        return self._NautTwilightStart
+        return self._nauttwilightstart
 
     @property
     def nauttwilightstart_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._NautTwilightStart, "%Y-%m-%d %H:%M")
+        return datetime.strptime(self._currentdate + " " + self._nauttwilightstart, "%Y-%m-%d %H:%M")
 
     @property
     def port(self):
@@ -342,7 +342,7 @@ class Server:
     @property
     # getversion & checkforupdate
     def revision(self):
-        return self._Revision
+        return self._revision
 
     @property
     # getauth
@@ -358,16 +358,16 @@ class Server:
     def servertime(self):
         self._getSunRiseSet(True)
         if self._api.status == self._api.OK:
-            self._currentdate = self._ServerTime[:10]  # yyyy-mm-dd
+            self._currentdate = self._servertime[:10]  # yyyy-mm-dd
             self._currentdate_dt = datetime.strptime(
-                self._ServerTime, "%Y-%m-%d %H:%M:%S").date()
+                self._servertime, "%Y-%m-%d %H:%M:%S").date()
         else:
-            self._ServerTime = None
-        return self._ServerTime
+            self._servertime = None
+        return self._servertime
 
     @property
     def servertime_dt(self):
-        return datetime.strptime(self._ServerTime, "%Y-%m-%d %H:%M:%S") if self._api.status == self._api.OK else None
+        return datetime.strptime(self._servertime, "%Y-%m-%d %H:%M:%S") if self._api.status == self._api.OK else None
 
     @property
     # checkforupdate
@@ -378,39 +378,39 @@ class Server:
     # getSunRiseSet
     def sunatsouth(self):
         self._getSunRiseSet()
-        return self._SunAtSouth
+        return self._sunatsouth
 
     @property
     def sunatsouth_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._SunAtSouth,
+        return datetime.strptime(self._currentdate + " " + self._sunatsouth,
                                  "%Y-%m-%d %H:%M") if self._api.status == self._api.OK else None
 
     @property
     # getSunRiseSet
     def sunrise(self):
         self._getSunRiseSet()
-        return self._Sunrise
+        return self._sunrise
 
     @property
     def sunrise_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._Sunrise,
+        return datetime.strptime(self._currentdate + " " + self._sunrise,
                                  "%Y-%m-%d %H:%M") if self._api.status == self._api.OK else None
 
     @property
     # getSunRiseSet
     def sunset(self):
         self._getSunRiseSet()
-        return self._Sunset
+        return self._sunset
 
     @property
     def sunset_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._Sunset,
+        return datetime.strptime(self._currentdate + " " + self._sunset,
                                  "%Y-%m-%d %H:%M") if self._api.status == self._api.OK else None
 
     @property
     # getversion & checkforupdate
     def systemname(self):
-        return self._SystemName
+        return self._systemname
 
     @property
     def translation(self):

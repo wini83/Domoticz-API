@@ -104,6 +104,7 @@ def bearing_2_status(d):
     ix = int((d + (step / 2)) / step)  # Calculate index in the list
     return dirs[ix % count]
 
+
 def bool_2_int(value):
     """Convert boolean to 0 or 1
 
@@ -133,8 +134,25 @@ def bool_2_str(value):
     else:
         return "false"
 
+
 def int_2_bool(value):
     if isinstance(value, int):
         return (bool(value))
+    else:
+        return False
+
+
+def str_2_bool(value):
+    """ Converts 'something' to boolean.
+
+        Args:
+            value (str)
+
+        Returns:
+           True for values : 1, True, "1", "TRue", "yes", "y", "t"
+           False otherwise
+    """
+    if str(value).lower() in ("yes", "y", "true",  "t", "1"):
+        return True
     else:
         return False

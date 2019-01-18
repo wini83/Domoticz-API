@@ -109,14 +109,14 @@ class BasePlugin:
             # Get production data
             _energy = 0.0
             for dev in self.__return:
-                dev._initDevice()
+                dev._init()
                 Domoticz.Debug(str(dev) + ": " +
                                str(dev.nvalue) + " - " + str(dev.idx))
                 _energy += dev.nvalue
             Domoticz.Debug("Return: " + str(_energy))
             # Get usage
             for dev in self.__usage:
-                dev._initDevice()
+                dev._init()
                 Domoticz.Debug(str(dev) + ": " + str(dev.nvalue))
                 _energy -= dev.nvalue
             Domoticz.Debug("Total: " + str(_energy))
