@@ -6,7 +6,6 @@ from .hardware import Hardware
 from .color import Color
 from .const import (NUM_MAX, NUM_MIN)
 from .utilities import (bool_2_int, bool_2_str, int_2_bool)
-from urllib.parse import quote
 
 
 class Device:
@@ -274,7 +273,7 @@ class Device:
             self._api.querystring = "type={}&idx={}&sensorname={}&devicetype={}&devicesubtype={}".format(
                 self._type_create_device,
                 self._hardware._idx,
-                quote(self._name),
+                self._name,
                 self._type,
                 self._subtype)
             self._api.call()
@@ -404,7 +403,7 @@ class Device:
                 self._api.querystring = "type=command&param={}&idx={}&color={}&brightness={}".format(
                     self._param_set_color_brightness,
                     self._idx,
-                    quote(value.color),
+                    value.color,
                     self._level
                 )
                 self._api.call()
@@ -573,7 +572,7 @@ class Device:
             self._api.querystring = "type=command&param={}&idx={}&switchcmd={}&level={}".format(
                 self._param_switch_light,
                 self._idx,
-                quote(self.SWITCH_SET_LEVEL),
+                self.SWITCH_SET_LEVEL,
                 value
             )
             self._api.call()
@@ -618,7 +617,7 @@ class Device:
             self._api.querystring = "type=command&param={}&idx={}&name={}".format(
                 self._param_rename_device,
                 self._idx,
-                quote(str(value))
+                value
             )
             self._api.call()
             if self._api.status == self._api.OK:

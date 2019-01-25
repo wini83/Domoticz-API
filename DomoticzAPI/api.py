@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import urllib.request
+import urllib.request as request
+import urllib.parse as parse
 import base64
 import json
 
@@ -55,11 +56,11 @@ class API:
     def call(self):
         """Call the Domoticz API"""
         if self._server is not None:
-            req = urllib.request.Request("http://{}:{}/{}?{}".format(
+            req = request.Request("http://{}:{}/{}?{}".format(
                 self._server._address,
                 self._server._port,
                 self.URL,
-                self._querystring))
+                parse.quote(self._querystring, safe="&=")))
             if self._server._rights == self._server._rights_login_required:
                 base64string = base64.encodestring(("{}:{}".format(
                     self._server._user,
@@ -67,7 +68,7 @@ class API:
                 req.add_header("Authorization",
                                "Basic {}".format(base64string))
             try:
-                response = urllib.request.urlopen(req).read()
+                response = request.urlopen(req).read()
                 data = json.loads(response.decode("utf-8"))
                 self._data = data
                 self._message = data.get(self.MESSAGE)

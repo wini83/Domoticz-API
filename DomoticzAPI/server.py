@@ -6,11 +6,6 @@ from .setting import Setting
 from .translation import Translation
 import json
 from datetime import datetime
-from urllib.parse import quote
-
-"""
-    Server
-"""
 
 
 class Server:
@@ -36,6 +31,10 @@ class Server:
     _param_shutdown = "system_shutdown"
     _param_sun = "getSunRiseSet"
     _param_version = "getversion"
+
+    _param_downloadupdate = "downloadupdate"
+    _param_downloadready = "downloadready"
+    _param_execute_script = "execute_script"
 
     # rights
     RIGHTS_LOGIN_REQUIRED = -1
@@ -113,7 +112,7 @@ class Server:
 
     def _checkForUpdate(self):
         # /json.htm?type=command&param=checkforupdate
-        self._api.querystring = "type=command&param={}".format(
+        self._api.querystring = "type=command&param={}&forced=true".format(
             self._param_checkforupdate)
         self._api.call()
         self._domoticzupdateurl = self._api.data.get("DomoticzUpdateURL")
@@ -161,6 +160,9 @@ class Server:
         # To store settings?
         pass
 
+    # ..........................................................................
+    # Public Methods
+    # ..........................................................................
     def checkForUpdate(self):
         """
         Retrieves Domoticz version information
@@ -179,7 +181,8 @@ class Server:
         if self.exists():
             self._api.querystring = "type=command&param={}&message={}".format(
                 self._param_log,
-                quote(text))
+                text
+            )
             self._api.call()
 
     def reboot(self):
@@ -197,6 +200,31 @@ class Server:
             self._api.querystring = "type=command&param={}".format(
                 self._param_shutdown)
             self._api.call()
+
+    def update(self):
+        """Update the Domoticz software"""
+        self._checkForUpdate()
+        if self.haveupdate:
+            # /json.htm?type=command&param=downloadupdate
+            self._api.querystring = "type=command&param={}".format(
+                self._param_downloadupdate
+            )
+            self._api.call()
+            if self._api.status == self._api.OK:
+                # Wait until download is completed
+                condition = False
+                while not condition:
+                    # /json.htm?type=command&param=downloadready
+                    self._api.querystring = "type=command&param={}".format(
+                        self._param_downloadready
+                    )
+                    self._api.call()
+                    condition = self._api.data.get("downloadok", False)
+                # Download complete: update the software
+                self._api.querystring = "type=command&param={}&scriptname=update_domoticz&direct=false".format(
+                    self._param_execute_script
+                )
+                self._api.call()
 
     # ..........................................................................
     # Properties

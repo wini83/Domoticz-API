@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from .server import Server
 from .api import API
-from urllib.parse import quote
 
 class RoomPlan:
     """
@@ -109,7 +108,7 @@ class RoomPlan:
             # /json.htm?type=command&param=addplan&name=NAME
             self._api.querystring = "type=command&param={}&name={}".format(
                 self._param_add_roomplan,
-                quote(self._name))
+                self._name)
             self._api.call()
             if self._api.status == self._api.OK:
                 self._init()  # Try to get idx? In Domoticz roomplan name is not unique!
@@ -122,7 +121,8 @@ class RoomPlan:
                 self._param_add_device,
                 self._idx,
                 self.ROOM_TYPE_DEVICE,
-                dev.idx)
+                dev.idx
+            )
             self._api.call()
             if self._api.status == self._api.OK:
                 # Call always returns OK, also if device does not exist!!!
@@ -134,7 +134,8 @@ class RoomPlan:
             # /json.htm?type=command&param=deleteplan&idx=IDX
             self._api.querystring = "type=command&param={}&idx={}".format(
                 self._param_delete_roomplan,
-                self._idx)
+                self._idx
+            )
             self._api.call()
             if self._api.status == self._api.OK:
                 self._idx = None
@@ -148,7 +149,8 @@ class RoomPlan:
             # /json.htm?type=command&param=deleteplandevice&idx=DEVICEIDX
             self._api.querystring = "type=command&param={}&idx={}".format(
                 self._param_delete_device,
-                self._find_idx(dev))
+                self._find_idx(dev)
+            )
             self._api.call()
             if self._api.status == self._api.OK:
                 self._init()
@@ -158,7 +160,8 @@ class RoomPlan:
         # /json.htm?type=command&param=deleteallplandevices&idx=IDX
         self._api.querystring = "type=command&param={}&idx={}".format(
             self._param_delete_all_devices,
-            self._idx)
+            self._idx
+        )
         self._api.call()
         if self._api.status == self._api.OK:
             self._init()
@@ -194,7 +197,8 @@ class RoomPlan:
         if self.exists():
             self._api.querystring = "type=command&param={}&idx={}".format(
                 self._param_get_devices,
-                self._idx)
+                self._idx
+            )
             self._api.call()
             return self._api.payload
         else:
@@ -218,7 +222,8 @@ class RoomPlan:
                 self._api.querystring = "type=command&param={}&idx={}&name={}".format(
                     self._param_update_roomplan,
                     self._idx,
-                    quote(value))
+                    value
+                )
                 self._api.call()
         self._name = value
         self._init()

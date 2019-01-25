@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from .api import API
 from .utilities import (str_2_bool, bool_2_str)
-from urllib.parse import quote
 
 
 class Hardware:
@@ -147,7 +146,7 @@ class Hardware:
                 querystring += self._add_param("Mode4", self._mode4)
                 querystring += self._add_param("Mode5", self._mode5)
                 querystring += self._add_param("Mode6", self._mode6)
-                querystring += self._add_param("name", quote(self._name))
+                querystring += self._add_param("name", self._name)
                 querystring += self._add_param("password", self._password)
                 querystring += self._add_param("port", self._port)
                 querystring += self._add_param("serialport", self._serialport)
@@ -290,7 +289,7 @@ class Hardware:
     @name.setter
     def name(self, value):
         self._name = str(value)
-        self._update("name", quote(self._name))
+        self._update("name", self._name)
 
     @property
     def password(self):

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from .server import Server
 from .api import API
-from urllib.parse import quote
 
 
 class Notification:
@@ -69,8 +68,8 @@ class Notification:
         if self._server is not None and self._subject is not None and self._body is not None:
             self._api.querystring = "type=command&param={}&subject={}&body={}".format(
                 self._param_notification,
-                quote(self._subject),
-                quote(self._body)
+                self._subject,
+                self._body
             )
             if self._subsystem is not None:
                 self._api.querystring += "&subsystem={}".format(

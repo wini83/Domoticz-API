@@ -18,6 +18,9 @@ def main():
         print("Update available ...... : {}".format(server.haveupdate))
         print("\r")
 
+        if server.haveupdate:
+            server.update()
+
         print("--------------------------------------------------------------------------------")
         print("SunRiseSet")
         print("--------------------------------------------------------------------------------")
