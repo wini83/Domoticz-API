@@ -14,8 +14,8 @@ Please look at the [`test_*.py`](https://github.com/Xorfor/Domoticz-API/tree/mas
 | :---                                                                     | :---
 | [Server](../../wiki/Server)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
 | [API](../../wiki/API)                   | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
-| [Setting](../../wiki/Setting)           | <img src="https://img.shields.io/badge/Status-Developement-yellow.svg?style=flat-square" />
-| [Translation](../../wiki/Translation)   | <img src="https://img.shields.io/badge/Status-Developement-yellow.svg?style=flat-square" />
+| [Setting](../../wiki/Setting)           | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
+| [Translation](../../wiki/Translation)   | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
 | [Hardware](../../wiki/Hardware)         | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
 | [Device](../../wiki/Device)             | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
 | [UserVariable](../../wiki/UserVariable) | <img src="https://img.shields.io/badge/Status-Stable-green.svg?style=flat-square" />
@@ -27,6 +27,7 @@ Please look at the [`test_*.py`](https://github.com/Xorfor/Domoticz-API/tree/mas
 
 | Version | Description
 | :---    | :---
+| 0.10.0  | Added server.update to update Domoticz software on server
 | 0.9.0   | Added Translation class
 | 0.8.0   | Added Setting class
 | 0.7.1   | Added functions to add, list and delete devices in RoomPlans

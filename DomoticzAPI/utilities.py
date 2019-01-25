@@ -8,8 +8,8 @@ from urllib.parse import quote
     Utilities
 """
 VERSION_MAJOR = 0
-VERSION_MINOR = 9
-VERSION_PATCH = 1
+VERSION_MINOR = 10
+VERSION_PATCH = 0
 VERSION_IDENTIFIER = "beta"
 
 VERSION_SHORT = '{}.{}'.format(VERSION_MAJOR, VERSION_MINOR)
