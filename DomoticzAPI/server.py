@@ -60,6 +60,10 @@ class Server:
         self._setting = Setting(self)
         # Check if authorization is required
         self._getAuth()
+        if self._api.status == self._api.OK:
+            self._exists = True
+        else:
+            self._exists = False
         if self._rights == self.RIGHTS_LOGGED_IN or (
                 self._rights == self.RIGHTS_LOGIN_REQUIRED and self._user is not None):
             # No need to initialize all time properties. Next procedures will do that.
@@ -137,7 +141,6 @@ class Server:
             self._api.querystring = "type=command&param={}".format(
                 self._param_sun)
             self._api.call()
-            self._acttime = self._api.data.get("ActTime")
             self._astrtwilightend = self._api.data.get("AstrTwilightEnd")
             self._astrtwilightstart = self._api.data.get("AstrTwilightStart")
             self._civtwilightend = self._api.data.get("CivTwilightEnd")
@@ -149,6 +152,18 @@ class Server:
             self._sunatsouth = self._api.data.get("SunAtSouth")
             self._daylength = self._api.data.get("DayLength")
             self._servertime = self._api.data.get("ServerTime")
+            # Remember the datetime from this call
+            if self._api.status == self._api.OK:
+                self._currentdate = self._servertime[:10]  # yyyy-mm-dd
+                self._currentdate_dt = datetime.strptime(
+                    self._servertime, "%Y-%m-%d %H:%M:%S").date()
+            else:
+                self._currentdate = None
+                self._currentdate_dt = None
+            # Calculate acttime
+            d = datetime.utcnow()
+            epoch = datetime(1970, 1, 1)
+            self._acttime = int((d - epoch).total_seconds())
 
     def _getConfig(self):
         # /json.htm?type=command&param=getconfig
@@ -170,8 +185,8 @@ class Server:
         self._checkForUpdate()
 
     def exists(self):
-        # Unable to use something else?
-        return self._api.status == self._api.OK
+        """ Check if Domoticz server exists """
+        return self._exists
 
     def logmessage(self, text):
         """
@@ -204,7 +219,7 @@ class Server:
     def update(self):
         """Update the Domoticz software"""
         self._checkForUpdate()
-        if self.haveupdate:
+        if self._haveupdate:
             # /json.htm?type=command&param=downloadupdate
             self._api.querystring = "type=command&param={}".format(
                 self._param_downloadupdate
@@ -238,8 +253,11 @@ class Server:
     # ..........................................................................
 
     @property
-    # Returned from device calls, together with the getSunRiseSet values
     def act_time(self):
+        """Current date time on the Domoticz server expressed as condensed UTC-label.
+        Also returned from device calls, together with the getSunRiseSet values.
+        """
+        self._getSunRiseSet(True)
         return self._acttime
 
     @property
@@ -385,12 +403,6 @@ class Server:
     # getSunRiseSet
     def servertime(self):
         self._getSunRiseSet(True)
-        if self._api.status == self._api.OK:
-            self._currentdate = self._servertime[:10]  # yyyy-mm-dd
-            self._currentdate_dt = datetime.strptime(
-                self._servertime, "%Y-%m-%d %H:%M:%S").date()
-        else:
-            self._servertime = None
         return self._servertime
 
     @property
