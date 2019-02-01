@@ -16,6 +16,11 @@ VERSION_SHORT = '{}.{}'.format(VERSION_MAJOR, VERSION_MINOR)
 VERSION = "{}.{}.{}-{}".format(VERSION_MAJOR,
                                VERSION_MINOR, VERSION_PATCH, VERSION_IDENTIFIER)
 
+HUMIDITY_NORMAL = 0
+HUMIDITY_COMFORTABLE = 1
+HUMIDITY_DRY = 2
+HUMIDITY_WET = 3
+
 
 def machine():
     return platform.machine()
@@ -135,6 +140,16 @@ def bool_2_str(value):
         return "false"
 
 
+def humidity_2_status(hlevel):
+    if hlevel < 25:
+        return HUMIDITY_DRY
+    if 25 <= hlevel <= 60:
+        return HUMIDITY_COMFORTABLE
+    if hlevel > 60:
+        return HUMIDITY_WET
+    return HUMIDITY_NORMAL
+
+
 def int_2_bool(value):
     if isinstance(value, int):
         return (bool(value))
@@ -156,3 +171,27 @@ def str_2_bool(value):
         return True
     else:
         return False
+
+
+def wind_chill(t, v):
+    """
+    Windchill temperature is defined only for temperatures at or below 10 °C 
+    and wind speeds above 4.8 kilometres per hour.
+
+    Args:
+        t: temperature in celsius
+        v: wind speed in m/s
+
+    Returns:
+        returns calculated windchill temperature
+
+    Ref: 
+        https://en.wikipedia.org/wiki/Wind_chill
+    """
+    # Calculation expects km/h instead of m/s, so
+    v = v * 3.6
+    if t < 10 and v > 4.8:
+        v = v ** 0.16
+        return round(13.12 + 0.6215 * t - 11.37 * v + 0.3965 * t * v, 1)
+    else:
+        return t
