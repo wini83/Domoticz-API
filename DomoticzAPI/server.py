@@ -14,6 +14,16 @@ class Server:
     DEFAULT_PORT = "8080"
     DEFAULT_LANGUAGE = "en"
 
+    # rights
+    RIGHTS_LOGIN_REQUIRED = -1
+    RIGHTS_NOT_DEFINED = 0
+    RIGHTS_LOGGED_IN = 2
+    RIGHTS = {
+        RIGHTS_LOGIN_REQUIRED,
+        RIGHTS_NOT_DEFINED,
+        RIGHTS_LOGGED_IN,
+    }
+
     # type parameter
     _type = "type"
     _type_command = "command"
@@ -26,6 +36,7 @@ class Server:
     _param_execute_script = "execute_script"
     _param_getauth = "getauth"
     _param_getlanguage = "getlanguage"
+    _param_getuptime = "getuptime"
     _param_log = "addlogmessage"
     _param_reboot = "system_reboot"
     _param_shutdown = "system_shutdown"
@@ -35,11 +46,6 @@ class Server:
     _param_downloadupdate = "downloadupdate"
     _param_downloadready = "downloadready"
     _param_execute_script = "execute_script"
-
-    # rights
-    RIGHTS_LOGIN_REQUIRED = -1
-    RIGHTS_NOT_DEFINED = 0
-    RIGHTS_LOGGED_IN = 2
 
     def __init__(self, address=DEFAULT_ADDRESS, port=DEFAULT_PORT, **kwargs):
         """The Server class represents the Domoticz server
@@ -160,10 +166,6 @@ class Server:
             else:
                 self._currentdate = None
                 self._currentdate_dt = None
-            # Calculate acttime
-            d = datetime.utcnow()
-            epoch = datetime(1970, 1, 1)
-            self._acttime = int((d - epoch).total_seconds())
 
     def _getConfig(self):
         # /json.htm?type=command&param=getconfig
@@ -175,9 +177,21 @@ class Server:
         # To store settings?
         pass
 
+    def _getUpTime(self):
+        # /json.htm?type=command&param=getuptime
+        self._api.querystring = "type=command&param={}".format(
+            self._param_getuptime)
+        self._api.call()
+        d = self._api.data.get("days") * 24 * 60 * 60
+        h = self._api.data.get("hours") * 60 * 60
+        m = self._api.data.get("minutes") * 60
+        s = self._api.data.get("seconds")
+        self._uptime = d + h + m + s
+
     # ..........................................................................
     # Public Methods
     # ..........................................................................
+
     def checkForUpdate(self):
         """
         Retrieves Domoticz version information
@@ -257,7 +271,10 @@ class Server:
         """Current date time on the Domoticz server expressed as condensed UTC-label.
         Also returned from device calls, together with the getSunRiseSet values.
         """
-        self._getSunRiseSet(True)
+        # Calculate acttime. Faster then API calls.
+        d = datetime.utcnow()
+        epoch = datetime(1970, 1, 1)
+        self._acttime = int((d - epoch).total_seconds())
         return self._acttime
 
     @property
@@ -455,6 +472,15 @@ class Server:
     @property
     def translation(self):
         return self._translation
+
+    @property
+    def uptime(self):
+        """Uptime of Domoticz in seconds.
+
+        Updated every 5 seconds.
+        """
+        self._getUpTime()
+        return self._getUpTime
 
     @property
     # getversion
