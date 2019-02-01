@@ -13,6 +13,7 @@ class Hardware:
     _param_add_hardware = "addhardware"
     _param_delete_hardware = "deletehardware"
     _param_update_hardware = "updatehardware"
+    _param_get_hardwaretypes = "gethardwaretypes"
 
     _htype_dummy = 15
     _htype_python_plugin = 94
@@ -103,6 +104,7 @@ class Hardware:
         self._port = found_dict.get("Port")
         self._serialport = found_dict.get("SerialPort")
         self._type = found_dict.get("Type")
+        self._hardwaretype = self._get_type_description(self._type)
         self._username = found_dict.get("Username")
 
     def _update(self, key, value):
@@ -114,12 +116,28 @@ class Hardware:
                 self._add_param(key, value))
             self._api.querystring = querystring
             self._api.call()
+            if key == "htype":
+                self._hardwaretype = self._get_type_description(self._type)
 
     def _add_param(self, key, value):
         if key is not None and value is not None:
             return "&{}={}".format(key, value)
         else:
             return ""
+
+    def _get_type_description(self, type):
+        # /json.htm?type=command&param=gethardwaretypes
+        self._api.querystring = "type=command&param={}".format(
+            self._param_get_hardwaretypes)
+        self._api.call()
+        if self._api.payload:
+            for found_dict in self._api.payload:
+                if found_dict.get("idx") == type:
+                    break
+            return found_dict.get("name")
+        else:
+            return None
+
     # ..........................................................................
     # Public methods
     # ..........................................................................
@@ -334,8 +352,9 @@ class Hardware:
             self._update("htype", self._type)
 
     @property
-    # For some reason, this value is only returned in eg. /json.htm?type=devices
-    def type_description(self):
+    # For some reason, this value is only returned in eg. /json.htm?type=devices in "HardwareType"
+    # Now also using /json.htm?type=command&param=gethardwaretypes, see _get_type_description
+    def type_name(self):
         return self._hardwaretype
 
     @property

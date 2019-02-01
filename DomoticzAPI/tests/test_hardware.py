@@ -29,6 +29,8 @@ def main():
     if hw2.exists():
         print("{:{}<{}}: {}".format(
             "hw2", SUFFIX, WIDTH_LABEL, hw2))
+        print("{:{}<{}}: {}".format(
+            "type_name", SUFFIX, WIDTH_LABEL, hw2.type_name))
     else:
         print("{:{}<{}}: {}".format(
             "hw2", SUFFIX, WIDTH_LABEL, "doesn't exists"))
