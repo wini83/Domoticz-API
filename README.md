@@ -27,6 +27,7 @@ Please look at the [`test_*.py`](https://github.com/Xorfor/Domoticz-API/tree/mas
 
 | Version | Description
 | :---    | :---
+| 0.11.0  | Improvements
 | 0.10.0  | Added server.update to update Domoticz software on server
 | 0.9.0   | Added Translation class
 | 0.8.0   | Added Setting class
