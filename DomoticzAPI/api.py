@@ -32,9 +32,9 @@ class API:
     ERROR = "ERR"
     UNKNOWN = "???"
     RESULTS = {OK,
-        ERROR,
-        UNKNOWN,
-        }
+               ERROR,
+               UNKNOWN,
+               }
 
     def __init__(self, server):
         """ API class
@@ -59,12 +59,7 @@ class API:
     def call(self):
         """Call the Domoticz API"""
         if self._server is not None:
-            req = request.Request("{}://{}:{}/{}?{}".format(
-                self.PROTOCOL_HTTP,
-                self._server._address,
-                self._server._port,
-                self.URL,
-                parse.quote(self._querystring, safe="&=")))
+            req = request.Request(self.url)
             if self._server._rights == self._server._rights_login_required:
                 base64string = base64.encodestring(("{}:{}".format(
                     self._server._user,
@@ -117,12 +112,6 @@ class API:
     def querystring(self, value):
         self._querystring = value
 
-    # Obsolete!
-    @property
-    def result(self):
-        """ Obsolete """
-        return self._payload
-
     @property
     def server(self):
         """ The Domoticz server """
@@ -157,4 +146,9 @@ class API:
     @property
     def url(self):
         """ The complete url used to call the Domoticz json/API """
-        return "http://{}:{}/{}?{}".format(self._server._address, self._server._port, self.URL, self._querystring)
+        return ("{}://{}:{}/{}?{}".format(
+            self.PROTOCOL_HTTP,
+            self._server._address,
+            self._server._port,
+            self.URL,
+            parse.quote(self._querystring, safe="&=")))
