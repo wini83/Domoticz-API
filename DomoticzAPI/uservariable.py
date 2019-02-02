@@ -3,7 +3,6 @@
 from .server import Server
 from .api import API
 from datetime import datetime
-from urllib.parse import quote
 
 
 class UserVariable:
@@ -94,9 +93,10 @@ class UserVariable:
             self._api.querystring = "type=command&param={}&idx={}&vname={}&vtype={}&vvalue={}".format(
                 self._param_update_user_variable,
                 self._idx,
-                quote(self._name),
+                self._name,
                 self._type,
-                quote(self._value))
+                self._value
+                )
             self._api.call()
             self.__init_var()
 
@@ -150,9 +150,10 @@ class UserVariable:
             if len(self._name) > 0 and self._type in self.UVE_TYPES and len(self._value) > 0:
                 self._api.querystring = "type=command&param={}&vname={}&vtype={}&vvalue={}".format(
                     self._param_add_user_variable,
-                    quote(self._name),
+                    self._name,
                     self._type,
-                    quote(self._value))
+                    self._value
+                    )
                 self._api.call()
                 if self._api.status == self._api.OK:
                     self.__init_var()

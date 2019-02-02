@@ -3,10 +3,10 @@
 import platform
 import os
 import subprocess
-from urllib.parse import quote
 """
     Utilities
 """
+
 VERSION_MAJOR = 0
 VERSION_MINOR = 11
 VERSION_PATCH = 0
@@ -22,6 +22,7 @@ HUMIDITY_DRY = 2
 HUMIDITY_WET = 3
 
 _MS_KMH = 60 * 60 / 1000
+
 
 def machine():
     return platform.machine()
@@ -89,7 +90,7 @@ def version_short():
 
 def c_2_f(value):
     """Temperature conversion from Celsius to Fahrenheit
-    
+
     Args:
         value (float): temperature in Celsius
 
@@ -101,7 +102,7 @@ def c_2_f(value):
 
 def f_2_c(value):
     """Temperature conversion from Fahrenheit to Celsius
-    
+
     Args:
         value (float): temperature in Fahrenheit
 
@@ -114,7 +115,7 @@ def f_2_c(value):
 def bearing_2_status(d):
     """ Converts wind direction in degrees to a winddirection in letters
     Used in wind devices
-    
+
     Args:
         d (float): winddirection in degrees, 0 - 360
 
@@ -240,6 +241,7 @@ def wind_chill(t, v):
     else:
         return t
 
+
 def kmh_2_ms(value):
     """Convert speed from km/h to m/s
 
@@ -250,6 +252,7 @@ def kmh_2_ms(value):
         speed in m/s
     """
     return value / _MS_KMH
+
 
 def ms_2_kmh(value):
     """Convert speed m/s to from km/h

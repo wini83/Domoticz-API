@@ -145,8 +145,8 @@ class Device:
             # In param=getversion it is "version"
             self._server._version = d.get("app_version")
             # Search for the given device
-            if self._api.result:
-                for result_dict in self._api.result:
+            if self._api.payload:
+                for result_dict in self._api.payload:
                     if (self._idx is not None and int(result_dict.get("idx")) == self._idx) \
                             or (self._name is not None and result_dict.get("Name") == self._name):
                         # Found device :)
