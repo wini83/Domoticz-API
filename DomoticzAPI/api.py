@@ -8,6 +8,9 @@ import json
 
 class API:
 
+    PROTOCOL_HTTP = "http"
+    PROTOCOL_HTTPS = "https"
+
     # type parameter
     TYPE = "type={}"
     TYPE_COMMAND = TYPE.format("command")
@@ -28,10 +31,10 @@ class API:
     OK = "OK"
     ERROR = "ERR"
     UNKNOWN = "???"
-    RESULTS = [OK,
-               ERROR,
-               UNKNOWN,
-               ]
+    RESULTS = {OK,
+        ERROR,
+        UNKNOWN,
+        }
 
     def __init__(self, server):
         """ API class
@@ -56,7 +59,8 @@ class API:
     def call(self):
         """Call the Domoticz API"""
         if self._server is not None:
-            req = request.Request("http://{}:{}/{}?{}".format(
+            req = request.Request("{}://{}:{}/{}?{}".format(
+                self.PROTOCOL_HTTP,
                 self._server._address,
                 self._server._port,
                 self.URL,

@@ -9,6 +9,7 @@ def main():
     print("********************************************************************************")
     server = dom.Server()
     print("Server language: {}".format(server.language))
+    print(server.translation)
     print("Translation language: {}".format(server.translation.language))
     server.translation.language = "nl"
     print("Translation language: {}".format(server.translation.language))

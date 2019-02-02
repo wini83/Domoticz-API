@@ -82,8 +82,9 @@ class Setting:
 
     def __init__(self, server):
         """Settings class, to get Domoticz settings
-            Args:
-                server (:obj:`Server`): Domoticz server object where to maintain the device            
+
+        Args:
+            server (:obj:`Server`): Domoticz server object where to maintain the device            
         """
         self._settings = {}
         self._server = server
@@ -99,12 +100,12 @@ class Setting:
     def _getSettings(self):
         # /json.htm?type=settings
         # Not required yet. Perhaps in the near future to be sure that ALL setting are available for use.
-        self._server._api.querystring = "type={}".format(self._type_settings)
-        self._server._api.call()
-        if self._server._api.status == self._server._api.OK:
-            self._settings = self._server._api.data
-        else:
-            self._settings = {}
+        self._settings = {}
+        if self._server.exists():
+            self._server._api.querystring = "type={}".format(self._type_settings)
+            self._server._api.call()
+            if self._server._api.status == self._server._api.OK:
+                self._settings = self._server._api.data
 
     # ..........................................................................
     # Public method
@@ -112,11 +113,12 @@ class Setting:
     def value(self, key):
         """Retrieve the value from a Domoticz setting
         
-            Args:
-                key (str): key from a setting, eg. "AcceptNewHardware", "SecPassword", etc
+        Args:
+            key (str): key from a setting, eg. "AcceptNewHardware", "SecPassword", etc
         """
         # Requery settings
-        self._getSettings() 
+        self._getSettings()
+        # Skip the keys "status" and "title"
         if key not in (self._server._api.STATUS, self._server._api.TITLE):
             return self._settings.get(key)
         else:

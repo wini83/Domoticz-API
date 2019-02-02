@@ -63,13 +63,12 @@ class Server:
         self._currentdate_dt = datetime.now().date()
         self._language = self.DEFAULT_LANGUAGE
         self._api = API(self)
-        self._setting = Setting(self)
+        self._exists = False
         # Check if authorization is required
         self._getAuth()
         if self._api.status == self._api.OK:
             self._exists = True
-        else:
-            self._exists = False
+        self._setting = Setting(self)
         if self._rights == self.RIGHTS_LOGGED_IN or (
                 self._rights == self.RIGHTS_LOGIN_REQUIRED and self._user is not None):
             # No need to initialize all time properties. Next procedures will do that.
@@ -107,86 +106,87 @@ class Server:
 
     def _getVersion(self):
         # /json.htm?type=command&param=getversion
-        self._api.querystring = "type=command&param={}".format(
-            self._param_version)
-        self._api.call()
-        self._build_time = self._api.data.get("build_time")
-        self._domoticzupdateurl = self._api.data.get("DomoticzUpdateURL")
-        self._dzvents_version = self._api.data.get("dzvents_version")
-        self._hash = self._api.data.get("hash")
-        self._haveupdate = self._api.data.get("HaveUpdate")
-        self._python_version = self._api.data.get("python_version")
-        self._revision = self._api.data.get("Revision")
-        self._systemname = self._api.data.get("SystemName")
-        self._version = self._api.data.get("version")
+        if self._exists:
+            self._api.querystring = "type=command&param={}".format(
+                self._param_version)
+            self._api.call()
+            self._build_time = self._api.data.get("build_time")
+            self._domoticzupdateurl = self._api.data.get("DomoticzUpdateURL")
+            self._dzvents_version = self._api.data.get("dzvents_version")
+            self._hash = self._api.data.get("hash")
+            self._haveupdate = self._api.data.get("HaveUpdate")
+            self._python_version = self._api.data.get("python_version")
+            self._revision = self._api.data.get("Revision")
+            self._systemname = self._api.data.get("SystemName")
+            self._version = self._api.data.get("version")
 
     def _checkForUpdate(self):
         # /json.htm?type=command&param=checkforupdate
-        self._api.querystring = "type=command&param={}&forced=true".format(
-            self._param_checkforupdate)
-        self._api.call()
-        self._domoticzupdateurl = self._api.data.get("DomoticzUpdateURL")
-        self._haveupdate = self._api.data.get("HaveUpdate")
-        self._revision = self._api.data.get("Revision")
-        self._systemname = self._api.data.get("SystemName")
-        self._statuscode = self._api.data.get("statuscode")
+        if self._exists:
+            self._api.querystring = "type=command&param={}&forced=true".format(
+                self._param_checkforupdate)
+            self._api.call()
+            self._domoticzupdateurl = self._api.data.get("DomoticzUpdateURL")
+            self._haveupdate = self._api.data.get("HaveUpdate")
+            self._revision = self._api.data.get("Revision")
+            self._systemname = self._api.data.get("SystemName")
+            self._statuscode = self._api.data.get("statuscode")
 
     def _getLanguage(self):
         # /json.htm?type=command&param=getlanguage
-        self._api.querystring = "type=command&param={}".format(
-            self._param_getlanguage)
-        self._api.call()
-        self._language = self._api.data.get("language")
+        if self._exists:
+            self._api.querystring = "type=command&param={}".format(
+                self._param_getlanguage)
+            self._api.call()
+            self._language = self._api.data.get("language")
 
     def _getSunRiseSet(self, now=False):
         # /json.htm?type=command&param=getSunRiseSet
-        if isinstance(self._currentdate_dt, datetime):
-            if datetime.now().date() > self._currentdate_dt:
-                now = True
-        if now:
-            self._api.querystring = "type=command&param={}".format(
-                self._param_sun)
-            self._api.call()
-            self._astrtwilightend = self._api.data.get("AstrTwilightEnd")
-            self._astrtwilightstart = self._api.data.get("AstrTwilightStart")
-            self._civtwilightend = self._api.data.get("CivTwilightEnd")
-            self._civtwilightstart = self._api.data.get("CivTwilightStart")
-            self._nauttwilightend = self._api.data.get("NautTwilightEnd")
-            self._nauttwilightstart = self._api.data.get("NautTwilightStart")
-            self._sunrise = self._api.data.get("Sunrise")
-            self._sunset = self._api.data.get("Sunset")
-            self._sunatsouth = self._api.data.get("SunAtSouth")
-            self._daylength = self._api.data.get("DayLength")
-            self._servertime = self._api.data.get("ServerTime")
-            # Remember the datetime from this call
-            if self._api.status == self._api.OK:
-                self._currentdate = self._servertime[:10]  # yyyy-mm-dd
-                self._currentdate_dt = datetime.strptime(
-                    self._servertime, "%Y-%m-%d %H:%M:%S").date()
-            else:
-                self._currentdate = None
-                self._currentdate_dt = None
+        if self._exists:
+            if isinstance(self._currentdate_dt, datetime):
+                if datetime.now().date() > self._currentdate_dt:
+                    now = True
+            if now:
+                self._api.querystring = "type=command&param={}".format(
+                    self._param_sun)
+                self._api.call()
+                self._astrtwilightend = self._api.data.get("AstrTwilightEnd")
+                self._astrtwilightstart = self._api.data.get("AstrTwilightStart")
+                self._civtwilightend = self._api.data.get("CivTwilightEnd")
+                self._civtwilightstart = self._api.data.get("CivTwilightStart")
+                self._nauttwilightend = self._api.data.get("NautTwilightEnd")
+                self._nauttwilightstart = self._api.data.get("NautTwilightStart")
+                self._sunrise = self._api.data.get("Sunrise")
+                self._sunset = self._api.data.get("Sunset")
+                self._sunatsouth = self._api.data.get("SunAtSouth")
+                self._daylength = self._api.data.get("DayLength")
+                self._servertime = self._api.data.get("ServerTime")
+                # Remember the datetime from this call
+                if self._api.status == self._api.OK:
+                    self._currentdate = self._servertime[:10]  # yyyy-mm-dd
+                    self._currentdate_dt = datetime.strptime(
+                        self._servertime, "%Y-%m-%d %H:%M:%S").date()
+                else:
+                    self._currentdate = None
+                    self._currentdate_dt = None
 
     def _getConfig(self):
         # /json.htm?type=command&param=getconfig
         # Not required yet. May be interesting to get latitude and longitude. Most is GUI stuff.
-        pass
-
-    def _setSettings(self):
-        # /storesettings.webem
-        # To store settings?
-        pass
+        if self._exists:
+            pass
 
     def _getUpTime(self):
         # /json.htm?type=command&param=getuptime
-        self._api.querystring = "type=command&param={}".format(
-            self._param_getuptime)
-        self._api.call()
-        d = self._api.data.get("days") * 24 * 60 * 60
-        h = self._api.data.get("hours") * 60 * 60
-        m = self._api.data.get("minutes") * 60
-        s = self._api.data.get("seconds")
-        self._uptime = d + h + m + s
+        if self._exists:
+            self._api.querystring = "type=command&param={}".format(
+                self._param_getuptime)
+            self._api.call()
+            d = self._api.data.get("days") * 24 * 60 * 60
+            h = self._api.data.get("hours") * 60 * 60
+            m = self._api.data.get("minutes") * 60
+            s = self._api.data.get("seconds")
+            self._uptime = d + h + m + s
 
     # ..........................................................................
     # Public Methods
@@ -207,7 +207,7 @@ class Server:
             Send text to the Domoticz log
         """
         # /json.htm?type=command&param=addlogmessage&message=MESSAGE
-        if self.exists():
+        if self._exists:
             self._api.querystring = "type=command&param={}&message={}".format(
                 self._param_log,
                 text
@@ -217,7 +217,7 @@ class Server:
     def reboot(self):
         """Reboot the Domoticz server"""
         # /json.htm?type=command&param=system_reboot
-        if self.exists():
+        if self._exists:
             self._api.querystring = "type=command&param={}".format(
                 self._param_reboot)
             self._api.call()
@@ -225,35 +225,36 @@ class Server:
     def shutdown(self):
         """Shutdown the Domoticz server"""
         # /json.htm?type=command&param=system_shutdown
-        if self.exists():
+        if self._exists:
             self._api.querystring = "type=command&param={}".format(
                 self._param_shutdown)
             self._api.call()
 
     def update(self):
         """Update the Domoticz software"""
-        self._checkForUpdate()
-        if self._haveupdate:
-            # /json.htm?type=command&param=downloadupdate
-            self._api.querystring = "type=command&param={}".format(
-                self._param_downloadupdate
-            )
-            self._api.call()
-            if self._api.status == self._api.OK:
-                # Wait until download is completed
-                condition = False
-                while not condition:
-                    # /json.htm?type=command&param=downloadready
-                    self._api.querystring = "type=command&param={}".format(
-                        self._param_downloadready
-                    )
-                    self._api.call()
-                    condition = self._api.data.get("downloadok", False)
-                # Download complete: update the software
-                self._api.querystring = "type=command&param={}&scriptname=update_domoticz&direct=false".format(
-                    self._param_execute_script
+        if self._exists:
+            self._checkForUpdate()
+            if self._haveupdate:
+                # /json.htm?type=command&param=downloadupdate
+                self._api.querystring = "type=command&param={}".format(
+                    self._param_downloadupdate
                 )
                 self._api.call()
+                if self._api.status == self._api.OK:
+                    # Wait until download is completed
+                    condition = False
+                    while not condition:
+                        # /json.htm?type=command&param=downloadready
+                        self._api.querystring = "type=command&param={}".format(
+                            self._param_downloadready
+                        )
+                        self._api.call()
+                        condition = self._api.data.get("downloadok", False)
+                    # Download complete: update the software
+                    self._api.querystring = "type=command&param={}&scriptname=update_domoticz&direct=false".format(
+                        self._param_execute_script
+                    )
+                    self._api.call()
 
     # ..........................................................................
     # Properties
