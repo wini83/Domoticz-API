@@ -166,6 +166,23 @@ def bool_2_str(value):
         return "false"
 
 
+def dew_point(t, h):
+    """Calculate dewpoint
+
+    Args:
+        t (float): temperature in °C
+        h (float): relative humidity in %
+
+    Returns:
+        calculated dewpoint in °C
+
+    Ref:
+        https://www.ajdesigner.com/phphumidity/dewpoint_equation_dewpoint_temperature.php
+    """
+    return round((h / 100) ** (1 / 8) * (112 + 0.9 * t) + 0.1 * t - 112, 2)
+
+
+
 def humidity_2_status(hlevel):
     """Converts humidity in % to a humidity level
     Used in weather stations
@@ -224,11 +241,11 @@ def wind_chill(t, v):
     and wind speeds above 4.8 kilometres per hour.
 
     Args:
-        t: temperature in celsius
+        t: temperature in °C
         v: wind speed in m/s
 
     Returns:
-        calculated windchill temperature
+        calculated windchill temperature in °C
 
     Ref: 
         https://en.wikipedia.org/wiki/Wind_chill
