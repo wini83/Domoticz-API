@@ -181,6 +181,7 @@ class Device:
         self._favorite = found_dict.get("Favorite")
         self._forecast = found_dict.get("Forecast")
         self._forecaststr = found_dict.get("ForecastStr")
+        self._forecast_url = found_dict("forecast_url") # base64 encoded
         self._gust = found_dict.get("Gust")
         self._havedimmer = found_dict.get("HaveDimmer")
         self._havegroupcmd = found_dict.get("HaveGroupCmd")
@@ -234,6 +235,7 @@ class Device:
         self._switchtypeval = found_dict.get("SwitchTypeVal")
         self._temp = found_dict.get("Temp")
         self._timers = found_dict.get("Timers")
+        self._trend = found_dict.get("trend")
         self._type = found_dict.get("Type", self._type)
         self._typeimg = found_dict.get("TypeImg")
         self._unit = found_dict.get("Unit")
@@ -329,15 +331,19 @@ class Device:
                     self._api.call()
                     self._init()
 
-    def update(self, nvalue=0, svalue=""):
+    def update(self, nvalue, svalue, battery, rssi):
         # /json.htm?type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
-        if self.exists():
+        if self.exists() and nvalue is not None:
             self._api.querystring = "type=command&param={}&idx={}&nvalue={}".format(
                 self._param_update_device,
                 self._idx,
                 nvalue)
-            if len(svalue) > 0:
+            if svalue is not None:
                 self._api.querystring += "&svalue={}".format(svalue)
+            if battery is not None and isinstance(battery, int):
+                self._api.querystring += "&battery={}".format(battery)
+            if rssi is not None and isinstance(rssi, int):
+                self._api.querystring += "&rssi={}".format(rssi)
             self._api.call()
             self._init()
 
