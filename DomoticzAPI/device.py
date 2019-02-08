@@ -128,7 +128,7 @@ class Device:
         found_dict = {}
         if self._api.status == self._api.OK:
             d = self._api.data
-            # For some reason next property is only given in device calls. No idea about the meaning!
+            # For some reason next property is only given in device calls.
             self._server._acttime = d.get("ActTime")
             # Update the server properties.
             self._server._astrtwilightend = d.get("AstrTwilightEnd")
