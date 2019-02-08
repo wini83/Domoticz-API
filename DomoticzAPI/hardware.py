@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from .api import API
 from .utilities import (str_2_bool, bool_2_str)
+from .const import (HTYPE_DUMMY, HTYPE_PYTHONPLUGIN)
 
 
 class Hardware:
@@ -15,10 +16,7 @@ class Hardware:
     _param_update_hardware = "updatehardware"
     _param_get_hardwaretypes = "gethardwaretypes"
 
-    _htype_dummy = 15
-    _htype_python_plugin = 94
 
-    # def __init__(self, server, idx):
     def __init__(self, server, *args, **kwargs):
         """ Hardware
         """
@@ -149,7 +147,7 @@ class Hardware:
         # At least Name and Type are required
         if self._idx is None and self._name is not None and self._type is not None:
             # Currently only Dummy device is allowed to create
-            if self._type == self._htype_dummy:
+            if self._type == HTYPE_DUMMY:
                 querystring = "type=command&param={}".format(
                     self._param_add_hardware)
                 querystring += self._add_param("address", self._address)
@@ -176,7 +174,7 @@ class Hardware:
                     self._init()
 
     def add_virtual(self):
-        self._type = self._htype_dummy
+        self._type = HTYPE_DUMMY
         self.add()
 
     def delete(self):
@@ -189,10 +187,10 @@ class Hardware:
                 self._idx = None
 
     def is_dummy(self):
-        return self._type == self._htype_dummy
+        return self._type == HTYPE_DUMMY
 
     def is_python_plugin(self):
-        return self._type == self._htype_python_plugin
+        return self._type == HTYPE_PYTHONPLUGIN
 
     # **************************************************************************
     # Properties
@@ -348,7 +346,7 @@ class Hardware:
     @type.setter
     def type(self, value):
         self._type = int(value) if value is not None else None
-        if self._type == self._htype_dummy:
+        if self._type == HTYPE_DUMMY:
             self._update("htype", self._type)
 
     @property

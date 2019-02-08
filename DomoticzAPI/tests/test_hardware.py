@@ -15,7 +15,7 @@ def main():
     print("Create hw2 Class")
     print(TEST)
     hw2 = dom.Hardware(server,
-                       type=15,
+                       type=dom.HTYPE_DUMMY,
                        port=1,
                        name="Test API hw2",
                        enabled="true")
