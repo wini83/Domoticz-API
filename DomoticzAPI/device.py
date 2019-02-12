@@ -74,7 +74,7 @@ class Device:
         if len(args) == 1:
             # For existing device
             #   dev = dom.Device(server, 180)
-            self._idx = args[0]
+            self._idx = int(args[0])
         # New device:      def __init__(self, server, hardware, name, type=None, subtype=None):
         elif len(args) == 2:
             self._idx = None
@@ -114,7 +114,7 @@ class Device:
     def _init(self):
         if self._idx is not None:
             # Retrieve status of specific device: /json.htm?type=devices&rid=IDX&displayhidden=1
-            querystring = "type={}&rid={}".format(
+            querystring = "type={}&rid={}&displayhidden=1".format(
                 self._type_devices,
                 self._idx)
         elif self._name is not None:
@@ -181,7 +181,7 @@ class Device:
         self._favorite = found_dict.get("Favorite")
         self._forecast = found_dict.get("Forecast")
         self._forecaststr = found_dict.get("ForecastStr")
-        self._forecast_url = found_dict("forecast_url") # base64 encoded
+        self._forecast_url = found_dict.get("forecast_url")  # base64 encoded
         self._gust = found_dict.get("Gust")
         self._havedimmer = found_dict.get("HaveDimmer")
         self._havegroupcmd = found_dict.get("HaveGroupCmd")
@@ -189,7 +189,8 @@ class Device:
         self._humidity = found_dict.get("Humidity")
         self._humiditystatus = found_dict.get("HumidityStatus")
         self._id = found_dict.get("ID")
-        self._idx = found_dict.get("idx", self._idx)
+        dummy = found_dict.get("idx", self._idx)
+        self._idx = int(dummy) if dummy is not None else None
         # Next property available with:
         #     /json.htm?type=command&param=getlightswitches
         #     /json.htm?type=devices&filter=light&used=true&order=Name
@@ -280,7 +281,7 @@ class Device:
                 self._subtype)
             self._api.call()
             if self._api.status == self._api.OK:
-                self._idx = self._api.data.get("idx", None)
+                self._idx = int(self._api.data.get("idx"))
                 self._init()
 
     def delete(self):
@@ -362,9 +363,33 @@ class Device:
                     self._api.call()
                     self._init()
 
+    def value(self, key):
+        """Retrieve the value from a device property 
+        Can be used if the property is not available/unknown
+
+        Args:
+            key (str): key from a property, eg. "Level", etc
+        """
+        found_dict = {}
+        if self.exists():
+            # Retrieve status of specific device: /json.htm?type=devices&rid=IDX&displayhidden=1
+            self._api.querystring = "type={}&rid={}&displayhidden=1".format(
+                self._type_devices,
+                self._idx)
+            self._api.call()
+            if self._api.status == self._api.OK:
+                if self._api.payload:
+                    for result_dict in self._api.payload:
+                        if int(result_dict.get("idx")) == self._idx:
+                            # Found device :)
+                            found_dict = result_dict
+                            break
+        return found_dict.get(key)
+
     # ..........................................................................
     # Properties
     # ..........................................................................
+
     @property
     def addjmulti(self):
         return self._addjmulti
@@ -549,7 +574,7 @@ class Device:
 
     @property
     def idx(self):
-        return int(self._idx) if self._idx is not None else None
+        return self._idx
 
     @property
     def image(self):

@@ -44,6 +44,7 @@ def main():
         print("{}: {} - {}".format(dev3, server.api.status, server.api.title))
         if dev3.exists():
             print("Switch successfully created")
+            print("Name: {}".format(dev3.value("Name")))
             print("Status: {}".format(dev3.data))
             print("Switch device: {}".format(dev3.SWITCH_ON))
             dev3.update_switch(dev3.SWITCH_ON)
