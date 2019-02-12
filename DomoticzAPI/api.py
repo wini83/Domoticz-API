@@ -60,7 +60,7 @@ class API:
         """Call the Domoticz API"""
         if self._server is not None:
             req = request.Request(self.url)
-            if self._server._rights == self._server._rights_login_required:
+            if self._server._rights == self._server.RIGHTS_LOGIN_REQUIRED:
                 base64string = base64.encodestring(("{}:{}".format(
                     self._server._user,
                     self._server._password)).encode()).decode().replace("\n", "")

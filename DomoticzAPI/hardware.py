@@ -16,7 +16,6 @@ class Hardware:
     _param_update_hardware = "updatehardware"
     _param_get_hardwaretypes = "gethardwaretypes"
 
-
     def __init__(self, server, *args, **kwargs):
         """ Hardware
         """
@@ -48,7 +47,7 @@ class Hardware:
             if self._idx is None:
                 # For existing hardware
                 #   hw = dom.Hardware(server, idx=180)
-                idx = kwargs.get("idx", None)
+                idx = kwargs.get("idx")
                 self._idx = int(idx) if idx is not None else None
                 if self.idx is None:
                     # For new hardware
@@ -79,7 +78,14 @@ class Hardware:
     # ..........................................................................
     # Private methods
     # ..........................................................................
+    def _add_param(self, key, value):
+        if key is not None and value is not None:
+            return "&{}={}".format(key, value)
+        else:
+            return ""
+
     def _init(self):
+        # /json.htm?type=hardware
         self._api.querystring = "type={}".format(self._type_hardware)
         self._api.call()
         found_dict = {}
@@ -106,7 +112,7 @@ class Hardware:
         self._username = found_dict.get("Username")
 
     def _update(self, key, value):
-        if value is not None and self._idx is not None:
+        if value is not None and self.exists():
             # /json.htm?type=command&param=updatehardware&idx=IDX&name=NAME
             querystring = "type=command&param={}&idx={}{}".format(
                 self._param_update_hardware,
@@ -116,12 +122,6 @@ class Hardware:
             self._api.call()
             if key == "htype":
                 self._hardwaretype = self._get_type_description(self._type)
-
-    def _add_param(self, key, value):
-        if key is not None and value is not None:
-            return "&{}={}".format(key, value)
-        else:
-            return ""
 
     def _get_type_description(self, type):
         # /json.htm?type=command&param=gethardwaretypes
@@ -141,7 +141,7 @@ class Hardware:
     # ..........................................................................
 
     def exists(self):
-        return self._idx is not None and self._name is not None
+        return self._idx is not None
 
     def add(self):
         # At least Name and Type are required
@@ -153,15 +153,15 @@ class Hardware:
                 querystring += self._add_param("address", self._address)
                 querystring += self._add_param("datatimeout",
                                                self._datatimeout)
-                querystring += self._add_param("enabled", self._enabled)
+                querystring += self._add_param("enabled", bool_2_str(self._enabled))
                 querystring += self._add_param("extra", self._extra)
                 querystring += self._add_param("htype", self._type)
-                querystring += self._add_param("Mode1", self._mode1)
-                querystring += self._add_param("Mode2", self._mode2)
-                querystring += self._add_param("Mode3", self._mode3)
-                querystring += self._add_param("Mode4", self._mode4)
-                querystring += self._add_param("Mode5", self._mode5)
-                querystring += self._add_param("Mode6", self._mode6)
+                querystring += self._add_param("mode1", self._mode1)
+                querystring += self._add_param("mode2", self._mode2)
+                querystring += self._add_param("mode3", self._mode3)
+                querystring += self._add_param("mode4", self._mode4)
+                querystring += self._add_param("mode5", self._mode5)
+                querystring += self._add_param("mode6", self._mode6)
                 querystring += self._add_param("name", self._name)
                 querystring += self._add_param("password", self._password)
                 querystring += self._add_param("port", self._port)
@@ -250,7 +250,7 @@ class Hardware:
     @mode1.setter
     def mode1(self, value):
         self._mode1 = str(value) if value is not None else None
-        self._update("Mode1", self._mode1)
+        self._update("mode1", self._mode1)
 
     @property
     def mode2(self):
@@ -259,7 +259,7 @@ class Hardware:
     @mode2.setter
     def mode2(self, value):
         self._mode2 = str(value) if value is not None else None
-        self._update("Mode2", self._mode2)
+        self._update("mode2", self._mode2)
 
     @property
     def mode3(self):
@@ -268,7 +268,7 @@ class Hardware:
     @mode3.setter
     def mode3(self, value):
         self._mode3 = str(value) if value is not None else None
-        self._update("Mode3", self._mode3)
+        self._update("mode3", self._mode3)
 
     @property
     def mode4(self):
@@ -277,7 +277,7 @@ class Hardware:
     @mode4.setter
     def mode4(self, value):
         self._mode4 = str(value) if value is not None else None
-        self._update("Mode4", self._mode4)
+        self._update("mode4", self._mode4)
 
     @property
     def mode5(self):
@@ -286,7 +286,7 @@ class Hardware:
     @mode5.setter
     def mode5(self, value):
         self._mode5 = str(value) if value is not None else None
-        self._update("Mode5", self._mode5)
+        self._update("mode5", self._mode5)
 
     @property
     def mode6(self):
@@ -295,7 +295,7 @@ class Hardware:
     @mode6.setter
     def mode6(self, value):
         self._mode6 = str(value) if value is not None else None
-        self._update("Mode6", self._mode6)
+        self._update("mode6", self._mode6)
 
     @property
     # In /json.htm?type=devices: HardwareName
