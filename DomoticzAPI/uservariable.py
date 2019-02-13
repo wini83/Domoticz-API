@@ -59,7 +59,7 @@ class UserVariable:
             else:
                 self._type = None
             self._value = self.__value(self._type, value) # Function will handle None values
-            self.__init_var()
+            self.__init()
 
     def __str__(self):
         return "{}({}, {}: \"{}\", {}, \"{}\")".format(
@@ -73,7 +73,7 @@ class UserVariable:
     # ..........................................................................
     # Private methods
     # ..........................................................................
-    def __init_var(self):
+    def __init(self):
         # /json.htm?type=command&param=getuservariables
         self._api.querystring = "type=command&param={}".format(
             self._param_get_user_variables)
@@ -98,7 +98,7 @@ class UserVariable:
                 self._value
                 )
             self._api.call()
-            self.__init_var()
+            self.__init()
 
     def __value(self, type, value):
         if value is None:
@@ -156,7 +156,8 @@ class UserVariable:
                     )
                 self._api.call()
                 if self._api.status == self._api.OK:
-                    self.__init_var()
+                    # If an uservariable with the same name is added, the status will be "Variable name already exists!"!
+                    self.__init()
 
     def delete(self):
         """Delete uservariable from Domoticz."""
