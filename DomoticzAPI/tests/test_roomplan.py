@@ -21,7 +21,7 @@ def main():
 
     print("Devices ............... : {}".format(roomplan1.devices))
 
-    dev = dom.Device(server, 61)
+    dev = dom.Device(server, 40)
     print(dev)
     roomplan1.add_device(dev)
     print("Nr of devices ......... : {}".format(roomplan1.device_count))

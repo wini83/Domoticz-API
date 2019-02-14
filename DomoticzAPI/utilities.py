@@ -3,12 +3,14 @@
 import platform
 import os
 import subprocess
+import base64
+
 """
     Utilities
 """
 
 VERSION_MAJOR = 0
-VERSION_MINOR = 11
+VERSION_MINOR = 12
 VERSION_PATCH = 0
 VERSION_IDENTIFIER = "beta"
 
@@ -21,95 +23,17 @@ HUMIDITY_COMFORTABLE = 1
 HUMIDITY_DRY = 2
 HUMIDITY_WET = 3
 
-_MS_KMH = 60 * 60 / 1000
+_SEC_IN_MIN = 60
+_MIN_IN_HOUR = 60
+
+_M_IN_KM = 1000
+
+_MS_KMH = _MIN_IN_HOUR * _SEC_IN_MIN / _M_IN_KM
 
 
-def machine():
-    return platform.machine()
-
-
-def node():
-    return platform.node()
-
-
-def os_command(command):
-    p = subprocess.Popen(command, shell=True,
-                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    p.wait()
-    data, errors = p.communicate()
-    if p.returncode != 0:
-        r = None
-    else:
-        r = data.decode("utf-8", "ignore")
-    return r
-
-
-def os_release():
-    return platform.release()
-
-
-def os_version():
-    return platform.version()
-
-
-def processor():
-    return platform.processor()
-
-
-def python_version():
-    return platform.python_version()
-
-
-def system():
-    return platform.system()
-
-
-def version():
-    return VERSION
-
-
-def version_identifier():
-    return VERSION_IDENTIFIER
-
-
-def version_major():
-    return VERSION_MAJOR
-
-
-def version_minor():
-    return VERSION_MINOR
-
-
-def version_patch():
-    return VERSION_PATCH
-
-
-def version_short():
-    return VERSION_SHORT
-
-
-def c_2_f(value):
-    """Temperature conversion from Celsius to Fahrenheit
-
-    Args:
-        value (float): temperature in Celsius
-
-    Returns:
-        temperature in Fahrenheit
-    """
-    return (value * 1.8) + 32
-
-
-def f_2_c(value):
-    """Temperature conversion from Fahrenheit to Celsius
-
-    Args:
-        value (float): temperature in Fahrenheit
-
-    Returns:
-        temperature in Celsius
-    """
-    return (value - 32) / 1.8
+def base64_encode(value):
+    return base64.encodestring(
+        ("{}".format(value)).encode()).decode().replace("\n", "")
 
 
 def bearing_2_status(d):
@@ -166,6 +90,18 @@ def bool_2_str(value):
         return "false"
 
 
+def c_2_f(value):
+    """Temperature conversion from Celsius to Fahrenheit
+
+    Args:
+        value (float): temperature in Celsius
+
+    Returns:
+        temperature in Fahrenheit
+    """
+    return (value * 1.8) + 32
+
+
 def dew_point(t, h):
     """Calculate dewpoint
 
@@ -182,13 +118,24 @@ def dew_point(t, h):
     return round((h / 100) ** (1 / 8) * (112 + 0.9 * t) + 0.1 * t - 112, 2)
 
 
+def f_2_c(value):
+    """Temperature conversion from Fahrenheit to Celsius
+
+    Args:
+        value (float): temperature in Fahrenheit
+
+    Returns:
+        temperature in Celsius
+    """
+    return (value - 32) / 1.8
+
 
 def humidity_2_status(hlevel):
     """Converts humidity in % to a humidity level
     Used in weather stations
 
     Args:
-        hlevel (float): humidity in %
+        hlevel (:obj:`float`): humidity in %
 
     Returns:
         1, 2, 3 depending on hlevel
@@ -219,6 +166,42 @@ def int_2_bool(value):
         return False
 
 
+def machine():
+    return platform.machine()
+
+
+def node():
+    return platform.node()
+
+
+def os_command(command):
+    p = subprocess.Popen(command, shell=True,
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p.wait()
+    data, errors = p.communicate()
+    if p.returncode != 0:
+        r = None
+    else:
+        r = data.decode("utf-8", "ignore")
+    return r
+
+
+def os_release():
+    return platform.release()
+
+
+def os_version():
+    return platform.version()
+
+
+def processor():
+    return platform.processor()
+
+
+def python_version():
+    return platform.python_version()
+
+
 def str_2_bool(value):
     """ Converts 'something' to boolean.
 
@@ -235,9 +218,37 @@ def str_2_bool(value):
         return False
 
 
+def system():
+    return platform.system()
+
+
+def version():
+    return VERSION
+
+
+def version_identifier():
+    return VERSION_IDENTIFIER
+
+
+def version_major():
+    return VERSION_MAJOR
+
+
+def version_minor():
+    return VERSION_MINOR
+
+
+def version_patch():
+    return VERSION_PATCH
+
+
+def version_short():
+    return VERSION_SHORT
+
+
+
 def wind_chill(t, v):
-    """
-    Windchill temperature is defined only for temperatures at or below 10 °C 
+    """ Windchill temperature is defined only for temperatures at or below 10 °C 
     and wind speeds above 4.8 kilometres per hour.
 
     Args:

@@ -3,6 +3,7 @@
 from .server import Server
 from .api import API
 
+
 class RoomPlan:
     """
         Domoticz RoomPlan class
@@ -110,8 +111,10 @@ class RoomPlan:
                 self._param_add_roomplan,
                 self._name)
             self._api.call()
-            if self._api.status == self._api.OK:
-                self._init()  # Try to get idx? In Domoticz roomplan name is not unique!
+            if self._api.isOK:
+                # Try to get idx (since 4.10429 supported)
+                self._idx = self._api.data.get("idx")
+                self._init()  # In Domoticz roomplan name is not unique!
 
     def add_device(self, dev):
         """:obj:`Device`: Add device to the roomplan"""
