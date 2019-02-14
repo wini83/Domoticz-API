@@ -81,6 +81,8 @@ class API:
                 self._status = None
                 self._title = None
 
+    def isOK(self):
+        return self.status == self.OK
     # ..........................................................................
     # Properties
     # ..........................................................................
@@ -132,6 +134,7 @@ class API:
             if value in self.RESULTS:
                 self._status = value
             else:
+                # Sometimes the status contains error text!!!
                 self._status = self.ERROR
 
     @property
