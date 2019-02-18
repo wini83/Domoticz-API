@@ -25,11 +25,18 @@ class Device:
     _param_reset_security_status = "resetsecuritystatus"
     _param_current_states = "currentstates"
 
-    # Parameters used for: setcolbrightnessvalue
-    SWITCH_ON = "On"
+    SWITCH_CLOSE_INLINE_RELAY = "Close inline relay"
+    SWITCH_CLOSED = "Closed"
+    SWITCH_LOCKED = "Locked"
     SWITCH_OFF = "Off"
-    SWITCH_TOGGLE = "Toggle"
+    SWITCH_ON = "On"
+    SWITCH_OPEN = "Open"
+    SWITCH_STOP = "Stop"
     SWITCH_SET_LEVEL = "Set Level"
+    SWITCH_STOP_INLINE_RELAY= "Stop inline relay"
+    SWITCH_TOGGLE = "Toggle"
+    SWITCH_UNLOCKED = "Unlocked"
+    # Parameters used for: switchlight
     SWITCH_LIGHT_VALUES = {
         SWITCH_ON,
         SWITCH_OFF,
