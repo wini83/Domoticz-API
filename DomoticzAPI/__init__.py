@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from .const import *
 from .server import *
+from .user import *
 from .hardware import *
 from .device import *
 from .roomplan import *
