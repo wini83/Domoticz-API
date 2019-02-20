@@ -5,38 +5,6 @@ from .utilities import (base64_encode, bool_2_str, int_2_bool, str_2_bool)
 import base64
 import hashlib
 
-"""
-# /json.htm?type=command&param=adduser&enabled=true&username=noudje&password=d8afef66ae4e850b306565e34333663e&rights=0&RemoteSharing=false&TabsEnabled=0
-# /json.htm?type=command&param=updateuser&idx=3&enabled=true&username=noudje&password=d8afef66ae4e850b306565e34333663e&rights=2&RemoteSharing=false&TabsEnabled=127
-# /json.htm?type=users
-{
-   "result" : [
-      {
-         "Enabled" : "true",                "true", or "false"
-         "Password" : "d8afef66ae4e850b306565e34333663e",
-         "RemoteSharing" : 0,               0 - False, 1 - True
-         "Rights" : 2,                      0 - Viewer, 1 - User, 2 - Admin
-         "TabsEnabled" : 127,               x x x x  x x x x
-                                            | | | |  | | | |
-                                            | | | |  | | | +--- Switches        1
-                                            | | | |  | | +----- Scenes          2
-                                            | | | |  | +------- Temperature     4
-                                            | | | |  +--------- Weather         8
-                                            | | | |
-                                            | | | +------------ Utility         16
-                                            | | +-------------- Custom          32
-                                            | +---------------- Floorplan       64
-                                            +------------------                 128
-         "Username" : "xorfor",
-         "idx" : "3"
-      }
-   ],
-   "status" : "OK",
-   "title" : "Users"
-}
-"""
-
-
 class User:
 
     USER_RIGHTS_VIEWER = 0
@@ -71,6 +39,8 @@ class User:
     _param_add_user = "adduser"
     _param_delete_user = "deleteuser"
     _param_update_user = "updateuser"
+    # /json.htm?type=setshareduserdevices&idx=1&devices=82;81;1
+    # /json.htm?type=getshareduserdevices&idx=1
 
     def __init__(self, server, *args, **kwargs):
         """User class
@@ -106,10 +76,10 @@ class User:
                 self._idx = kwargs.get("idx")
                 if self._idx is None:
                     self._enabled = kwargs.get("enabled",
-                        True)
+                                               True)
                     self._password = self._md5hash(kwargs.get("password"))
                     self._remotesharing = kwargs.get("remotesharing",
-                        False)
+                                                     False)
                     self._rights = kwargs.get(
                         "rights", self.USER_RIGHTS_VIEWER)
                     self._tabsenabled = kwargs.get(
@@ -156,7 +126,8 @@ class User:
                 if self._idx is not None:
                     self._enabled = str_2_bool(myDict.get("Enabled"))
                     self._password = myDict.get("Password")
-                    self._remotesharing = int_2_bool(myDict.get("RemoteSharing"))
+                    self._remotesharing = int_2_bool(
+                        myDict.get("RemoteSharing"))
                     self._rights = myDict.get("Rights")
                     self._tabsenabled = myDict.get("TabsEnabled")
                     self._username = myDict.get("Username")
