@@ -12,14 +12,14 @@ class UserVariable:
     UVE_TYPE_STRING = 2
     UVE_TYPE_DATE = 3
     UVE_TYPE_TIME = 4
-    UVE_TYPE_DATETIME = 5
+    # UVE_TYPE_DATETIME = 5
     UVE_TYPES = [
         UVE_TYPE_INTEGER,
         UVE_TYPE_FLOAT,
         UVE_TYPE_STRING,
         UVE_TYPE_DATE,
         UVE_TYPE_TIME,
-        UVE_TYPE_DATETIME,
+        # UVE_TYPE_DATETIME,
     ]
 
     _param_get_user_variable = "getuservariable"
@@ -125,15 +125,15 @@ class UserVariable:
                 result = dt.strftime(self._time)
             else:
                 result = None
-        elif type == self.UVE_TYPE_DATETIME:
-            try:
-                dt = datetime.strptime(value, self._date + " " + self._time)
-            except:
-                dt = None
-            if dt is not None:
-                result = dt.strftime(self._date + " " + self._time)
-            else:
-                result = None
+        # elif type == self.UVE_TYPE_DATETIME:
+        #     try:
+        #         dt = datetime.strptime(value, self._date + " " + self._time)
+        #     except:
+        #         dt = None
+        #     if dt is not None:
+        #         result = dt.strftime(self._date + " " + self._time)
+        #     else:
+        #         result = None
         elif type == self.UVE_TYPE_STRING:
             result = value
         else:  # string
