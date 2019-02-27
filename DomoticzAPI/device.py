@@ -28,9 +28,11 @@ class Device:
     SWITCH_CLOSE_INLINE_RELAY = "Close inline relay"
     SWITCH_CLOSED = "Closed"
     SWITCH_LOCKED = "Locked"
+    SWITCH_NORMAL = "Normal"
     SWITCH_OFF = "Off"
     SWITCH_ON = "On"
     SWITCH_OPEN = "Open"
+    SWITCH_PANIC_END = "Panic End"
     SWITCH_STOP = "Stop"
     SWITCH_SET_LEVEL = "Set Level"
     SWITCH_STOP_INLINE_RELAY= "Stop inline relay"
@@ -41,6 +43,10 @@ class Device:
         SWITCH_ON,
         SWITCH_OFF,
         SWITCH_TOGGLE,
+    }
+    SWITCH_SECURITY_VALUES = {
+        SWITCH_NORMAL,
+        SWITCH_PANIC_END,
     }
 
     # Parameters used for: resetsecuritystatus
@@ -310,6 +316,9 @@ class Device:
         """ Check if this device is using a battery """
         return not (self._batterylevel is None or self._batterylevel == NUM_MAX)
 
+    def is_blind(self):
+        return self._typeimg == "blinds"
+
     def is_dimmer(self):
         return ((self.is_switch() and self._switchtype == "Dimmer") or (self._isdimmer == True))
 
@@ -318,6 +327,9 @@ class Device:
 
     def is_hygrometer(self):
         return self._humidity is not None
+
+    def is_motion(self):
+        return self._typeimg == "motion"
 
     def is_switch(self):
         return self._switchtype is not None
