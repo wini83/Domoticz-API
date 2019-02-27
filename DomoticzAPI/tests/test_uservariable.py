@@ -5,7 +5,7 @@ import DomoticzAPI as dom
 
 def main():
     print("********************************************************************************")
-    print("Test script ........... : {}".format(__file__))
+    print("Test script ........... : {} ({})".format(__file__, dom.VERSION))
     print("********************************************************************************")
     server = dom.Server()
 
@@ -38,7 +38,7 @@ def main():
         server,
         "API Test 2",
         dom.UserVariable.UVE_TYPE_INTEGER,
-        "1.23")
+        "4.56")
     print("var2 exists: {}".format(var2.exists()))
     var2.add()
     print(var2)
@@ -49,9 +49,9 @@ def main():
     print("--------------------------------------------------------------------------------")
     print("Change value")
     print("--------------------------------------------------------------------------------")
-    var1.value = "11.87"
+    var1.value = "9.87"
     print(var1)
-    var2.value = "11.87"
+    var2.value = "6.54"
     print(var2)
     print("Last update: {}".format(var2.lastupdate))
 
@@ -64,6 +64,18 @@ def main():
     var2.type = var2.UVE_TYPE_STRING
     print(var2)
     var2.value = "Hello world"
+    print(var2)
+
+    var2.name = "API Test 4"
+    print(var2)
+    var2.type = var2.UVE_TYPE_INTEGER
+    print(var2)
+    var2.value = "Test"
+    print(var2)
+
+    var2.value = 1
+    print(var2)
+    var2.type = var2.UVE_TYPE_INTEGER
     print(var2)
 
     print("\r")

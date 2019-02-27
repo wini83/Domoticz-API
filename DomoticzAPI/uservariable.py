@@ -12,14 +12,12 @@ class UserVariable:
     UVE_TYPE_STRING = 2
     UVE_TYPE_DATE = 3
     UVE_TYPE_TIME = 4
-    # UVE_TYPE_DATETIME = 5
     UVE_TYPES = [
         UVE_TYPE_INTEGER,
         UVE_TYPE_FLOAT,
         UVE_TYPE_STRING,
         UVE_TYPE_DATE,
         UVE_TYPE_TIME,
-        # UVE_TYPE_DATETIME,
     ]
 
     _param_get_user_variable = "getuservariable"
@@ -41,7 +39,6 @@ class UserVariable:
                     UVE_TYPE_STRING     = String
                     UVE_TYPE_DATE       = Date in format DD/MM/YYYY
                     UVE_TYPE_TIME       = Time in 24 hr format HH:MM
-                    UVE_TYPE_DATETIME   = DateTime (but the format is not checked)
                 value (:obj:`str`, optional): Value of the user variable (default = None)
         """
         if isinstance(server, Server) and server.exists():
@@ -58,7 +55,8 @@ class UserVariable:
                 self._type = type
             else:
                 self._type = None
-            self._value = self.__value(self._type, value) # Function will handle None values
+            # Function will handle None values
+            self._value = self.__value(self._type, value)
             self.__init()
 
     def __str__(self):
@@ -74,13 +72,20 @@ class UserVariable:
     # Private methods
     # ..........................................................................
     def __init(self):
-        # /json.htm?type=command&param=getuservariables
-        self._api.querystring = "type=command&param={}".format(
-            self._param_get_user_variables)
+        if self._idx is not None:
+            # /json.htm?type=command&param=getuservariable&idx=IDX
+            self._api.querystring = "type=command&param={}&idx={}".format(
+                self._param_get_user_variable,
+                self._idx
+            )
+        else:
+            # /json.htm?type=command&param=getuservariables
+            self._api.querystring = "type=command&param={}".format(
+                self._param_get_user_variables)
         self._api.call()
         if self._api.status == self._api.OK and self._api.payload is not None:
             for var in self._api.payload:
-                if var.get("Name") == self._name:
+                if (self._idx is not None and int(var.get("idx")) == self._idx) or (self._name is not None and var.get("Name") == self._name):
                     self._idx = int(var.get("idx"))
                     self._value = var.get("Value")
                     self._type = int(var.get("Type"))
@@ -96,7 +101,7 @@ class UserVariable:
                 self._name,
                 self._type,
                 self._value
-                )
+            )
             self._api.call()
             self.__init()
 
@@ -125,18 +130,9 @@ class UserVariable:
                 result = dt.strftime(self._time)
             else:
                 result = None
-        # elif type == self.UVE_TYPE_DATETIME:
-        #     try:
-        #         dt = datetime.strptime(value, self._date + " " + self._time)
-        #     except:
-        #         dt = None
-        #     if dt is not None:
-        #         result = dt.strftime(self._date + " " + self._time)
-        #     else:
-        #         result = None
         elif type == self.UVE_TYPE_STRING:
             result = value
-        else:  # string
+        else:
             result = None
         return result
 
@@ -145,7 +141,7 @@ class UserVariable:
     # ..........................................................................
     def add(self):
         """Add uservariable to Domoticz."""
-        # /json.htm?type=command&param=saveuservariable&vname=NAME&vtype=TYPE&vvalue=VALUE
+        # /json.htm?type=command&param=adduservariable&vname=NAME&vtype=TYPE&vvalue=VALUE
         if not self.exists():
             if len(self._name) > 0 and self._type in self.UVE_TYPES and len(self._value) > 0:
                 self._api.querystring = "type=command&param={}&vname={}&vtype={}&vvalue={}".format(
@@ -153,7 +149,7 @@ class UserVariable:
                     self._name,
                     self._type,
                     self._value
-                    )
+                )
                 self._api.call()
                 if self._api.status == self._api.OK:
                     # If an uservariable with the same name is added, the status will be "Variable name already exists!"!
