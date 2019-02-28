@@ -86,8 +86,8 @@ class Server:
         self._translation = Translation(self, language=self._language)
 
     def __str__(self):
-        txt = "{}(\"{}\", \"{}\")".format(
-            self.__class__.__name__, self._address, self._port)
+        txt = "{}(\"{}\", \"{}\"): {}".format(
+            self.__class__.__name__, self._address, self._port, self._exists)
         return txt
 
     def __getattr__(self, item):
@@ -202,10 +202,12 @@ class Server:
         """ Check if Domoticz server exists """
         return self._exists
 
+    def has_location(self):
+        """ Check if location is defined for sunrise, sunset, etc.""" 
+        return self.setting.value("Location") is not None
+
     def logmessage(self, text):
-        """
-            Send text to the Domoticz log
-        """
+        """ Send text to the Domoticz log """
         # /json.htm?type=command&param=addlogmessage&message=MESSAGE
         if self._exists:
             self._api.querystring = "type=command&param={}&message={}".format(
@@ -280,6 +282,7 @@ class Server:
 
     @property
     def address(self):
+        """Domoticz server address"""
         return self._address
 
     @address.setter
@@ -288,11 +291,13 @@ class Server:
 
     @property
     def api(self):
+        """:obj:`API`"""
         return self._api
 
     @property
     # getSunRiseSet
     def astrtwilightend(self):
+        """"""
         self._getSunRiseSet()
         return self._astrtwilightend
 
@@ -342,32 +347,38 @@ class Server:
     @property
     # getSunRiseSet
     def daylength(self):
+        """Day length"""
         self._getSunRiseSet()
         return self._daylength
 
     @property
     # getversion & checkforupdate
     def domoticzupdateurl(self):
+        """Domoticz update url"""
         return self._domoticzupdateurl
 
     @property
     # getversion
     def dzvents_version(self):
+        """dzVents version"""
         return self._dzvents_version
 
     @property
     # getversion & checkforupdate
     def haveupdate(self):
+        """Domoticz update available?"""
         return self._haveupdate
 
     @property
     # getversion
     def hash(self):
+        """Build hash from Git"""
         return self._hash
 
     @property
     # getlanguage
     def language(self):
+        """Domoticz user interface language"""
         return self._language
 
     @property
@@ -392,6 +403,7 @@ class Server:
 
     @property
     def port(self):
+        """Domoticz server port"""
         return self._port
 
     @port.setter
@@ -401,30 +413,36 @@ class Server:
     @property
     # getversion
     def python_version(self):
+        """Python version on Domoticz server"""
         return self._python_version
 
     @property
     # getversion & checkforupdate
     def revision(self):
+        """Domoticz revision"""
         return self._revision
 
     @property
     # getauth
     def rights(self):
+        """Domoticz protection"""
         return self._rights
 
     @property
     def setting(self):
+        """:obj: `Setting`"""
         return self._setting
 
     @property
     # getSunRiseSet
     def servertime(self):
+        """Domoticz server time"""
         self._getSunRiseSet(True)
         return self._servertime
 
     @property
     def servertime_dt(self):
+        """:obj:`datetime` Domoticz server time"""
         return datetime.strptime(self._servertime, "%Y-%m-%d %H:%M:%S") if self._api.status == self._api.OK else None
 
     @property
@@ -486,4 +504,5 @@ class Server:
     @property
     # getversion
     def version(self):
+        """Domoticz version"""
         return self._version
