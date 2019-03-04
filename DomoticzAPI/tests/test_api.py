@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import DomoticzAPI as dom
-from datetime import datetime
 
 
 def main():
     print("********************************************************************************")
-    print("Test script ........... : {} ({})".format(__file__, dom.VERSION))
+    print("Test script .............. : {} ({})".format(__file__, dom.VERSION))
     print("********************************************************************************")
 
     server = dom.Server()
@@ -67,7 +66,8 @@ def main():
         print("server.api.status ........ : {}".format(server.api.status))
         print("server.api.title ......... : {}".format(server.api.title))
         print("server.api.url ........... : {}".format(server.api.url))
-        print("version .................. : {}".format(server.api.data.get("version")))
+        print("version .................. : {}".format(
+            server.api.data.get("version")))
     else:
         print("Server not found!!!")
         print(server.api.message)

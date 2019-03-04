@@ -10,6 +10,10 @@ class API:
 
     PROTOCOL_HTTP = "http"
     PROTOCOL_HTTPS = "https"
+    PROTOCOLS = {
+        PROTOCOL_HTTP,
+        PROTOCOL_HTTPS,
+    }
 
     # type parameter
     TYPE = "type={}"
@@ -31,14 +35,14 @@ class API:
     OK = "OK"
     ERROR = "ERR"
     UNKNOWN = "???"
-    RESULTS = {OK,
-               ERROR,
-               UNKNOWN,
-               }
+    RESULTS = {
+        OK,
+        ERROR,
+        UNKNOWN,
+    }
 
     def __init__(self, server):
-        """ API class
-            To maintain status of the API calls
+        """ API class to maintain status of the API calls
 
             Args:
                 server (:obj:`Server`): Domoticz server object where to maintain the device            
@@ -46,6 +50,7 @@ class API:
         self._message = None
         self._querystring = None
         self._payload = None
+        self._protocol = self.PROTOCOL_HTTP
         self._server = server
         self._status = self.UNKNOWN
         self._title = None
@@ -83,6 +88,7 @@ class API:
 
     def isOK(self):
         return self.status == self.OK
+
     # ..........................................................................
     # Properties
     # ..........................................................................
@@ -106,6 +112,20 @@ class API:
         return self._payload
 
     @property
+    def protocol(self):
+        """ The protocol used for the call 
+        
+        Args:
+            `str`: API.PROTOCOL_HTTP or API.PROTOCOL_HTTPS
+        """
+        return self._protocol
+
+    @protocol.setter
+    def protocol(self, value):
+        if value in self.PROTOCOLS:
+            self._protocol = value
+
+    @property
     def querystring(self):
         """ The querystring used in the call """
         return self._querystring
@@ -121,7 +141,11 @@ class API:
 
     @property
     def status(self):
-        """ The status in the response, OK, or ERR """
+        """ The status in the response
+        
+        Args:
+            `str`: API.OK, API.ERROR, or API.UNKNOWN
+        """
         return self._status
 
     @status.setter
@@ -150,7 +174,7 @@ class API:
     def url(self):
         """ The complete url used to call the Domoticz json/API """
         return ("{}://{}:{}/{}?{}".format(
-            self.PROTOCOL_HTTP,
+            self._protocol,
             self._server._address,
             self._server._port,
             self.URL,
