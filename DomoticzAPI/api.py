@@ -86,8 +86,14 @@ class API:
                 self._status = None
                 self._title = None
 
-    def isOK(self):
-        return self.status == self.OK
+    def has_payload(self):
+        return self._payload is not None
+
+    def is_OK(self):
+        return self._status == self.OK
+
+    def is_ERR(self):
+        return self._status == self.ERROR
 
     # ..........................................................................
     # Properties

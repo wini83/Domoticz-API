@@ -179,7 +179,7 @@ class User:
             self._api.querystring += self._add_param(
                 "TabsEnabled", self._tabsenabled)
             self._api.call()
-            if self._api.isOK():
+            if self._api.is_OK():
                 self._init()
 
     def add_tab(self, tab):
@@ -201,7 +201,7 @@ class User:
                 self._idx
             )
             self._api.call()
-            if self._api.isOK():
+            if self._api.is_OK():
                 self._idx = None
 
     def exists(self):

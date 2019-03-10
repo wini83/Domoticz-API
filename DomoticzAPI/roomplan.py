@@ -111,7 +111,7 @@ class RoomPlan:
                 self._param_add_roomplan,
                 self._name)
             self._api.call()
-            if self._api.isOK:
+            if self._api.is_OK:
                 # Try to get idx (since 4.10429 supported)
                 self._idx = self._api.data.get("idx")
                 self._init()  # In Domoticz roomplan name is not unique!

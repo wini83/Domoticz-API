@@ -20,11 +20,11 @@ class UserVariable:
         UVE_TYPE_TIME,
     ]
 
+    _param_add_user_variable = "adduservariable"
+    _param_delete_user_variable = "deleteuservariable"
     _param_get_user_variable = "getuservariable"
     _param_get_user_variables = "getuservariables"
-    _param_add_user_variable = "adduservariable"
     _param_update_user_variable = "updateuservariable"
-    _param_delete_user_variable = "deleteuservariable"
 
     _date = "%d/%m/%Y"
     _time = "%H:%M"
@@ -83,7 +83,7 @@ class UserVariable:
             self._api.querystring = "type=command&param={}".format(
                 self._param_get_user_variables)
         self._api.call()
-        if self._api.status == self._api.OK and self._api.payload is not None:
+        if self._api.is_OK() and self._api.has_payload():
             for var in self._api.payload:
                 if (self._idx is not None and int(var.get("idx")) == self._idx) or (self._name is not None and var.get("Name") == self._name):
                     self._idx = int(var.get("idx"))
