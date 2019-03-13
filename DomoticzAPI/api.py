@@ -56,7 +56,7 @@ class API:
         self._title = None
 
     def __str__(self):
-        return "{}({}): {}-{}".format(self.__class__.__name__, self.url, self._title, self._status)
+        return "{}({}): {}-{}".format(self.__class__.__name__, self.endpoint, self._title, self._status)
 
     # ..........................................................................
     # Public methods
@@ -104,6 +104,17 @@ class API:
         return self._data
 
     @property
+    def endpoint(self):
+        """ The endpoint to the Domoticz server """
+        return ("{}://{}:{}/{}".format(
+            self._protocol,
+            self._server._address,
+            self._server._port,
+            self.URL
+        )
+        )
+
+    @property
     def message(self):
         """ Sometimes a message is returned """
         return self._message
@@ -120,7 +131,7 @@ class API:
     @property
     def protocol(self):
         """ The protocol used for the call 
-        
+
         Args:
             `str`: API.PROTOCOL_HTTP or API.PROTOCOL_HTTPS
         """
@@ -148,7 +159,7 @@ class API:
     @property
     def status(self):
         """ The status in the response
-        
+
         Args:
             `str`: API.OK, API.ERROR, or API.UNKNOWN
         """
@@ -179,9 +190,11 @@ class API:
     @property
     def url(self):
         """ The complete url used to call the Domoticz json/API """
-        return ("{}://{}:{}/{}?{}".format(
-            self._protocol,
-            self._server._address,
-            self._server._port,
-            self.URL,
-            parse.quote(self._querystring, safe="&=")))
+        if self._querystring is None:
+            return None
+        else:
+            return ("{}?{}".format(
+                self.endpoint,
+                parse.quote(self._querystring, safe="&=")
+                )
+            )
