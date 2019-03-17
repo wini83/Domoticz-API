@@ -402,6 +402,15 @@ class Server:
         return datetime.strptime(self._currentdate + " " + self._nauttwilightstart, "%Y-%m-%d %H:%M")
 
     @property
+    def password(self):
+        """Domoticz password"""
+        return self._password
+
+    @password.setter
+    def password(self, value):
+        self._password = value
+
+    @property
     def port(self):
         """Domoticz server port"""
         return self._port
@@ -500,6 +509,15 @@ class Server:
         """
         self._getUpTime()
         return self._getUpTime
+
+    @property
+    def user(self):
+        """Domoticz user"""
+        return self._user
+
+    @user.setter
+    def user(self, value):
+        self._user = value
 
     @property
     # getversion
