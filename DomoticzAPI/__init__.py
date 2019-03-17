@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from .const import *
-from .server import *
-from .user import *
-from .hardware import *
-from .device import *
-from .roomplan import *
-from .color import *
-from .uservariable import *
-from .notification import *
-from .utilities import *
 from .api import *
+from .color import *
+from .const import *
+from .device import *
+from .hardware import *
+from .notification import *
+from .roomplan import *
+from .server import *
+from .scene import *
+from .user import *
+from .uservariable import *
+from .utilities import *
 from .setting import *
 from .translation import *

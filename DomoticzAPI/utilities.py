@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from .const import *
 import platform
 import os
 import subprocess
@@ -11,7 +12,7 @@ import base64
 
 VERSION_MAJOR = 0
 VERSION_MINOR = 12
-VERSION_PATCH = 4
+VERSION_PATCH = 6
 VERSION_IDENTIFIER = "beta"
 
 VERSION_SHORT = '{}.{}'.format(VERSION_MAJOR, VERSION_MINOR)
@@ -173,6 +174,13 @@ def machine():
 def node():
     return platform.node()
 
+def onoff_2_str(value):
+    if value == ON:
+        return "On"
+    elif value == OFF:
+        return "Off"
+    else:
+        return None        
 
 def os_command(command):
     p = subprocess.Popen(command, shell=True,
