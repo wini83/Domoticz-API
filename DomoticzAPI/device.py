@@ -35,7 +35,7 @@ class Device:
     SWITCH_PANIC_END = "Panic End"
     SWITCH_STOP = "Stop"
     SWITCH_SET_LEVEL = "Set Level"
-    SWITCH_STOP_INLINE_RELAY= "Stop inline relay"
+    SWITCH_STOP_INLINE_RELAY = "Stop inline relay"
     SWITCH_TOGGLE = "Toggle"
     SWITCH_UNLOCKED = "Unlocked"
     # Parameters used for: switchlight
@@ -79,6 +79,8 @@ class Device:
         self._subtype = None
         self._typename = None
         self._htype = None
+        self._nvalue = None
+        self._svalue = None
         if isinstance(server, Server) and server.exists():
             self._server = server
         else:
@@ -276,6 +278,10 @@ class Device:
             else:
                 self._hardware = None
 
+    def _update(self, key, value):
+        if key in ("nvalue", "svalue", "battery", "rssi"):
+            pass
+
     # ..........................................................................
     # Public methods
     # ..........................................................................
@@ -351,15 +357,28 @@ class Device:
                     self._api.call()
                     self._init()
 
+    def setused(self, used):
+        if self.exists() and isinstance(used, bool):
+            # /json.htm?type=setused&idx=IDX&used=true|false
+            self._api.querystring = "type={}&idx={}&used={}".format(
+                self._type_set_used,
+                self._idx,
+                bool_2_str(used)
+            )
+            self._api.call()
+            self._init()
+
     def update(self, nvalue, svalue, battery, rssi):
         # /json.htm?type=command&param=udevice&idx=IDX&nvalue=NVALUE&svalue=SVALUE
-        if self.exists() and nvalue is not None:
-            self._api.querystring = "type=command&param={}&idx={}&nvalue={}".format(
+        if self.exists() and (nvalue is not None or svalue is not None):
+            self._api.querystring = "type=command&param={}&idx={}".format(
                 self._param_update_device,
-                self._idx,
-                nvalue)
+                self._idx)
+            if nvalue is not None:
+                self._api.querystring += "&nvalue={}".format(nvalue)
             if svalue is not None:
                 self._api.querystring += "&svalue={}".format(svalue)
+            # Optional parameters
             if battery is not None and isinstance(battery, int):
                 self._api.querystring += "&battery={}".format(battery)
             if rssi is not None and isinstance(rssi, int):
@@ -431,6 +450,10 @@ class Device:
 
     @property
     def batterylevel(self):
+        return self._batterylevel
+
+    @batterylevel.setter
+    def batterylevel(self, value):
         return self._batterylevel
 
     @property
@@ -703,12 +726,12 @@ class Device:
             value = found_dict.get("value")
             values = found_dict.get("values")
             try:
-                nvalue = float(value)
+                nvalue = float(value.split(";")[0])
             except:
                 nvalue = None
             if nvalue is None:
                 try:
-                    nvalue = float(values.partition("/")[0])
+                    nvalue = float(values.split(";")[0].split("/")[1])
                 except:
                     nvalue = None
             return nvalue
@@ -777,6 +800,10 @@ class Device:
     def signallevel(self):
         return self._signallevel
 
+    @signallevel.setter
+    def signallevel(self, value):
+        self._signallevel = value
+
     @property
     def speed(self):
         return self._speed
@@ -788,6 +815,10 @@ class Device:
     @property
     def subtype(self):
         return self._subtype
+
+    @property
+    def svalue(self):
+        return self._svalue
 
     @property
     def temp(self):
