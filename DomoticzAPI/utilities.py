@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from .const import *
-import platform
-import os
-import subprocess
 import base64
+import os
+import platform
+import subprocess
+import time
+
+from .const import *
 
 """
     Utilities
@@ -12,7 +14,7 @@ import base64
 
 VERSION_MAJOR = 0
 VERSION_MINOR = 12
-VERSION_PATCH = 6
+VERSION_PATCH = 7
 VERSION_IDENTIFIER = "beta"
 
 VERSION_SHORT = '{}.{}'.format(VERSION_MAJOR, VERSION_MINOR)
@@ -167,12 +169,37 @@ def int_2_bool(value):
         return False
 
 
+def kmh_2_ms(value):
+    """Convert speed from km/h to m/s
+
+    Args:
+        value (float): speed in km/h
+
+    Returns:
+        speed in m/s
+    """
+    return value / _MS_KMH
+
+
 def machine():
     return platform.machine()
 
 
+def ms_2_kmh(value):
+    """Convert speed m/s to from km/h
+
+    Args:
+        value (float): speed in m/s
+
+    Returns:
+        speed in km/h
+    """
+    return value * _MS_KMH
+
+
 def node():
     return platform.node()
+
 
 def onoff_2_str(value):
     if value == ON:
@@ -180,7 +207,8 @@ def onoff_2_str(value):
     elif value == OFF:
         return "Off"
     else:
-        return None        
+        return None
+
 
 def os_command(command):
     p = subprocess.Popen(command, shell=True,
@@ -230,6 +258,10 @@ def system():
     return platform.system()
 
 
+def tz():
+    return - time.timezone / (_SEC_IN_MIN * _MIN_IN_HOUR)
+
+
 def version():
     return VERSION
 
@@ -254,7 +286,6 @@ def version_short():
     return VERSION_SHORT
 
 
-
 def wind_chill(t, v):
     """ Windchill temperature is defined only for temperatures at or below 10 °C 
     and wind speeds above 4.8 kilometres per hour.
@@ -276,27 +307,3 @@ def wind_chill(t, v):
         return round(13.12 + 0.6215 * t - 11.37 * v + 0.3965 * t * v, 1)
     else:
         return t
-
-
-def kmh_2_ms(value):
-    """Convert speed from km/h to m/s
-
-    Args:
-        value (float): speed in km/h
-
-    Returns:
-        speed in m/s
-    """
-    return value / _MS_KMH
-
-
-def ms_2_kmh(value):
-    """Convert speed m/s to from km/h
-
-    Args:
-        value (float): speed in m/s
-
-    Returns:
-        speed in km/h
-    """
-    return value * _MS_KMH

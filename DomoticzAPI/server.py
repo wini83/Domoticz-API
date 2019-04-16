@@ -60,7 +60,7 @@ class Server:
         self._user = kwargs.get("user")
         self._password = kwargs.get("password")
         self._rights = self.RIGHTS_NOT_DEFINED
-        self._currentdate_dt = datetime.now().date()
+        self._currentdate_date = datetime.now().date()
         self._language = self.DEFAULT_LANGUAGE
         self._api = API(self)
         self._exists = False
@@ -143,32 +143,52 @@ class Server:
     def _getSunRiseSet(self, now=False):
         # /json.htm?type=command&param=getSunRiseSet
         if self._exists:
-            if isinstance(self._currentdate_dt, datetime):
-                if datetime.now().date() > self._currentdate_dt:
+            if isinstance(self._currentdate_date, datetime):
+                if datetime.now().date() > self._currentdate_date:
                     now = True
             if now:
                 self._api.querystring = "type=command&param={}".format(
                     self._param_sun)
                 self._api.call()
                 self._astrtwilightend = self._api.data.get("AstrTwilightEnd")
-                self._astrtwilightstart = self._api.data.get("AstrTwilightStart")
+                self._astrtwilightstart = self._api.data.get(
+                    "AstrTwilightStart")
                 self._civtwilightend = self._api.data.get("CivTwilightEnd")
                 self._civtwilightstart = self._api.data.get("CivTwilightStart")
                 self._nauttwilightend = self._api.data.get("NautTwilightEnd")
-                self._nauttwilightstart = self._api.data.get("NautTwilightStart")
+                self._nauttwilightstart = self._api.data.get(
+                    "NautTwilightStart")
                 self._sunrise = self._api.data.get("Sunrise")
                 self._sunset = self._api.data.get("Sunset")
                 self._sunatsouth = self._api.data.get("SunAtSouth")
                 self._daylength = self._api.data.get("DayLength")
                 self._servertime = self._api.data.get("ServerTime")
+
                 # Remember the datetime from this call
                 if self._api.status == self._api.OK:
                     self._currentdate = self._servertime[:10]  # yyyy-mm-dd
-                    self._currentdate_dt = datetime.strptime(
+                    self._currentdate_date = datetime.strptime(
                         self._servertime, "%Y-%m-%d %H:%M:%S").date()
+
+                    self._servertime_dt = datetime.strptime(
+                        self._servertime, "%Y-%m-%d %H:%M:%S")
+                    sr = datetime.strptime(
+                        self._currentdate + " " + self._sunrise, "%Y-%m-%d %H:%M")
+                    ss = datetime.strptime(
+                        self._currentdate + " " + self._sunset, "%Y-%m-%d %H:%M")
+                    ats = datetime.strptime(
+                        self._currentdate + " " + self._astrtwilightstart, "%Y-%m-%d %H:%M")
+                    ate = datetime.strptime(
+                        self._currentdate + " " + self._astrtwilightend, "%Y-%m-%d %H:%M")
+                    self._is_day = sr < self._servertime_dt < ss
+                    self._is_night = (self._servertime_dt < ats) or (
+                        self._servertime_dt > ate)
                 else:
                     self._currentdate = None
-                    self._currentdate_dt = None
+                    self._currentdate_date = None
+                    self._is_day = None
+                    self._is_night = None
+                    self._servertime_dt = None
 
     def _getConfig(self):
         # /json.htm?type=command&param=getconfig
@@ -203,8 +223,20 @@ class Server:
         return self._exists
 
     def has_location(self):
-        """ Check if location is defined for sunrise, sunset, etc.""" 
+        """ Check if location is defined for sunrise, sunset, etc."""
         return self.setting.value("Location") is not None
+
+    # def is_day(self):
+    #     if self._exists:
+    #         return self._is_day
+    #     else:
+    #         return None
+            
+    # def is_night(self):
+    #     if self._exists:
+    #         return self._is_night
+    #     else:
+    #         return None
 
     def logmessage(self, text):
         """ Send text to the Domoticz log """
@@ -374,6 +406,14 @@ class Server:
     def hash(self):
         """Build hash from Git"""
         return self._hash
+
+    @property
+    def is_day(self):
+        return self._is_day
+
+    @property
+    def is_night(self):
+        return self._is_night
 
     @property
     # getlanguage

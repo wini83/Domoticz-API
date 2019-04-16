@@ -17,7 +17,8 @@ def main():
     if server.exists():
         print("Domoticz version ........... : {}".format(server.version))
         print("Build time ................. : {}".format(server.build_time_dt))
-        print("DomoticzUpdateURL .......... : {}".format(server.domoticzupdateurl))
+        print("DomoticzUpdateURL .......... : {}".format(
+            server.domoticzupdateurl))
         print("Update available ........... : {}".format(server.haveupdate))
         print("\r")
 
@@ -37,6 +38,8 @@ def main():
             print("sunset ..................... : {}".format(server.sunset))
             print("sunrise_dt ................. : {}".format(server.sunrise_dt))
             print("sunset_dt .................. : {}".format(server.sunset_dt))
+            print("is_day ..................... : {}".format(server.is_day))
+            print("is_night ................... : {}".format(server.is_night))
         else:
             print("Location NOT set!!!")
             print("sunrise .................... : {}".format(server.sunrise))
@@ -59,7 +62,8 @@ def main():
             server.setting.value("Location").get("Latitude")))
         print("SecPassword ................ : {}".format(
             server.setting.value("SecPassword")))
-
+        print("Name ....................... : {}".format(
+            server.setting.value("Title")))
     else:
         print("Server not found!!!")
         print(server.api.message)
