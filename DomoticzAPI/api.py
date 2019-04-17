@@ -56,7 +56,21 @@ class API:
         self._title = None
 
     def __str__(self):
+        """
+        The string representation of the API.
+
+        :rtype: str
+
+        """
         return "{}({}): {}-{}".format(self.__class__.__name__, self.endpoint, self._title, self._status)
+
+    def __auth(self):
+        if self._server._user is not None and self._server._password is not None:
+            return base64.encodestring(("{}:{}".format(
+                self._server._user,
+                self._server._password)).encode()).decode().replace("\n", "")
+        else:
+            return ""
 
     # ..........................................................................
     # Public methods
@@ -66,11 +80,8 @@ class API:
         if self._server is not None:
             req = request.Request(self.url)
             if self._server._rights == self._server.RIGHTS_LOGIN_REQUIRED:
-                base64string = base64.encodestring(("{}:{}".format(
-                    self._server._user,
-                    self._server._password)).encode()).decode().replace("\n", "")
                 req.add_header("Authorization",
-                               "Basic {}".format(base64string))
+                               "Basic {}".format(self.__auth()))
             try:
                 response = request.urlopen(req).read()
                 data = json.loads(response.decode("utf-8"))
@@ -106,11 +117,10 @@ class API:
     @property
     def endpoint(self):
         """ The endpoint to the Domoticz server """
-        return ("{}://{}:{}/{}".format(
+        return ("{}://{}:{}/".format(
             self._protocol,
             self._server._address,
-            self._server._port,
-            self.URL
+            self._server._port
         )
         )
 
@@ -193,8 +203,9 @@ class API:
         if self._querystring is None:
             return None
         else:
-            return ("{}?{}".format(
+            return ("{}{}?{}".format(
                 self.endpoint,
+                self.URL,
                 parse.quote(self._querystring, safe="&=")
-                )
+            )
             )

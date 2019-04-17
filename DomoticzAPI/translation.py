@@ -11,7 +11,7 @@ class Translation:
         self._server = server
         self._language = kwargs.get(
             "language",
-            self._server.setting.value("Language"))
+            self._server.setting.get_value("Language"))
         self._getTranslations()
 
     def __str__(self):

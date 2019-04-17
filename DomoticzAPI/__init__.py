@@ -13,4 +13,5 @@ from .user import *
 from .uservariable import *
 from .utilities import *
 from .setting import *
+from .settings import *
 from .translation import *

@@ -224,7 +224,7 @@ class Server:
 
     def has_location(self):
         """ Check if location is defined for sunrise, sunset, etc."""
-        return self.setting.value("Location") is not None
+        return self._setting.get_value("Location") is not None
 
     # def is_day(self):
     #     if self._exists:
