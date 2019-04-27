@@ -68,33 +68,56 @@ class Setting:
             # First we have to transform all switches from 0/1 to <deleted>/on :(
             for k, v in list(d.items()):
                 if k in Settings.KEY_SWITCHES:
-                    if v == Settings.SETTING_OFF:
-                        try:
-                            del d[k]
-                        except:
-                            pass
-                    else:
-                        # Now the real disaster!!! When you get the values, the keys are sometimes different to set these values!!!
-                        if key in (Settings.KEY_CHECKFORUPDATES, Settings.KEY_ENABLEAUTOBACKUP):
-                            del d[k]
-                            if key == Settings.KEY_CHECKFORUPDATES:
-                                d.update({'checkforupdates': 'on'})
-                            if key == Settings.KEY_ENABLEAUTOBACKUP:
-                                d.update({'enableautobackup': 'on'})
+                    # DisableDzVentsSystem works the opposite way!!!
+                    if k == Settings.KEY_DISABLEDZVENTSSYSTEM:
+                        if value == Settings.SETTING_ON:
+                            try:
+                                del d[key]
+                            except:
+                                pass
                         else:
-                            d[k] = "on"
-            # Now set the value
+                            d[key] = "on"
+                    else:
+                        if v == Settings.SETTING_OFF:
+                            try:
+                                del d[k]
+                            except:
+                                pass
+                        else:
+                            # Now the real disaster!!! When you get the values, the keys are sometimes different to set these values!!!
+                            if key in (Settings.KEY_CHECKFORUPDATES, Settings.KEY_ENABLEAUTOBACKUP):
+                                del d[k]
+                                if key == Settings.KEY_CHECKFORUPDATES:
+                                    d.update({'checkforupdates': 'on'})
+                                if key == Settings.KEY_ENABLEAUTOBACKUP:
+                                    d.update({'enableautobackup': 'on'})
+                            else:
+                                d[k] = "on"
+            # Finally: set the value
             if key in Settings.KEY_SWITCHES:
                 if value in Settings.SETTING_VALUES:
-                    if value == Settings.SETTING_OFF:
-                        try:
-                            del d[key]
-                        except:
-                            pass
+                    # DisableDzVentsSystem works the opposite way!!!
+                    if k == Settings.KEY_DISABLEDZVENTSSYSTEM:
+                        if value == Settings.SETTING_ON:
+                            try:
+                                del d[key]
+                            except:
+                                pass
+                        else:
+                            d[key] = "on"
                     else:
-                        d[key] = "on"
+                        if value == Settings.SETTING_OFF:
+                            try:
+                                del d[key]
+                            except:
+                                pass
+                        else:
+                            d[key] = "on"
             else:
                 d[key] = value
             data = parse.urlencode(d).encode("utf-8")
             req = request.Request(url, data=data)
-            request.urlopen(req)
+            try:
+                request.urlopen(req)
+            except:
+                pass
