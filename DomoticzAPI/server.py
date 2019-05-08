@@ -6,6 +6,7 @@ from .setting import Setting
 from .translation import Translation
 import json
 from datetime import datetime
+from urllib.parse import urlparse
 
 
 class Server:
@@ -54,16 +55,40 @@ class Server:
                 port (:obj:`str`, optional): the port number of your Domoticz installation. Default = "8080"
                 user (:obj:`str`, optional): the username to access Domoticz.
                 password (:obj:`str`, optional): the password to access Domoticz.
+                url (:obj:`str`, optional): use url to pass protocol/adress/port/user and password to access Domoticz.
         """
         self._address = address
         self._port = port
+        self._protocol='http'
         self._user = kwargs.get("user")
         self._password = kwargs.get("password")
+        self._domUrl = kwargs.get("url")
+
         self._rights = self.RIGHTS_NOT_DEFINED
         self._currentdate_date = datetime.now().date()
         self._language = self.DEFAULT_LANGUAGE
+
+
+        if self._domUrl != None:
+            url = urlparse(self._domUrl)
+            self._protocol=url.scheme.lower()
+            if url.username != None:
+                self._user=url.username
+            if url.password != None:
+                self._password = url.password
+            if url.port != None:
+                self._port=url.port
+            else:
+                if self._protocol=='https':
+                    self._port=443
+            self._address=url.hostname
+
+        if self._password != None:
+            self._rights=self.RIGHTS_LOGIN_REQUIRED
+
         self._api = API(self)
         self._exists = False
+
         # Check if authorization is required
         self._getAuth()
         if self._api.status == self._api.OK:
@@ -92,6 +117,10 @@ class Server:
 
     def __getattr__(self, item):
         return None
+
+    @property
+    def protocol(self):
+        return self._protocol
 
     # ..........................................................................
     # Private methods
