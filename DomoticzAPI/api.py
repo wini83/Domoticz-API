@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import urllib.request as request
+
 import urllib.parse as parse
+import requests
 import base64
 import json
 
@@ -50,10 +51,11 @@ class API:
         self._message = None
         self._querystring = None
         self._payload = None
-        self._protocol = self.PROTOCOL_HTTP
+        self._protocol = server.protocol
         self._server = server
         self._status = self.UNKNOWN
         self._title = None
+        self._session = None              # Session Object for Http Session
 
     def __str__(self):
         """
@@ -78,19 +80,28 @@ class API:
     def call(self):
         """Call the Domoticz API"""
         if self._server is not None:
-            req = request.Request(self.url)
-            if self._server._rights == self._server.RIGHTS_LOGIN_REQUIRED:
-                req.add_header("Authorization",
-                               "Basic {}".format(self.__auth()))
             try:
-                response = request.urlopen(req).read()
-                data = json.loads(response.decode("utf-8"))
+                if self._session==None:
+                    self._session=requests.Session()
+
+                if self._server._rights == self._server.RIGHTS_LOGIN_REQUIRED:
+                    self._session.auth=(self._server._user, self._server._password) # TODO: check if base64 is required
+
+                response =  self._session.get(self.url,
+                                              verify=False) # bad fix for invalid domoticz certificate
+
+                if response.status_code != 200:
+                    raise Exception('call', response.reason)
+
+                strContent = response.content.decode('utf8').replace("'", '"')
+                data = json.loads(strContent)
+
                 self._data = data
                 self._message = data.get(self.MESSAGE)
                 self._payload = data.get(self.RESULT)
                 self.status = data.get(self.STATUS)  # set correct value
                 self._title = data.get(self.TITLE)
-            except:
+            except Exception as e:
                 self._data = {}
                 self._message = "Invalid call"
                 self._payload = None
