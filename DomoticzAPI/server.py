@@ -118,10 +118,6 @@ class Server:
     def __getattr__(self, item):
         return None
 
-    @property
-    def protocol(self):
-        return self._protocol
-
     # ..........................................................................
     # Private methods
     # ..........................................................................
@@ -487,6 +483,11 @@ class Server:
     @port.setter
     def port(self, port):
         self._port = port
+
+    @property
+    def protocol(self):
+        """http or https"""
+        return self._protocol
 
     @property
     # getversion
