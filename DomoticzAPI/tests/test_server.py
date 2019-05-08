@@ -57,13 +57,14 @@ def main():
         print("Settings")
         print("--------------------------------------------------------------------------------")
         print("AcceptNewHardware .......... : {}".format(
-            server.setting.value("AcceptNewHardware")))
-        print("Latitude ................... : {}".format(
-            server.setting.value("Location").get("Latitude")))
+            server.setting.get_value("AcceptNewHardware")))
+        if server.has_location():
+            print("Latitude ................... : {}".format(
+                server.setting.get_value("Location").get("Latitude")))
         print("SecPassword ................ : {}".format(
-            server.setting.value("SecPassword")))
+            server.setting.get_value("SecPassword")))
         print("Name ....................... : {}".format(
-            server.setting.value("Title")))
+            server.setting.get_value("Title")))
     else:
         print("Server not found!!!")
         print(server.api.message)

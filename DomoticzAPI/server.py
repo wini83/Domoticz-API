@@ -15,6 +15,10 @@ class Server:
     DEFAULT_PORT = "8080"
     DEFAULT_LANGUAGE = "en"
 
+    # Protocols
+    PROTOCOL_HTTP = "http"
+    PROTOCOL_HTTPS = "https"
+
     # rights
     RIGHTS_LOGIN_REQUIRED = -1
     RIGHTS_NOT_DEFINED = 0
@@ -59,7 +63,7 @@ class Server:
         """
         self._address = address
         self._port = port
-        self._protocol='http'
+        self._protocol = 'http'
         self._user = kwargs.get("user")
         self._password = kwargs.get("password")
         self._domUrl = kwargs.get("url")
@@ -68,23 +72,22 @@ class Server:
         self._currentdate_date = datetime.now().date()
         self._language = self.DEFAULT_LANGUAGE
 
-
         if self._domUrl != None:
             url = urlparse(self._domUrl)
-            self._protocol=url.scheme.lower()
+            self._protocol = url.scheme.lower()
             if url.username != None:
-                self._user=url.username
+                self._user = url.username
             if url.password != None:
                 self._password = url.password
             if url.port != None:
-                self._port=url.port
+                self._port = url.port
             else:
-                if self._protocol=='https':
-                    self._port=443
-            self._address=url.hostname
+                if self._protocol == 'https':
+                    self._port = 443
+            self._address = url.hostname
 
         if self._password != None:
-            self._rights=self.RIGHTS_LOGIN_REQUIRED
+            self._rights = self.RIGHTS_LOGIN_REQUIRED
 
         self._api = API(self)
         self._exists = False
@@ -157,6 +160,13 @@ class Server:
             self._systemname = self._api.data.get("SystemName")
             self._statuscode = self._api.data.get("statuscode")
 
+    @staticmethod
+    def _str2dt(value, format):
+        try:
+            return datetime.strptime(value, format)
+        except:
+            return None
+
     def _getLanguage(self):
         # /json.htm?type=command&param=getlanguage
         if self._exists:
@@ -192,19 +202,13 @@ class Server:
                 # Remember the datetime from this call
                 if self._api.status == self._api.OK:
                     self._currentdate = self._servertime[:10]  # yyyy-mm-dd
-                    self._currentdate_date = datetime.strptime(
-                        self._servertime, "%Y-%m-%d %H:%M:%S").date()
+                    self._currentdate_date = self._str2dt(self._servertime, "%Y-%m-%d %H:%M:%S").date()
 
-                    self._servertime_dt = datetime.strptime(
-                        self._servertime, "%Y-%m-%d %H:%M:%S")
-                    sr = datetime.strptime(
-                        self._currentdate + " " + self._sunrise, "%Y-%m-%d %H:%M")
-                    ss = datetime.strptime(
-                        self._currentdate + " " + self._sunset, "%Y-%m-%d %H:%M")
-                    ats = datetime.strptime(
-                        self._currentdate + " " + self._astrtwilightstart, "%Y-%m-%d %H:%M")
-                    ate = datetime.strptime(
-                        self._currentdate + " " + self._astrtwilightend, "%Y-%m-%d %H:%M")
+                    self._servertime_dt = self._str2dt(self._servertime, "%Y-%m-%d %H:%M:%S")
+                    sr = self._str2dt(self._currentdate + " " + self._sunrise, "%Y-%m-%d %H:%M")
+                    ss = self._str2dt(self._currentdate + " " + self._sunset, "%Y-%m-%d %H:%M")
+                    ats = self._str2dt(self._currentdate + " " + self._astrtwilightstart, "%Y-%m-%d %H:%M")
+                    ate = self._str2dt(self._currentdate + " " + self._astrtwilightend, "%Y-%m-%d %H:%M")
                     self._is_day = sr < self._servertime_dt < ss
                     self._is_night = (self._servertime_dt < ats) or (
                         self._servertime_dt > ate)
@@ -250,18 +254,6 @@ class Server:
     def has_location(self):
         """ Check if location is defined for sunrise, sunset, etc."""
         return self._setting.get_value("Location") is not None
-
-    # def is_day(self):
-    #     if self._exists:
-    #         return self._is_day
-    #     else:
-    #         return None
-            
-    # def is_night(self):
-    #     if self._exists:
-    #         return self._is_night
-    #     else:
-    #         return None
 
     def logmessage(self, text):
         """ Send text to the Domoticz log """
@@ -360,7 +352,7 @@ class Server:
 
     @property
     def astrtwilightend_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._astrtwilightend, "%Y-%m-%d %H:%M")
+        return self._str2dt(self._currentdate + " " + self._astrtwilightend, "%Y-%m-%d %H:%M")
 
     @property
     # getSunRiseSet
@@ -370,7 +362,7 @@ class Server:
 
     @property
     def astrtwilightstart_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._astrtwilightstart, "%Y-%m-%d %H:%M")
+        return self._str2dt(self._currentdate + " " + self._astrtwilightstart, "%Y-%m-%d %H:%M")
 
     @property
     # getversion
@@ -379,7 +371,7 @@ class Server:
 
     @property
     def build_time_dt(self):
-        return datetime.strptime(self._build_time, "%Y-%m-%d %H:%M:%S") if self._api.status == self._api.OK else None
+        return self._str2dt(self._build_time, "%Y-%m-%d %H:%M:%S")
 
     @property
     # getSunRiseSet
@@ -389,7 +381,7 @@ class Server:
 
     @property
     def civtwilightend_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._civtwilightend, "%Y-%m-%d %H:%M")
+        return self._str2dt(self._currentdate + " " + self._civtwilightend, "%Y-%m-%d %H:%M")
 
     @property
     # getSunRiseSet
@@ -399,7 +391,7 @@ class Server:
 
     @property
     def civtwilightstart_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._civtwilightstart, "%Y-%m-%d %H:%M")
+        return self._str2dt(self._currentdate + " " + self._civtwilightstart, "%Y-%m-%d %H:%M")
 
     @property
     # getSunRiseSet
@@ -454,7 +446,7 @@ class Server:
 
     @property
     def nauttwilightend_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._nauttwilightend, "%Y-%m-%d %H:%M")
+        return self._str2dt(self._currentdate + " " + self._nauttwilightend, "%Y-%m-%d %H:%M")
 
     @property
     # getSunRiseSet
@@ -464,7 +456,7 @@ class Server:
 
     @property
     def nauttwilightstart_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._nauttwilightstart, "%Y-%m-%d %H:%M")
+        return self._str2dt(self._currentdate + " " + self._nauttwilightstart, "%Y-%m-%d %H:%M")
 
     @property
     def password(self):
@@ -522,7 +514,7 @@ class Server:
     @property
     def servertime_dt(self):
         """:obj:`datetime` Domoticz server time"""
-        return datetime.strptime(self._servertime, "%Y-%m-%d %H:%M:%S") if self._api.status == self._api.OK else None
+        return self._str2dt(self._servertime, "%Y-%m-%d %H:%M:%S")
 
     @property
     # checkforupdate
@@ -537,8 +529,7 @@ class Server:
 
     @property
     def sunatsouth_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._sunatsouth,
-                                 "%Y-%m-%d %H:%M") if self._api.status == self._api.OK else None
+        return self._str2dt(self._currentdate + " " + self._sunatsouth, "%Y-%m-%d %H:%M")
 
     @property
     # getSunRiseSet
@@ -548,8 +539,7 @@ class Server:
 
     @property
     def sunrise_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._sunrise,
-                                 "%Y-%m-%d %H:%M") if self._api.status == self._api.OK else None
+        return self._str2dt(self._currentdate + " " + self._sunrise, "%Y-%m-%d %H:%M")
 
     @property
     # getSunRiseSet
@@ -559,8 +549,7 @@ class Server:
 
     @property
     def sunset_dt(self):
-        return datetime.strptime(self._currentdate + " " + self._sunset,
-                                 "%Y-%m-%d %H:%M") if self._api.status == self._api.OK else None
+        return self._str2dt(self._currentdate + " " + self._sunset, "%Y-%m-%d %H:%M")
 
     @property
     # getversion & checkforupdate
