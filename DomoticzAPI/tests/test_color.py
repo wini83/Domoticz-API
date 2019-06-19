@@ -6,7 +6,7 @@ import time
 
 def main():
     print("********************************************************************************")
-    print("Test script ........... : {}".format(__file__))
+    print("Test script ..................: {} ({})".format(__file__, dom.VERSION))
     print("********************************************************************************")
     server = dom.Server()
     dev1 = dom.Device(server, 77)

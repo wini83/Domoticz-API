@@ -7,11 +7,12 @@ import time
 
 def main():
     print("********************************************************************************")
-    print("Test script ........... : {}".format(__file__))
+    print("Test script ..................: {} ({})".format(__file__, dom.VERSION))
     print("********************************************************************************")
     server = dom.Server()
     print(server)
     print("\r")
+
     print("********************************************************************************")
     print("Non existing device")
     print("********************************************************************************")
@@ -21,8 +22,8 @@ def main():
         print("Value .................. : {}".format(dev2.data))
     else:
         print("Device {} does not exist!!!".format(dev2.name))
-
     print("\r")
+
     print("********************************************************************************")
     print("Create new hardware")
     print("********************************************************************************")
@@ -44,7 +45,7 @@ def main():
         print("{}: {} - {}".format(dev3, server.api.status, server.api.title))
         if dev3.exists():
             print("Switch successfully created")
-            print("Name: {}".format(dev3.value("Name")))
+            print("Name: {}".format(dev3.name))
             print("Status: {}".format(dev3.data))
             print("Switch device: {}".format(dev3.SWITCH_ON))
             dev3.update_switch(dev3.SWITCH_ON)
