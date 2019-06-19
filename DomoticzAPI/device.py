@@ -25,6 +25,37 @@ class Device:
     _param_reset_security_status = "resetsecuritystatus"
     _param_current_states = "currentstates"
 
+    _type_set_used_keys = {
+        "addjmulti",
+        "addjmulti2",
+        "addjvalue",
+        "addjvalue2",
+        "clock",
+        "customimage",
+        "description",
+        "deviceid",
+        "fmode",
+        "maindeviceidx",
+        "mode",
+        "name",
+        "protected",
+        "setpoint",
+        "state",
+        "strparam1",
+        "strparam2",
+        "switchtype",
+        "tmode",
+        "unit",
+        "until",
+    }
+
+    _param_update_device_keys = {
+        "nvalue",
+        "svalue",
+        "battery",
+        "rssi",
+    }
+
     SWITCH_CLOSE_INLINE_RELAY = "Close inline relay"
     SWITCH_CLOSED = "Closed"
     SWITCH_LOCKED = "Locked"
@@ -282,6 +313,37 @@ class Device:
         if key in ("nvalue", "svalue", "battery", "rssi"):
             pass
 
+    def _values(self):
+                # The only way to get a current value from a device is by calling:
+        #
+        #   /type=events&param=currentstates
+        #
+        # Where:
+        #   idx = self._idx
+        #   value = nvalue (if string, then take value before '/' in values)
+        #
+        if self.exists():
+            # /json.htm?type=events&param=currentstates
+            self._api.querystring = "type={}&param={}".format(
+                self._type_events,
+                self._param_current_states)
+            self._api.call()
+            found_dict = {}
+            if self._api.status == self._api.OK and self._api.payload:
+                for result_dict in self._api.payload:
+                    if self._idx is not None and result_dict.get("id") == self.idx:
+                        # Found device :)
+                        found_dict = result_dict
+                        break
+            self._state = found_dict.get("value")
+            values = found_dict.get("values")  # like: "0/333.000;919936.000"
+            try:
+                self._nvalue = int(values.split("/")[0])
+                self._svalue = values.split("/")[1]
+            except:
+                self._nvalue = None
+                self._svalue = None
+
     # ..........................................................................
     # Public methods
     # ..........................................................................
@@ -401,6 +463,7 @@ class Device:
                     self._api.call()
                     self._init()
 
+    @property
     def value(self, key):
         """Retrieve the value from a device property 
         Can be used if the property is not available/unknown
@@ -423,6 +486,23 @@ class Device:
                             found_dict = result_dict
                             break
         return found_dict.get(key)
+
+    @value.setter
+    def value(self, key, value):
+        if key in self._type_set_used_keys:
+            # /json.htm?type=setused&idx=IDX&used=true|false
+            self._api.querystring = "type={}&idx={}&used={}&{}={}".format(
+                self._type_set_used,
+                self._idx,
+                self._used,
+                key,
+                value
+            )
+            self._api.call()
+            self._init()
+        elif key in self._param_update_device_keys:
+            # self.update(self._nvalue, self._svalue, self._batterylevel, self._rssi)
+            pass
 
     # ..........................................................................
     # Properties
@@ -454,7 +534,7 @@ class Device:
 
     @batterylevel.setter
     def batterylevel(self, value):
-        return self._batterylevel
+        self._batterylevel = value
 
     @property
     def cameraidx(self):
@@ -702,39 +782,8 @@ class Device:
 
     @property
     def nvalue(self):
-        # The only way to get a current value from a device is by calling:
-        #
-        #   /type=events&param=currentstates
-        #
-        # Where:
-        #   idx = self._idx
-        #   value = nvalue (if string, then take value before '/' in values)
-        #
-        if self.exists():
-            # /json.htm?type=events&param=currentstates
-            self._api.querystring = "type={}&param={}".format(
-                self._type_events,
-                self._param_current_states)
-            self._api.call()
-            found_dict = {}
-            if self._api.status == self._api.OK and self._api.payload:
-                for result_dict in self._api.payload:
-                    if self._idx is not None and result_dict.get("id") == self.idx:
-                        # Found device :)
-                        found_dict = result_dict
-                        break
-            value = found_dict.get("value")
-            values = found_dict.get("values")
-            try:
-                nvalue = float(value.split(";")[0])
-            except:
-                nvalue = None
-            if nvalue is None:
-                try:
-                    nvalue = float(values.split(";")[0].split("/")[1])
-                except:
-                    nvalue = None
-            return nvalue
+        self._values()
+        return self._nvalue
 
     @property
     def options(self):
@@ -810,6 +859,7 @@ class Device:
 
     @property
     def state(self):
+        self._values()
         return self._state
 
     @property
@@ -818,6 +868,7 @@ class Device:
 
     @property
     def svalue(self):
+        self._values()
         return self._svalue
 
     @property
