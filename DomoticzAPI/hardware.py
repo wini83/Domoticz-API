@@ -114,10 +114,27 @@ class Hardware:
     def _update(self, key, value):
         if value is not None and self.exists():
             # /json.htm?type=command&param=updatehardware&idx=IDX&name=NAME
+            param = self._add_param(key, value)
+            if key == "enabled":
+                param += self._add_param("address", self._address)
+                param += self._add_param("datatimeout", self._datatimeout)
+                param += self._add_param("extra", self._extra)
+                param += self._add_param("htype", self._type)
+                param += self._add_param("mode1", self._mode1)
+                param += self._add_param("mode2", self._mode2)
+                param += self._add_param("mode3", self._mode3)
+                param += self._add_param("mode4", self._mode4)
+                param += self._add_param("mode5", self._mode5)
+                param += self._add_param("mode6", self._mode6)
+                param += self._add_param("name", self._name)
+                param += self._add_param("password", self._password)
+                param += self._add_param("port", self._port)
+                param += self._add_param("serialport", self._serialport)
+                param += self._add_param("username", self._username)
             querystring = "type=command&param={}&idx={}{}".format(
                 self._param_update_hardware,
                 self._idx,
-                self._add_param(key, value))
+                param)
             self._api.querystring = querystring
             self._api.call()
             if key == "htype":
@@ -169,6 +186,7 @@ class Hardware:
                 querystring += self._add_param("username", self._username)
                 self._api.querystring = querystring
                 self._api.call()
+                
                 if self._api.status == self._api.OK:
                     self._idx = int(self._api.data.get("idx"))
                     self._init()
@@ -222,6 +240,7 @@ class Hardware:
         return self._enabled
 
     @enabled.setter
+    # /json.htm?type=command&param=updatehardware&htype=HTYPE&idx=IDX&name=NAME&username=&password=&address=&port=&serialport=&Mode1=&Mode2=&Mode3=&Mode4=&Mode5=&Mode6=Normal&extra=&enabled=true&datatimeout=0
     def enabled(self, value):
         if isinstance(value, bool):
             self._enabled = value

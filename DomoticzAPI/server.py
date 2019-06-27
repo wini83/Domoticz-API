@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 
 class Server:
 
-    DEFAULT_ADDRESS = "localhost"
+    DEFAULT_ADDRESS = "127.0.0.1"
     DEFAULT_PORT = "8080"
     DEFAULT_LANGUAGE = "en"
 
@@ -55,7 +55,7 @@ class Server:
     def __init__(self, address=DEFAULT_ADDRESS, port=DEFAULT_PORT, **kwargs):
         """The Server class represents the Domoticz server
             Args:
-                address (:obj:`str`, optional): the IP-address or hostname of your Domoticz installation. Default = "localhost".
+                address (:obj:`str`, optional): the IP-address or hostname of your Domoticz installation. Default = "127.0.0.1".
                 port (:obj:`str`, optional): the port number of your Domoticz installation. Default = "8080"
                 user (:obj:`str`, optional): the username to access Domoticz.
                 password (:obj:`str`, optional): the password to access Domoticz.

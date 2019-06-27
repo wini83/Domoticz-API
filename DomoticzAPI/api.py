@@ -81,21 +81,20 @@ class API:
         """Call the Domoticz API"""
         if self._server is not None:
             try:
-                if self._session==None:
-                    self._session=requests.Session()
+                if self._session == None:
+                    self._session = requests.Session()
 
                 if self._server._rights == self._server.RIGHTS_LOGIN_REQUIRED:
-                    self._session.auth=(self._server._user, self._server._password) # TODO: check if base64 is required
-
-                response =  self._session.get(self.url,
-                                              verify=False) # bad fix for invalid domoticz certificate
-
+                    # TODO: check if base64 is required
+                    self._session.auth = (
+                        self._server._user, self._server._password)
+                response = self._session.get(self.url,
+                                             verify=False)  # bad fix for invalid domoticz certificate
                 if response.status_code != 200:
                     raise Exception('call', response.reason)
 
                 strContent = response.content.decode('utf8').replace("'", '"')
                 data = json.loads(strContent)
-
                 self._data = data
                 self._message = data.get(self.MESSAGE)
                 self._payload = data.get(self.RESULT)
@@ -218,5 +217,4 @@ class API:
                 self.endpoint,
                 self.URL,
                 parse.quote(self._querystring, safe="&=")
-            )
-            )
+            ))
