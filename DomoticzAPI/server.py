@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 
 class Server:
 
-    DEFAULT_ADDRESS = "127.0.0.1"
+    DEFAULT_ADDRESS = "localhost"
     DEFAULT_PORT = "8080"
     DEFAULT_LANGUAGE = "en"
 
@@ -163,7 +163,7 @@ class Server:
     @staticmethod
     def _str2dt(value, format):
         try:
-            return datetime.strptime(value, format)
+            return time.strptime(value, format)
         except:
             return None
 
@@ -202,7 +202,7 @@ class Server:
                 # Remember the datetime from this call
                 if self._api.status == self._api.OK:
                     self._currentdate = self._servertime[:10]  # yyyy-mm-dd
-                    self._currentdate_date = self._str2dt(self._servertime, "%Y-%m-%d %H:%M:%S").date()
+                    self._currentdate_date = self._str2dt(self._servertime, "%Y-%m-%d %H:%M:%S")
 
                     self._servertime_dt = self._str2dt(self._servertime, "%Y-%m-%d %H:%M:%S")
                     sr = self._str2dt(self._currentdate + " " + self._sunrise, "%Y-%m-%d %H:%M")
