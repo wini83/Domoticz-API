@@ -163,7 +163,7 @@ class Server:
     @staticmethod
     def _str2dt(value, format):
         try:
-            return time.strptime(value, format)
+            return datetime.strptime(value, format)
         except:
             return None
 
@@ -198,11 +198,10 @@ class Server:
                 self._sunatsouth = self._api.data.get("SunAtSouth")
                 self._daylength = self._api.data.get("DayLength")
                 self._servertime = self._api.data.get("ServerTime")
-
                 # Remember the datetime from this call
                 if self._api.status == self._api.OK:
                     self._currentdate = self._servertime[:10]  # yyyy-mm-dd
-                    self._currentdate_date = self._str2dt(self._servertime, "%Y-%m-%d %H:%M:%S")
+                    self._currentdate_date = self._str2dt(self._servertime, "%Y-%m-%d %H:%M:%S").date()
 
                     self._servertime_dt = self._str2dt(self._servertime, "%Y-%m-%d %H:%M:%S")
                     sr = self._str2dt(self._currentdate + " " + self._sunrise, "%Y-%m-%d %H:%M")
