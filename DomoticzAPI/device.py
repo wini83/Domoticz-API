@@ -167,6 +167,10 @@ class Device:
             # Get all devices: /json.htm?type=devices&displayhidden=1
             querystring = "type={}&displayhidden=1".format(
                 self._type_devices)
+        elif self._typename is not None:
+            # Get all devices: /json.htm?type=devices&displayhidden=1
+            querystring = "type={}&displayhidden=1".format(
+                self._type_devices)
         else:
             querystring = ""
         self._api.querystring = querystring
