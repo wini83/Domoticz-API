@@ -9,7 +9,7 @@ def main():
     print("********************************************************************************")
     print("Test script ..................: {} ({})".format(__file__, dom.VERSION))
     print("********************************************************************************")
-    server = dom.Server()
+    server = dom.Server("192.168.1.16", "81")
     print(server)
     print("\r")
 
@@ -36,8 +36,7 @@ def main():
         print("********************************************************************************")
         print("Add device to new hardware")
         print("********************************************************************************")
-        dev3 = dom.Device(server, hw3, "Test Device",
-                          type=244, subtype=73)  # Switch
+        dev3 = dom.Device(server, hw3, "Test Device", type=244, subtype=73)  # Switch
         print("dev3.hardware: {}".format(dev3.hardware))
         print("{}: {} - {}".format(dev3, server.api.status, server.api.title))
 
