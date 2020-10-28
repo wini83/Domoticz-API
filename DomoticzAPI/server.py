@@ -166,7 +166,7 @@ class Server:
             return datetime.strptime(value, format)
         except TypeError:
             import time
-            return datetime.datetime(*(time.strptime(value, format)[0:6]))
+            return datetime(*(time.strptime(value, format)[0:6]))
         except:
             return None
 
