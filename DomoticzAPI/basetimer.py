@@ -6,7 +6,7 @@ from .device import Device
 from .scene import Scene
 from datetime import datetime
 from enum import IntFlag, IntEnum
-from .utilities import (bool_2_int, int_2_bool, bool_2_str, str_2_bool)
+from .utilities import (bool_2_int, int_2_bool, bool_2_str, str_2_bool, str_2_date)
 from abc import ABC, abstractmethod
 
 class TimerDays (IntFlag):
@@ -222,11 +222,7 @@ class BaseTimer(ABC):
     # Private methods
     # ..........................................................................
     def _fillfrompayload(self, var):
-        try:
-            t = datetime.strptime(var.get("Time"),"%H:%M")
-        except TypeError:
-            import time
-            t = datetime(*(time.strptime(var.get("Time"), "%H:%M")[0:6]))
+        t = str_2_date(var.get("Time"),"%H:%M")
         self._idx = int(var.get("idx"))
         self._active = str_2_bool(var.get("Active"))
         self._timertype = TimerTypes(int(var.get("Type")))
@@ -241,11 +237,7 @@ class BaseTimer(ABC):
         self._initfields(var)
 
     def _fillfromkwargs(self, var):
-        try:
-            t = datetime.strptime(var.get("Time", "00:00"),"%H:%M")
-        except TypeError:
-            import time
-            t = datetime(*(time.strptime(var.get("Time", "00:00"), "%H:%M")[0:6]))
+        t = str_2_date(var.get("Time", "00:00"),"%H:%M")
         self._active = str_2_bool(var.get("Active", False))
         self._timertype = TimerTypes(int(var.get("Type", TimerTypes.TME_TYPE_ON_TIME)))
         self._hour = t.hour
@@ -267,11 +259,7 @@ class BaseTimer(ABC):
         self._api.call()
         if self._api.is_OK() and self._api.has_payload():
             for var in self._api.payload:
-                try:
-                    t = datetime.strptime(var.get("Time"),"%H:%M")
-                except TypeError:
-                    import time
-                    t = datetime(*(time.strptime(var.get("Time"), "%H:%M")[0:6]))
+                t = str_2_date(var.get("Time"),"%H:%M")
                 if aftercreate:
                     #print("{} {} {}:{} {} Date:{}".format(str_2_bool(var.get("Active")), int(var.get("Type")), t.hour, t.minute, int(var.get("Days")), var.get("Date")))
                     if self._timertype == TimerTypes(int(var.get("Type"))) \
@@ -297,11 +285,7 @@ class BaseTimer(ABC):
     @staticmethod 
     def _checkDateFormat(str):
         if (str and str != ""):
-            try:
-                d = datetime.strptime(str, '%Y-%m-%d')
-            except TypeError:
-                import time
-                d = datetime(*(time.strptime(str, "%Y-%m-%d")[0:6]))
+            d = str_2_date(str, '%Y-%m-%d')
             return d.strftime('%Y-%m-%d')
         
         return None
