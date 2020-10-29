@@ -35,7 +35,7 @@ class SceneTimer(BaseTimer):
                     days (:obj:`int`): Days combination for timer
                         EveryDay = 0
                         Monday = 1
-                        Thuesday = 2
+                        Tuesday = 2
                         Wednesday = 4
                         Thursday = 8
                         Friday = 16

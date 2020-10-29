@@ -35,7 +35,7 @@ def main():
             print("Device successfully created")
             print("Name: {}".format(dev3.name))
             print("Status: {}".format(dev3.data))
-            tmr = dom.DeviceTimer(dev3, True, dom.TimerTypes.TME_TYPE_ON_TIME, 1, 0, dom.TimerDays.Monday | dom.TimerDays.Thuesday, None, 1, 2, 3, False, 0, 100)
+            tmr = dom.DeviceTimer(dev3, True, dom.TimerTypes.TME_TYPE_ON_TIME, 1, 0, dom.TimerDays.Monday | dom.TimerDays.Tuesday, None, 1, 2, 3, False, 0, 100)
             print (tmr)
             print("Timer exists: {}".format(tmr.exists()))
             print("Adding new timer.")
@@ -97,7 +97,7 @@ def main():
             tmr.level = 80
             print (tmr)
 
-            tmr1 = dom.DeviceTimer(dev3, True, dom.TimerTypes.TME_TYPE_ON_TIME, 1, 0, dom.TimerDays.Monday | dom.TimerDays.Thuesday, None, 1, 2, 3, True, 1, 90)
+            tmr1 = dom.DeviceTimer(dev3, True, dom.TimerTypes.TME_TYPE_ON_TIME, 1, 0, dom.TimerDays.Monday | dom.TimerDays.Tuesday, None, 1, 2, 3, True, 1, 90)
             print("Adding new timer 2.")
             tmr1.add()
 
