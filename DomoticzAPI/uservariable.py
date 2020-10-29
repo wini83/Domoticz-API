@@ -3,7 +3,7 @@
 from .server import Server
 from .api import API
 from datetime import datetime
-
+from .utilities import (str_2_date)
 
 class UserVariable:
 
@@ -114,7 +114,7 @@ class UserVariable:
             result = str(float(value))
         elif type == self.UVE_TYPE_DATE:
             try:
-                dt = datetime.strptime(value, self._date)
+                dt = str_2_date(value, self._date)
             except:
                 dt = None
             if dt is not None:
@@ -123,7 +123,7 @@ class UserVariable:
                 result = None
         elif type == self.UVE_TYPE_TIME:
             try:
-                dt = datetime.strptime(value, self._time)
+                dt = str_2_date(value, self._time)
             except:
                 dt = None
             if dt is not None:
@@ -190,7 +190,7 @@ class UserVariable:
     @property
     def lastupdate(self):
         """:obj:`datetime`: Date and time of the last update."""
-        return datetime.strptime(self._lastupdate, "%Y-%m-%d %H:%M:%S")
+        return str_2_date(self._lastupdate, "%Y-%m-%d %H:%M:%S")
 
     @property
     def name(self):
