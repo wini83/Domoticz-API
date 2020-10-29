@@ -440,6 +440,16 @@ class BaseTimer(ABC):
             self._update()
             
     @property
+    def days(self):
+        """TimerDays: Timer days."""
+        return self._days
+
+    @days.setter
+    def days(self, value):
+        self._days = TimerDays(int(value))
+        self._update()
+    
+    @property
     def minute(self):
         """int: Timer minute."""
         return self._min
