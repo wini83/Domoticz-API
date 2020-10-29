@@ -36,7 +36,7 @@ def main():
             print("Thermostat successfully created")
             print("Name: {}".format(dev3.name))
             print("Status: {}".format(dev3.data))
-            tmr = dom.SetPointTimer(dev3, True, dom.TimerTypes.TME_TYPE_ON_TIME, 1, 0, dom.TimerDays.Monday | dom.TimerDays.Thuesday, None, 1, 2, 3, 7)
+            tmr = dom.SetPointTimer(dev3, True, dom.TimerTypes.TME_TYPE_ON_TIME, 1, 0, dom.TimerDays.Monday | dom.TimerDays.Tuesday, None, 1, 2, 3, 7)
             print (tmr)
             print("Timer exists: {}".format(tmr.exists()))
             print("Adding new timer.")
@@ -101,7 +101,7 @@ def main():
             tmr.temperature = 20.8
             print (tmr)
 
-            tmr1 = dom.SetPointTimer(dev3, True, dom.TimerTypes.TME_TYPE_ON_TIME, 1, 0, dom.TimerDays.Monday | dom.TimerDays.Thuesday, None, 1, 2, 3, 20)
+            tmr1 = dom.SetPointTimer(dev3, True, dom.TimerTypes.TME_TYPE_ON_TIME, 1, 0, dom.TimerDays.Monday | dom.TimerDays.Tuesday, None, 1, 2, 3, 20)
             print("Adding new timer 2.")
             tmr1.add()
 

@@ -12,7 +12,7 @@ from abc import ABC, abstractmethod
 class TimerDays (IntFlag):
     EveryDay = 0
     Monday = 1
-    Thuesday = 2
+    Tuesday = 2
     Wednesday = 4
     Thursday = 8
     Friday = 16
@@ -80,7 +80,7 @@ class BaseTimer(ABC):
                     days (:obj:`int`): Days combination for timer
                         EveryDay = 0
                         Monday = 1
-                        Thuesday = 2
+                        Tuesday = 2
                         Wednesday = 4
                         Thursday = 8
                         Friday = 16
