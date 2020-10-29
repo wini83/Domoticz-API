@@ -222,7 +222,11 @@ class BaseTimer(ABC):
     # Private methods
     # ..........................................................................
     def _fillfrompayload(self, var):
-        t = datetime.strptime(var.get("Time"),"%H:%M")
+        try:
+            t = datetime.strptime(var.get("Time"),"%H:%M")
+        except TypeError:
+            import time
+            t = datetime(*(time.strptime(var.get("Time"), "%H:%M")[0:6]))
         self._idx = int(var.get("idx"))
         self._active = str_2_bool(var.get("Active"))
         self._timertype = TimerTypes(int(var.get("Type")))
@@ -237,7 +241,11 @@ class BaseTimer(ABC):
         self._initfields(var)
 
     def _fillfromkwargs(self, var):
-        t = datetime.strptime(var.get("Time", "00:00"),"%H:%M")
+        try:
+            t = datetime.strptime(var.get("Time", "00:00"),"%H:%M")
+        except TypeError:
+            import time
+            t = datetime(*(time.strptime(var.get("Time", "00:00"), "%H:%M")[0:6]))
         self._active = str_2_bool(var.get("Active", False))
         self._timertype = TimerTypes(int(var.get("Type", TimerTypes.TME_TYPE_ON_TIME)))
         self._hour = t.hour
@@ -259,7 +267,11 @@ class BaseTimer(ABC):
         self._api.call()
         if self._api.is_OK() and self._api.has_payload():
             for var in self._api.payload:
-                t = datetime.strptime(var.get("Time"),"%H:%M")
+                try:
+                    t = datetime.strptime(var.get("Time"),"%H:%M")
+                except TypeError:
+                    import time
+                    t = datetime(*(time.strptime(var.get("Time"), "%H:%M")[0:6]))
                 if aftercreate:
                     #print("{} {} {}:{} {} Date:{}".format(str_2_bool(var.get("Active")), int(var.get("Type")), t.hour, t.minute, int(var.get("Days")), var.get("Date")))
                     if self._timertype == TimerTypes(int(var.get("Type"))) \
@@ -284,7 +296,15 @@ class BaseTimer(ABC):
     
     @staticmethod 
     def _checkDateFormat(str):
-        return datetime.strptime(str, '%Y-%m-%d').strftime('%Y-%m-%d') if str and str != "" else None
+        if (str and str != ""):
+            try:
+                d = datetime.strptime(str, '%Y-%m-%d')
+            except TypeError:
+                import time
+                d = datetime(*(time.strptime(str, "%Y-%m-%d")[0:6]))
+            return d.strftime('%Y-%m-%d')
+        
+        return None
     
     # ..........................................................................
     # Public methods

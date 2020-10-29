@@ -115,6 +115,9 @@ class UserVariable:
         elif type == self.UVE_TYPE_DATE:
             try:
                 dt = datetime.strptime(value, self._date)
+            except TypeError:
+                import time
+                dt = datetime(*(time.strptime(value, self._date)[0:6]))
             except:
                 dt = None
             if dt is not None:
@@ -124,6 +127,9 @@ class UserVariable:
         elif type == self.UVE_TYPE_TIME:
             try:
                 dt = datetime.strptime(value, self._time)
+            except TypeError:
+                import time
+                dt = datetime(*(time.strptime(value, self._time)[0:6]))
             except:
                 dt = None
             if dt is not None:
