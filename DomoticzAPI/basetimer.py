@@ -103,6 +103,7 @@ class BaseTimer(ABC):
         
         if (isinstance(device, Device) or isinstance(device, Scene)) and device.exists():
             self._device = device
+            self._api = device._api
         else:
             self._device = None
 
@@ -141,7 +142,6 @@ class BaseTimer(ABC):
             else:
                 self._fillfromkwargs(kwargs)
 
-        self._api = self._device._api
         self._init()
         
     def __checkTypeAndValues(self, timertype, date, occurence, mday, month):

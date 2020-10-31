@@ -113,8 +113,9 @@ def main():
             print("Bulk load timers.")
             print("--------------------------------------------------------------------------------")           
             timers = dom.SetPointTimer.loadbythermostat(dev3)
-            for tmr1 in timers:
-                print (tmr1)
+            for tmr01 in timers:
+                print (tmr01)
+                tmr01.delete()
             
             tmr.delete()
             if tmr.exists():
