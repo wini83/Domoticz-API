@@ -63,12 +63,22 @@ def main():
             # Check Color class
             temp_t = dev3.color.t
             new_color = dev3.color
-            for x in range(0, 255, 10):
-                new_color.t = x
-                dev3.color = new_color
-                time.sleep(1)
-            new_color.t = temp_t
-            dev3.color = new_color
+            #for x in range(0, 255, 10):
+            #    new_color.t = x
+            #    dev3.color = new_color
+            #    time.sleep(1)
+            #new_color.t = temp_t
+            #dev3.color = new_color
+    
+    
+        dev4 = dom.Device(server, hw3, "Test Thermostat", type=242, subtype=1)
+        print(dev4)
+        dev4.add()
+        dev4.set_value("setpoint", 23)
+        print(dev4)
+        print(dev4.get_value("SetPoint"))
+      
+        
     # Cleanup test data
     hw3.delete()
 
