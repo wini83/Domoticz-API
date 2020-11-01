@@ -69,6 +69,16 @@ def main():
                 time.sleep(1)
             new_color.t = temp_t
             dev3.color = new_color
+    
+    
+        dev4 = dom.Device(server, hw3, "Test Thermostat", type=242, subtype=1)
+        print(dev4)
+        dev4.add()
+        dev4.set_value("setpoint", 23)
+        print(dev4)
+        print(dev4.get_value("SetPoint"))
+      
+        
     # Cleanup test data
     hw3.delete()
 
