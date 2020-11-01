@@ -68,7 +68,7 @@ class Hardware:
                     self._serialport = kwargs.get("serialport")
                     self._type = kwargs.get("type")
                     self._username = kwargs.get("username")
-        if self._idx is not None:
+        if self._idx is not None or ( self._type is not None and self._name is not None) :
             self._init()
 
     def __str__(self):
@@ -93,10 +93,13 @@ class Hardware:
             for found_dict in self._api.payload:
                 if found_dict.get("idx") == str(self._idx):
                     break
+                if found_dict.get("Name") == str(self._name) and found_dict.get("Type") == self._type:
+                    break                    
         self._address = found_dict.get("Address")
         self._datatimeout = found_dict.get("DataTimeout")
         self._enabled = found_dict.get("Enabled", "true") == "true"
         self._extra = found_dict.get("Extra")
+        self._idx = found_dict.get("idx")        
         self._mode1 = found_dict.get("Mode1")
         self._mode2 = found_dict.get("Mode2")
         self._mode3 = found_dict.get("Mode3")
