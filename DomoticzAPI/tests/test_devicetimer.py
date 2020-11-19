@@ -9,7 +9,7 @@ def main():
     print("********************************************************************************")
     print("Test script ..................: {} ({})".format(__file__, dom.VERSION))
     print("********************************************************************************")
-    server = dom.Server("localhost", "81")
+    server = dom.Server()
     print(server)
     print("\r")
 
