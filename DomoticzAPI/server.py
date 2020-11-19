@@ -7,6 +7,7 @@ from .translation import Translation
 import json
 from datetime import datetime
 from urllib.parse import urlparse
+from .utilities import (str_2_date)
 
 
 class Server:
@@ -163,7 +164,7 @@ class Server:
     @staticmethod
     def _str2dt(value, format):
         try:
-            return datetime.strptime(value, format)
+            return str_2_date(value, format)
         except:
             return None
 

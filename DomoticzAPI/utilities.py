@@ -5,6 +5,7 @@ import os
 import platform
 import subprocess
 import time
+from datetime import datetime
 
 from .const import *
 
@@ -60,6 +61,12 @@ def bearing_2_status(d):
     ix = int((d + (step / 2)) / step)  # Calculate index in the list
     return dirs[ix % count]
 
+def str_2_date(value, format):
+    """Fix for python bug https://bugs.python.org/issue27400"""
+    try:
+        return datetime.strptime(value, format)
+    except TypeError:
+        return datetime(*(time.strptime(value, format)[0:6]))
 
 def bool_2_int(value):
     """Convert boolean to 0 or 1

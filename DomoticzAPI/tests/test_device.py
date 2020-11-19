@@ -36,8 +36,7 @@ def main():
         print("********************************************************************************")
         print("Add device to new hardware")
         print("********************************************************************************")
-        dev3 = dom.Device(server, hw3, "Test Device",
-                          type=244, subtype=73)  # Switch
+        dev3 = dom.Device(server, hw3, "Test Device", type=244, subtype=73)  # Switch
         print("dev3.hardware: {}".format(dev3.hardware))
         print("{}: {} - {}".format(dev3, server.api.status, server.api.title))
 
@@ -70,6 +69,16 @@ def main():
                 time.sleep(1)
             new_color.t = temp_t
             dev3.color = new_color
+    
+    
+        dev4 = dom.Device(server, hw3, "Test Thermostat", type=242, subtype=1)
+        print(dev4)
+        dev4.add()
+        dev4.set_value("setpoint", 23)
+        print(dev4)
+        print(dev4.get_value("SetPoint"))
+      
+        
     # Cleanup test data
     hw3.delete()
 

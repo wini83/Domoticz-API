@@ -77,6 +77,24 @@ def main():
     print(var2)
     var2.type = var2.UVE_TYPE_INTEGER
     print(var2)
+    
+    var5 = dom.UserVariable(
+        server,
+        "API Test 5",
+        dom.UserVariable.UVE_TYPE_DATE,
+        "11/11/2020")
+    print(var5)
+    var5.value = "13/11/2020"
+    print(var5)
+
+    var6 = dom.UserVariable(
+        server,
+        "API Test 6",
+        dom.UserVariable.UVE_TYPE_TIME,
+        "11:11")
+    print(var6)
+    var6.value = "13:11"
+    print(var6)
 
     print("\r")
     print("--------------------------------------------------------------------------------")
@@ -86,6 +104,10 @@ def main():
     print(var1)
     var2.delete()
     print(var2)
+    var5.delete()
+    print(var5)
+    var6.delete()
+    print(var6)
 
 
 if __name__ == "__main__":

@@ -490,6 +490,29 @@ class Device:
                             found_dict = result_dict
                             break
         return found_dict.get(key)
+        
+    def get_value(self, key):
+        """Retrieve the value from a device property 
+        Can be used if the property is not available/unknown
+
+        Args:
+            key (str): key from a property, eg. "Level", etc
+        """
+        found_dict = {}
+        if self.exists():
+            # Retrieve status of specific device: /json.htm?type=devices&rid=IDX&displayhidden=1
+            self._api.querystring = "type={}&rid={}&displayhidden=1".format(
+                self._type_devices,
+                self._idx)
+            self._api.call()
+            if self._api.status == self._api.OK:
+                if self._api.payload:
+                    for result_dict in self._api.payload:
+                        if int(result_dict.get("idx")) == self._idx:
+                            # Found device :)
+                            found_dict = result_dict
+                            break
+        return found_dict.get(key)        
 
     @value.setter
     def value(self, key, value):
@@ -499,6 +522,22 @@ class Device:
                 self._type_set_used,
                 self._idx,
                 self._used,
+                key,
+                value
+            )
+            self._api.call()
+            self._init()
+        elif key in self._param_update_device_keys:
+            # self.update(self._nvalue, self._svalue, self._batterylevel, self._rssi)
+            pass
+
+    def set_value(self, key, value):
+        if key in self._type_set_used_keys:
+            # /json.htm?type=setused&idx=IDX&used=true|false
+            self._api.querystring = "type={}&idx={}&used={}&{}={}".format(
+                self._type_set_used,
+                self._idx,
+                bool_2_str(int_2_bool(self._used)),
                 key,
                 value
             )
