@@ -9,6 +9,6 @@ setup(
     name='DomoticzAPI',
     packages=['DomoticzAPI'],
     python_requires='>3',
-    url='https://github.com/Xorfor/Domoticz-API/',
+    url='https://github.com/wini83/Domoticz-API/',
     version=version()
 )
