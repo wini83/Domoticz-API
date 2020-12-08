@@ -112,7 +112,7 @@ class Server:
             self._api.status = self._api.ERROR
             self._api.message = "Authorization is required"
         self._getLanguage()
-        self._translation = Translation(self, language=self._language)
+        self._translation = None
 
     def __str__(self):
         txt = "{}(\"{}\", \"{}\"): {}".format(
