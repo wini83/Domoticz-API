@@ -12,9 +12,9 @@ So I moved to Home Assistant, and have no time/environment to maintain this plug
 The goal of this project is to have access to other devices, user variables, send notifications, etc. in Domoticz Python plugins.
 This API uses the interfaces as defined at [Domoticz API/JSON URL's](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL%27s). This page does not describe all available url's. This API also uses some 'undocumented' api url's.
 
-##Installation
+## Installation
 
-sudo pip install git+git://github.com/wini83/Domoticz-API.git
+`sudo pip install git+git://github.com/wini83/Domoticz-API.git`
 
 ## This is an beta version
 
